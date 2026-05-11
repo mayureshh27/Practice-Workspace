@@ -1161,16 +1161,17 @@
     {
       "id": "exercise-3-13",
       "number": 30,
-      "title": "Exercise 3.13: const declarations for KB MB",
+      "title": "Exercise 3.13: Iota Size Constants",
       "chapter": "ch3",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "basic"
+        "constants",
+        "iota"
       ],
-      "statement": "Build const declarations for KB, MB, up through YB as compactly as you can.",
+      "statement": "Given an exponent n, return 1 shifted by 10*n, modeling KB/MB/GB style constants.",
       "lessonTitle": "Book Exercise 3.13 study guide",
-      "lesson": "This entry follows Exercise 3.13 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 3, Basic Data Types. This chapter is about integers, floats, complex numbers, booleans, strings, constants, bytes, and runes.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 3.13:\n\nOriginal exercise idea, paraphrased: Build const declarations for KB, MB, up through YB as compactly as you can.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 3.13 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 3, Basic Data Types. This chapter is about integers, floats, complex numbers, booleans, strings, constants, bytes, and runes.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 3.13:\n\nOriginal exercise idea, paraphrased: Build const declarations for KB, MB, up through YB as compactly as you can.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -1182,18 +1183,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 3.13\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.13\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.13.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.13: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.13: implementation is project-specific\") }",
+      "starterCode": "func Solve(n uint) uint64 {\n    return 0\n}",
+      "solutionCode": "func Solve(n uint) uint64 { return 1 << (10*n) }",
+      "testCode": "func main(){ assertEqual(Solve(0),uint64(1)); assertEqual(Solve(1),uint64(1024)); assertEqual(Solve(2),uint64(1048576)) }",
       "examples": [
         {
-          "input": "Book Exercise 3.13",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "2",
+          "output": "1048576"
         }
       ],
       "sourceExercise": "3.13",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-4-1",
@@ -1460,16 +1461,17 @@
     {
       "id": "exercise-4-8",
       "number": 38,
-      "title": "Exercise 4.8: charcount to count letters digits",
+      "title": "Exercise 4.8: Character Class Count",
       "chapter": "ch4",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "unicode"
+        "unicode",
+        "maps"
       ],
-      "statement": "Adapt charcount to count letters, digits, and so on in their Unicode categories, using functions like unicode.IsLetter.",
+      "statement": "Count letters, digits, spaces, and other runes in a string.",
       "lessonTitle": "Book Exercise 4.8 study guide",
-      "lesson": "This entry follows Exercise 4.8 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 4, Composite Types. This chapter is about arrays, slices, maps, structs, JSON, templates, and graph-shaped data.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 4.8:\n\nOriginal exercise idea, paraphrased: Adapt charcount to count letters, digits, and so on in their Unicode categories, using functions like unicode.IsLetter.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 4.8 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 4, Composite Types. This chapter is about arrays, slices, maps, structs, JSON, templates, and graph-shaped data.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 4.8:\n\nOriginal exercise idea, paraphrased: Adapt charcount to count letters, digits, and so on in their Unicode categories, using functions like unicode.IsLetter.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -1481,18 +1483,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 4.8\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 4.8\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 4.8.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 4.8: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 4.8: implementation is project-specific\") }",
+      "starterCode": "func Solve(s string) map[string]int {\n    return nil\n}",
+      "solutionCode": "import \"unicode\"\nfunc Solve(s string) map[string]int { m:=map[string]int{\"letters\":0,\"digits\":0,\"spaces\":0,\"other\":0}; for _,r:=range s { switch {case unicode.IsLetter(r): m[\"letters\"]++; case unicode.IsDigit(r): m[\"digits\"]++; case unicode.IsSpace(r): m[\"spaces\"]++; default: m[\"other\"]++} }; return m }",
+      "testCode": "func main(){ assertEqual(Solve(\"Go 1!\"),map[string]int{\"letters\":2,\"digits\":1,\"spaces\":1,\"other\":1}) }",
       "examples": [
         {
-          "input": "Book Exercise 4.8",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "Go 1!",
+          "output": "letters=2 digits=1 spaces=1 other=1"
         }
       ],
       "sourceExercise": "4.8",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-4-9",
@@ -2059,18 +2061,18 @@
     {
       "id": "exercise-5-10",
       "number": 54,
-      "title": "Exercise 5.10: Rewrite topoSort to use maps",
+      "title": "Exercise 5.10: Topological Sort Order",
       "chapter": "ch5",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "map",
-        "slice",
-        "sort"
+        "maps",
+        "sort",
+        "graphs"
       ],
-      "statement": "Rewrite topoSort to use maps instead of slices and eliminate the initial sort. Verify that the results, though nondeterministic, are valid topological orderings.",
+      "statement": "Given prerequisite edges course -> prereq, return a deterministic topological order with prerequisites before courses.",
       "lessonTitle": "Book Exercise 5.10 study guide",
-      "lesson": "This entry follows Exercise 5.10 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 5, Functions. This chapter is about function signatures, recursion, multiple returns, errors, function values, closures, variadic functions, defer, panic, and recover.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 5.10:\n\nOriginal exercise idea, paraphrased: Rewrite topoSort to use maps instead of slices and eliminate the initial sort. Verify that the results, though nondeterministic, are valid topological orderings.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 5.10 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 5, Functions. This chapter is about function signatures, recursion, multiple returns, errors, function values, closures, variadic functions, defer, panic, and recover.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 5.10:\n\nOriginal exercise idea, paraphrased: Rewrite topoSort to use maps instead of slices and eliminate the initial sort. Verify that the results, though nondeterministic, are valid topological orderings.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -2082,18 +2084,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 5.10\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.10\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.10.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.10: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.10: implementation is project-specific\") }",
+      "starterCode": "func Solve(prereqs map[string][]string) []string {\n    return nil\n}",
+      "solutionCode": "import \"sort\"\nfunc Solve(prereqs map[string][]string) []string { seen:=map[string]bool{}; out:=[]string{}; var visit func(string); visit=func(x string){ if seen[x]{return}; seen[x]=true; ps:=append([]string{},prereqs[x]...); sort.Strings(ps); for _,p:=range ps {visit(p)}; out=append(out,x)}; keys:=[]string{}; for k:=range prereqs {keys=append(keys,k); for _,p:=range prereqs[k] { if _,ok:=prereqs[p]; !ok {prereqs[p]=nil} } }; keys=keys[:0]; for k:=range prereqs {keys=append(keys,k)}; sort.Strings(keys); for _,k:=range keys {visit(k)}; return out }",
+      "testCode": "func main(){ assertEqual(Solve(map[string][]string{\"algorithms\":{\"data structures\"},\"calculus\":{\"linear algebra\"}}),[]string{\"data structures\",\"algorithms\",\"linear algebra\",\"calculus\"}) }",
       "examples": [
         {
-          "input": "Book Exercise 5.10",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "{algorithms:[data structures]}",
+          "output": "[data structures, algorithms]"
         }
       ],
       "sourceExercise": "5.10",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-5-11",
@@ -2257,7 +2259,7 @@
       "statement": "Return min and max of at least one integer.",
       "lessonTitle": "Book Exercise 5.15 study guide",
       "lesson": "This entry follows Exercise 5.15 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 5, Functions. This chapter is about function signatures, recursion, multiple returns, errors, function values, closures, variadic functions, defer, panic, and recover.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so you can practice the same concept with local tests. It still follows the book's idea, but avoids command-line/filesystem/network details that are awkward for an in-browser judge.",
-      "approach": "Book-following attack plan for Exercise 5.15:\n\nOriginal exercise idea, paraphrased: Build variadic functions max and min, analogous to sum. What should these functions do when called with no arguments? Build variants that require at least one argu- ment.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn this judgeable version, focus on the pure transformation inside Solve. That is the core logic the original full program would rely on.",
+      "approach": "Book-following attack plan for Exercise 5.15:\n\nOriginal exercise idea, paraphrased: Build variadic functions max and min, analogous to sum. What should these functions do when called with no arguments? Build variants that require at least one argu- ment.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn this judgeable version, focus on the pure transformation inside Solve. That is the core logic the original full program would rely on.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -2473,16 +2475,17 @@
     {
       "id": "exercise-6-2",
       "number": 65,
-      "title": "Exercise 6.2: Define variadic IntSet AddAll int",
+      "title": "Exercise 6.2: IntSet AddAll",
       "chapter": "ch6",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "methods"
+        "methods",
+        "sets"
       ],
-      "statement": "Define a variadic (*IntSet).ExtendAll(...int) method that allows a list of val- ues to be added, such as s.ExtendAll(1, 2, 3).",
+      "statement": "Add many integers to a set and return sorted unique elements.",
       "lessonTitle": "Book Exercise 6.2 study guide",
-      "lesson": "This entry follows Exercise 6.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 6, Methods. This chapter is about method declarations, pointer receivers, nil receivers, struct embedding, method values, and encapsulation.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 6.2:\n\nOriginal exercise idea, paraphrased: Define a variadic (*IntSet).ExtendAll(...int) method that allows a list of val- ues to be added, such as s.ExtendAll(1, 2, 3).\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 6.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 6, Methods. This chapter is about method declarations, pointer receivers, nil receivers, struct embedding, method values, and encapsulation.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 6.2:\n\nOriginal exercise idea, paraphrased: Define a variadic (*IntSet).ExtendAll(...int) method that allows a list of val- ues to be added, such as s.ExtendAll(1, 2, 3).\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -2494,32 +2497,33 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 6.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 6.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 6.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 6.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 6.2: implementation is project-specific\") }",
+      "starterCode": "func Solve(existing []int, add []int) []int {\n    return nil\n}",
+      "solutionCode": "import \"sort\"\nfunc Solve(existing,add []int) []int { m:=map[int]bool{}; for _,x:=range existing {m[x]=true}; for _,x:=range add {m[x]=true}; out:=[]int{}; for x:=range m {out=append(out,x)}; sort.Ints(out); return out }",
+      "testCode": "func main(){ assertEqual(Solve([]int{1,3},[]int{3,2,2}),[]int{1,2,3}) }",
       "examples": [
         {
-          "input": "Book Exercise 6.2",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "existing [1,3], add [3,2,2]",
+          "output": "[1,2,3]"
         }
       ],
       "sourceExercise": "6.2",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-6-3",
       "number": 66,
-      "title": "Exercise 6.3: IntSet UnionWith computes the union",
+      "title": "Exercise 6.3: IntSet Union String",
       "chapter": "ch6",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "methods"
+        "methods",
+        "sets"
       ],
-      "statement": "(*IntSet).UnionWith computes the union of two sets using |, the word-paral- lel bitwise OR operator. Implement methods for IntersectWith, DifferenceWith, and Sym- metricDifference for the corresponding set operations. (The symmetric difference of two",
+      "statement": "Return sorted union of two integer sets.",
       "lessonTitle": "Book Exercise 6.3 study guide",
-      "lesson": "This entry follows Exercise 6.3 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 6, Methods. This chapter is about method declarations, pointer receivers, nil receivers, struct embedding, method values, and encapsulation.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 6.3:\n\nOriginal exercise idea, paraphrased: (*IntSet).UnionWith computes the union of two sets using |, the word-paral- lel bitwise OR operator. Implement methods for IntersectWith, DifferenceWith, and Sym- metricDifference for the corresponding set operations. (The symmetric difference of two\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 6.3 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 6, Methods. This chapter is about method declarations, pointer receivers, nil receivers, struct embedding, method values, and encapsulation.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 6.3:\n\nOriginal exercise idea, paraphrased: (*IntSet).UnionWith computes the union of two sets using |, the word-paral- lel bitwise OR operator. Implement methods for IntersectWith, DifferenceWith, and Sym- metricDifference for the corresponding set operations. (The symmetric difference of two\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -2531,18 +2535,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 6.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 6.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 6.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 6.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 6.3: implementation is project-specific\") }",
+      "starterCode": "func Solve(a []int, b []int) []int {\n    return nil\n}",
+      "solutionCode": "import \"sort\"\nfunc Solve(a,b []int) []int { m:=map[int]bool{}; for _,x:=range a {m[x]=true}; for _,x:=range b {m[x]=true}; out:=[]int{}; for x:=range m {out=append(out,x)}; sort.Ints(out); return out }",
+      "testCode": "func main(){ assertEqual(Solve([]int{1,3},[]int{2,3}),[]int{1,2,3}) }",
       "examples": [
         {
-          "input": "Book Exercise 6.3",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "[1,3] + [2,3]",
+          "output": "[1,2,3]"
         }
       ],
       "sourceExercise": "6.3",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-6-4",
@@ -2660,16 +2664,17 @@
     {
       "id": "exercise-7-2",
       "number": 70,
-      "title": "Exercise 7.2: function CountingWriter with the signature",
+      "title": "Exercise 7.2: Counting Writer Core",
       "chapter": "ch7",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "writer"
+        "writer",
+        "interfaces"
       ],
-      "statement": "Build a function CountingBuildr with the signature below that, given an io.Buildr, returns a new Buildr that wraps the original, and a pointer to an int64 variable that at any moment contains the number of bytes written to the new Buildr. func CountingBuildr(w io.Buildr) (io.Buildr, *int64)",
+      "statement": "Given write chunks, return total bytes written after all chunks.",
       "lessonTitle": "Book Exercise 7.2 study guide",
-      "lesson": "This entry follows Exercise 7.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 7, Interfaces. This chapter is about interfaces as contracts, io.Reader/io.Writer, sorting, type assertions, type switches, and XML/HTML token streams.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 7.2:\n\nOriginal exercise idea, paraphrased: Build a function CountingBuildr with the signature below that, given an io.Buildr, returns a new Buildr that wraps the original, and a pointer to an int64 variable that at any moment contains the number of bytes written to the new Buildr. func CountingBuildr(w io.Buildr) (io.Buildr, *int64)\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 7.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 7, Interfaces. This chapter is about interfaces as contracts, io.Reader/io.Writer, sorting, type assertions, type switches, and XML/HTML token streams.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 7.2:\n\nOriginal exercise idea, paraphrased: Build a function CountingBuildr with the signature below that, given an io.Buildr, returns a new Buildr that wraps the original, and a pointer to an int64 variable that at any moment contains the number of bytes written to the new Buildr. func CountingBuildr(w io.Buildr) (io.Buildr, *int64)\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -2681,18 +2686,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 7.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.2: implementation is project-specific\") }",
+      "starterCode": "func Solve(chunks []string) int64 {\n    return 0\n}",
+      "solutionCode": "func Solve(chunks []string) int64 { var n int64; for _,s:=range chunks { n+=int64(len(s)) }; return n }",
+      "testCode": "func main(){ assertEqual(Solve([]string{\"go\",\"lang\"}),int64(6)); assertEqual(Solve([]string{\"\u03c0\"}),int64(2)) }",
       "examples": [
         {
-          "input": "Book Exercise 7.2",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "[go, lang]",
+          "output": "6"
         }
       ],
       "sourceExercise": "7.2",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-7-3",
@@ -2734,19 +2739,17 @@
     {
       "id": "exercise-7-4",
       "number": 72,
-      "title": "Exercise 7.4: strings NewReader function returns value",
+      "title": "Exercise 7.4: NewReader Count",
       "chapter": "ch7",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "strings",
-        "interface",
         "reader",
-        "html"
+        "strings"
       ],
-      "statement": "The strings.NewReader function returns a value that satisfies the io.Reader interface (and others) by reading from its argument, a string. Implement a simple version of NewReader yourself, and use it to make the HTML parser (\u00a75.2) take input from a string.",
+      "statement": "Return how many bytes a strings.Reader would expose for s.",
       "lessonTitle": "Book Exercise 7.4 study guide",
-      "lesson": "This entry follows Exercise 7.4 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 7, Interfaces. This chapter is about interfaces as contracts, io.Reader/io.Writer, sorting, type assertions, type switches, and XML/HTML token streams.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 7.4:\n\nOriginal exercise idea, paraphrased: The strings.NewReader function returns a value that satisfies the io.Reader interface (and others) by reading from its argument, a string. Implement a simple version of NewReader yourself, and use it to make the HTML parser (\u00a75.2) take input from a string.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 7.4 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 7, Interfaces. This chapter is about interfaces as contracts, io.Reader/io.Writer, sorting, type assertions, type switches, and XML/HTML token streams.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 7.4:\n\nOriginal exercise idea, paraphrased: The strings.NewReader function returns a value that satisfies the io.Reader interface (and others) by reading from its argument, a string. Implement a simple version of NewReader yourself, and use it to make the HTML parser (\u00a75.2) take input from a string.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -2758,18 +2761,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 7.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.4: implementation is project-specific\") }",
+      "starterCode": "func Solve(s string) int {\n    return 0\n}",
+      "solutionCode": "func Solve(s string) int { return len(s) }",
+      "testCode": "func main(){ assertEqual(Solve(\"go\"),2); assertEqual(Solve(\"\u03c0\"),2); assertEqual(Solve(\"\"),0) }",
       "examples": [
         {
-          "input": "Book Exercise 7.4",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "\u03c0",
+          "output": "2 bytes"
         }
       ],
       "sourceExercise": "7.4",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-7-5",
@@ -2963,17 +2966,17 @@
     {
       "id": "exercise-7-10",
       "number": 78,
-      "title": "Exercise 7.10: sort Interface type can be",
+      "title": "Exercise 7.10: Multi Sort People",
       "chapter": "ch7",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
         "sort",
-        "interface"
+        "interfaces"
       ],
-      "statement": "The sort.Interface type can be adapted to other uses. Build a function IsPalindrome(s sort.Interface) bool that reports whether the sequence s is a palin- drome, in other words, reversing the sequence would not change it. Assume that the elements at indices i and j are equal if !s.Less(i, j) && !s.Less(j, i).",
+      "statement": "Sort rows by multiple keys: age ascending, then score descending, then name ascending.",
       "lessonTitle": "Book Exercise 7.10 study guide",
-      "lesson": "This entry follows Exercise 7.10 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 7, Interfaces. This chapter is about interfaces as contracts, io.Reader/io.Writer, sorting, type assertions, type switches, and XML/HTML token streams.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 7.10:\n\nOriginal exercise idea, paraphrased: The sort.Interface type can be adapted to other uses. Build a function IsPalindrome(s sort.Interface) bool that reports whether the sequence s is a palin- drome, in other words, reversing the sequence would not change it. Assume that the elements at indices i and j are equal if !s.Less(i, j) && !s.Less(j, i).\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 7.10 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 7, Interfaces. This chapter is about interfaces as contracts, io.Reader/io.Writer, sorting, type assertions, type switches, and XML/HTML token streams.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 7.10:\n\nOriginal exercise idea, paraphrased: The sort.Interface type can be adapted to other uses. Build a function IsPalindrome(s sort.Interface) bool that reports whether the sequence s is a palin- drome, in other words, reversing the sequence would not change it. Assume that the elements at indices i and j are equal if !s.Less(i, j) && !s.Less(j, i).\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -2985,18 +2988,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 7.10\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.10\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.10.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.10: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.10: implementation is project-specific\") }",
+      "starterCode": "type Person struct{Name string; Age int; Score int}\nfunc Solve(xs []Person) []Person {\n    return nil\n}",
+      "solutionCode": "import \"sort\"\ntype Person struct{Name string; Age int; Score int}\nfunc Solve(xs []Person) []Person { out:=append([]Person{},xs...); sort.Slice(out,func(i,j int)bool{ a,b:=out[i],out[j]; if a.Age!=b.Age {return a.Age<b.Age}; if a.Score!=b.Score {return a.Score>b.Score}; return a.Name<b.Name }); return out }",
+      "testCode": "func main(){ assertEqual(Solve([]Person{{\"Bob\",20,5},{\"Ada\",20,7},{\"Amy\",19,9}}),[]Person{{\"Amy\",19,9},{\"Ada\",20,7},{\"Bob\",20,5}}) }",
       "examples": [
         {
-          "input": "Book Exercise 7.10",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "people rows",
+          "output": "sorted rows"
         }
       ],
       "sourceExercise": "7.10",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-7-11",
@@ -3301,16 +3304,17 @@
     {
       "id": "exercise-8-1",
       "number": 87,
-      "title": "Exercise 8.1: clock2 to accept port number",
+      "title": "Exercise 8.1: Clock Time Parse",
       "chapter": "ch8",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "server"
+        "channels",
+        "time"
       ],
-      "statement": "Adapt clock2 to accept a port number, and write a program, clockwall, that acts as a client of several clock servers at once, reading the times from each one and displaying the results in a table, akin to the wall of clocks seen in some business offices. If you have access to geographically distributed computers, run instances remotely ; otherwise run local instances on different ports with fake time zones. $ TZ=US/Eastern ./clock2 -port 8010 & $ TZ=Asia/Tokyo ./clock2 -port 8020 & $ TZ=Europe/London ./clock2 -port 8030 & $ clockwall NewYork=localhost:8010 London=localhost:8020 Tokyo=localhost:8030",
+      "statement": "Given HH:MM:SS strings, return them sorted as seconds since midnight.",
       "lessonTitle": "Book Exercise 8.1 study guide",
-      "lesson": "This entry follows Exercise 8.1 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 8, Goroutines and Channels. This chapter is about goroutines, channels, pipelines, cancellation, multiplexing, chat servers, and concurrency patterns.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 8.1:\n\nOriginal exercise idea, paraphrased: Adapt clock2 to accept a port number, and write a program, clockwall, that acts as a client of several clock servers at once, reading the times from each one and displaying the results in a table, akin to the wall of clocks seen in some business offices. If you have access to geographically distributed computers, run instances remotely ; otherwise run local instances on different ports with fake time zones. $ TZ=US/Eastern ./clock2 -port 8010 & $ TZ=Asia/Tokyo ./clock2 -port 8020 & $ TZ=Europe/London ./clock2 -port 8030 & $ clockwall NewYork=localhost:8010 London=localhost:8020 Tokyo=localhost:8030\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 8.1 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 8, Goroutines and Channels. This chapter is about goroutines, channels, pipelines, cancellation, multiplexing, chat servers, and concurrency patterns.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 8.1:\n\nOriginal exercise idea, paraphrased: Adapt clock2 to accept a port number, and write a program, clockwall, that acts as a client of several clock servers at once, reading the times from each one and displaying the results in a table, akin to the wall of clocks seen in some business offices. If you have access to geographically distributed computers, run instances remotely ; otherwise run local instances on different ports with fake time zones. $ TZ=US/Eastern ./clock2 -port 8010 & $ TZ=Asia/Tokyo ./clock2 -port 8020 & $ TZ=Europe/London ./clock2 -port 8030 & $ clockwall NewYork=localhost:8010 London=localhost:8020 Tokyo=localhost:8030\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -3322,18 +3326,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 8.1\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.1\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.1.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.1: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.1: implementation is project-specific\") }",
+      "starterCode": "func Solve(times []string) []int {\n    return nil\n}",
+      "solutionCode": "import (\"sort\"; \"strconv\"; \"strings\")\nfunc Solve(times []string) []int { out:=[]int{}; for _,t:=range times { p:=strings.Split(t,\":\"); if len(p)!=3 {continue}; h,_:=strconv.Atoi(p[0]); m,_:=strconv.Atoi(p[1]); s,_:=strconv.Atoi(p[2]); out=append(out,h*3600+m*60+s) }; sort.Ints(out); return out }",
+      "testCode": "func main(){ assertEqual(Solve([]string{\"00:00:10\",\"00:00:02\"}),[]int{2,10}); assertEqual(Solve([]string{\"01:02:03\"}),[]int{3723}) }",
       "examples": [
         {
-          "input": "Book Exercise 8.1",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "00:00:10, 00:00:02",
+          "output": "[2,10]"
         }
       ],
       "sourceExercise": "8.1",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-8-2",
@@ -3454,17 +3458,17 @@
     {
       "id": "exercise-8-5",
       "number": 91,
-      "title": "Exercise 8.5: Take an existing CPU bound",
+      "title": "Exercise 8.5: Deduplicate Channel Stream",
       "chapter": "ch8",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "goroutine",
-        "channel"
+        "channels",
+        "maps"
       ],
-      "statement": "Take an existing CPU-bound sequential program, such as the Mandelbrot program of Section 3.3 or the 3-D surface computation of Section 3.2, and execute its main loop in parallel using channels for communication. How much faster does it run on a multiprocessor machine? What is the optimal number of goroutines to use?",
+      "statement": "Return first occurrence of each integer preserving stream order.",
       "lessonTitle": "Book Exercise 8.5 study guide",
-      "lesson": "This entry follows Exercise 8.5 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 8, Goroutines and Channels. This chapter is about goroutines, channels, pipelines, cancellation, multiplexing, chat servers, and concurrency patterns.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 8.5:\n\nOriginal exercise idea, paraphrased: Take an existing CPU-bound sequential program, such as the Mandelbrot program of Section 3.3 or the 3-D surface computation of Section 3.2, and execute its main loop in parallel using channels for communication. How much faster does it run on a multiprocessor machine? What is the optimal number of goroutines to use?\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 8.5 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 8, Goroutines and Channels. This chapter is about goroutines, channels, pipelines, cancellation, multiplexing, chat servers, and concurrency patterns.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 8.5:\n\nOriginal exercise idea, paraphrased: Take an existing CPU-bound sequential program, such as the Mandelbrot program of Section 3.3 or the 3-D surface computation of Section 3.2, and execute its main loop in parallel using channels for communication. How much faster does it run on a multiprocessor machine? What is the optimal number of goroutines to use?\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -3476,18 +3480,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 8.5\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.5\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.5.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.5: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.5: implementation is project-specific\") }",
+      "starterCode": "func Solve(nums []int) []int {\n    return nil\n}",
+      "solutionCode": "func Solve(nums []int) []int { seen:=map[int]bool{}; out:=[]int{}; for _,x:=range nums { if !seen[x] {seen[x]=true; out=append(out,x)} }; return out }",
+      "testCode": "func main(){ assertEqual(Solve([]int{1,2,1,3,2}),[]int{1,2,3}); assertEqual(Solve(nil),[]int{}) }",
       "examples": [
         {
-          "input": "Book Exercise 8.5",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "[1,2,1,3,2]",
+          "output": "[1,2,3]"
         }
       ],
       "sourceExercise": "8.5",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-8-6",
@@ -3906,16 +3910,17 @@
     {
       "id": "exercise-9-2",
       "number": 103,
-      "title": "Exercise 9.2: Rewrite the PopCount example from",
+      "title": "Exercise 9.2: Withdraw If Enough",
       "chapter": "ch9",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "shared"
+        "mutex",
+        "state"
       ],
-      "statement": "Rewrite the PopCount example from Section 2.6.2 so that it initializes the lookup table using sync.Once the first time it is needed. (Realistically, the cost of synchronization would be prohibitive for a small and highly optimized function like PopCount.)",
+      "statement": "Apply withdrawals only when enough balance remains; deposits are positive numbers.",
       "lessonTitle": "Book Exercise 9.2 study guide",
-      "lesson": "This entry follows Exercise 9.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 9, Shared Variables and Mutexes. This chapter is about race conditions, sync.Mutex, sync.RWMutex, memory synchronization, lazy initialization, and confinement.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 9.2:\n\nOriginal exercise idea, paraphrased: Rewrite the PopCount example from Section 2.6.2 so that it initializes the lookup table using sync.Once the first time it is needed. (Realistically, the cost of synchronization would be prohibitive for a small and highly optimized function like PopCount.)\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 9.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 9, Shared Variables and Mutexes. This chapter is about race conditions, sync.Mutex, sync.RWMutex, memory synchronization, lazy initialization, and confinement.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 9.2:\n\nOriginal exercise idea, paraphrased: Rewrite the PopCount example from Section 2.6.2 so that it initializes the lookup table using sync.Once the first time it is needed. (Realistically, the cost of synchronization would be prohibitive for a small and highly optimized function like PopCount.)\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -3927,32 +3932,33 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 9.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 9.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 9.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 9.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 9.2: implementation is project-specific\") }",
+      "starterCode": "func Solve(ops []int) int {\n    return 0\n}",
+      "solutionCode": "func Solve(ops []int) int { b:=0; for _,x:=range ops { if x>=0 {b+=x} else if b+x>=0 {b+=x} }; return b }",
+      "testCode": "func main(){ assertEqual(Solve([]int{100,-30,-80,10}),80); assertEqual(Solve([]int{-5,5}),5) }",
       "examples": [
         {
-          "input": "Book Exercise 9.2",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "[100,-30,-80,10]",
+          "output": "80"
         }
       ],
       "sourceExercise": "9.2",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-9-3",
       "number": 104,
-      "title": "Exercise 9.3: the Func type and the",
+      "title": "Exercise 9.3: Memoized Fibonacci",
       "chapter": "ch9",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "channel"
+        "memoization",
+        "state"
       ],
-      "statement": "Extend the Func type and the (*Memo).Get method so that callers may provide an optional done channel through which they can cancel the operation (\u00a78.9). The results of a cancelled Func call should not be cached.",
+      "statement": "Return the nth Fibonacci number using memo-style thinking.",
       "lessonTitle": "Book Exercise 9.3 study guide",
-      "lesson": "This entry follows Exercise 9.3 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 9, Shared Variables and Mutexes. This chapter is about race conditions, sync.Mutex, sync.RWMutex, memory synchronization, lazy initialization, and confinement.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 9.3:\n\nOriginal exercise idea, paraphrased: Extend the Func type and the (*Memo).Get method so that callers may provide an optional done channel through which they can cancel the operation (\u00a78.9). The results of a cancelled Func call should not be cached.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 9.3 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 9, Shared Variables and Mutexes. This chapter is about race conditions, sync.Mutex, sync.RWMutex, memory synchronization, lazy initialization, and confinement.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 9.3:\n\nOriginal exercise idea, paraphrased: Extend the Func type and the (*Memo).Get method so that callers may provide an optional done channel through which they can cancel the operation (\u00a78.9). The results of a cancelled Func call should not be cached.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -3964,18 +3970,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 9.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 9.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 9.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 9.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 9.3: implementation is project-specific\") }",
+      "starterCode": "func Solve(n int) int {\n    return 0\n}",
+      "solutionCode": "func Solve(n int) int { memo:=map[int]int{0:0,1:1}; var f func(int)int; f=func(k int)int{ if v,ok:=memo[k]; ok {return v}; memo[k]=f(k-1)+f(k-2); return memo[k] }; return f(n) }",
+      "testCode": "func main(){ assertEqual(Solve(0),0); assertEqual(Solve(1),1); assertEqual(Solve(10),55) }",
       "examples": [
         {
-          "input": "Book Exercise 9.3",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "10",
+          "output": "55"
         }
       ],
       "sourceExercise": "9.3",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-9-4",
@@ -4092,16 +4098,17 @@
     {
       "id": "exercise-10-1",
       "number": 108,
-      "title": "Exercise 10.1: the jpeg program so that",
+      "title": "Exercise 10.1: Package Path Base",
       "chapter": "ch10",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "packages"
+        "packages",
+        "strings"
       ],
-      "statement": "Extend the jpeg program so that it converts any supported input format to any output format, using image.Decode to detect the input format and a flag to select the output format.",
+      "statement": "Return the last path element of an import path.",
       "lessonTitle": "Book Exercise 10.1 study guide",
-      "lesson": "This entry follows Exercise 10.1 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 10, Packages and the Go Tool. This chapter is about package organization, import paths, modules, documentation, internal packages, go list, go test, and vendoring.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 10.1:\n\nOriginal exercise idea, paraphrased: Extend the jpeg program so that it converts any supported input format to any output format, using image.Decode to detect the input format and a flag to select the output format.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 10.1 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 10, Packages and the Go Tool. This chapter is about package organization, import paths, modules, documentation, internal packages, go list, go test, and vendoring.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 10.1:\n\nOriginal exercise idea, paraphrased: Extend the jpeg program so that it converts any supported input format to any output format, using image.Decode to detect the input format and a flag to select the output format.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -4113,32 +4120,33 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 10.1\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 10.1\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 10.1.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 10.1: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 10.1: implementation is project-specific\") }",
+      "starterCode": "func Solve(path string) string {\n    return \"\"\n}",
+      "solutionCode": "import \"strings\"\nfunc Solve(path string) string { path=strings.Trim(path,\"/\"); if path==\"\" {return \"\"}; parts:=strings.Split(path,\"/\"); return parts[len(parts)-1] }",
+      "testCode": "func main(){ assertEqual(Solve(\"github.com/u/repo/pkg\"),\"pkg\"); assertEqual(Solve(\"fmt\"),\"fmt\") }",
       "examples": [
         {
-          "input": "Book Exercise 10.1",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "github.com/u/repo/pkg",
+          "output": "pkg"
         }
       ],
       "sourceExercise": "10.1",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-10-2",
       "number": 109,
-      "title": "Exercise 10.2: Define generic archive file reading",
+      "title": "Exercise 10.2: Package Import Groups",
       "chapter": "ch10",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "file"
+        "packages",
+        "sort"
       ],
-      "statement": "Define a generic archive file-reading function capable of reading ZIP files (archive/zip) and POSIX tar files (archive/tar). Practice using a registration mechanism similar to the one described above so that support for each file format can be plugged in using blank imports.",
+      "statement": "Group import paths as standard library or external based on whether they contain a dot.",
       "lessonTitle": "Book Exercise 10.2 study guide",
-      "lesson": "This entry follows Exercise 10.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 10, Packages and the Go Tool. This chapter is about package organization, import paths, modules, documentation, internal packages, go list, go test, and vendoring.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 10.2:\n\nOriginal exercise idea, paraphrased: Define a generic archive file-reading function capable of reading ZIP files (archive/zip) and POSIX tar files (archive/tar). Practice using a registration mechanism similar to the one described above so that support for each file format can be plugged in using blank imports.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 10.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 10, Packages and the Go Tool. This chapter is about package organization, import paths, modules, documentation, internal packages, go list, go test, and vendoring.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 10.2:\n\nOriginal exercise idea, paraphrased: Define a generic archive file-reading function capable of reading ZIP files (archive/zip) and POSIX tar files (archive/tar). Practice using a registration mechanism similar to the one described above so that support for each file format can be plugged in using blank imports.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -4150,18 +4158,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 10.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 10.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 10.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 10.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 10.2: implementation is project-specific\") }",
+      "starterCode": "func Solve(paths []string) map[string][]string {\n    return nil\n}",
+      "solutionCode": "import (\"sort\"; \"strings\")\nfunc Solve(paths []string) map[string][]string { out:=map[string][]string{\"std\":{},\"external\":{}}; for _,p:=range paths { if strings.Contains(strings.Split(p,\"/\")[0],\".\") {out[\"external\"]=append(out[\"external\"],p)} else {out[\"std\"]=append(out[\"std\"],p)} }; sort.Strings(out[\"std\"]); sort.Strings(out[\"external\"]); return out }",
+      "testCode": "func main(){ assertEqual(Solve([]string{\"fmt\",\"github.com/x/y\",\"net/http\"}),map[string][]string{\"std\":{\"fmt\",\"net/http\"},\"external\":{\"github.com/x/y\"}}) }",
       "examples": [
         {
-          "input": "Book Exercise 10.2",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "[fmt, github.com/x/y]",
+          "output": "std/external groups"
         }
       ],
       "sourceExercise": "10.2",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-10-3",
@@ -4280,18 +4288,17 @@
     {
       "id": "exercise-11-2",
       "number": 113,
-      "title": "Exercise 11.2: set of tests for IntSet",
+      "title": "Exercise 11.2: Palindrome Property Core",
       "chapter": "ch11",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "map",
-        "test",
-        "benchmark"
+        "testing",
+        "runes"
       ],
-      "statement": "Build a set of tests for IntSet (\u00a76.5) that checks that its behavior after each operation is equivalent to a set based on built-in maps. Save your implementation for benchmarking in Exercise 11.7.",
+      "statement": "Return true if a string is a palindrome by runes.",
       "lessonTitle": "Book Exercise 11.2 study guide",
-      "lesson": "This entry follows Exercise 11.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 11, Testing. This chapter is about test functions, table tests, random testing, coverage, benchmarks, profiling, and examples.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 11.2:\n\nOriginal exercise idea, paraphrased: Build a set of tests for IntSet (\u00a76.5) that checks that its behavior after each operation is equivalent to a set based on built-in maps. Save your implementation for benchmarking in Exercise 11.7.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 11.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 11, Testing. This chapter is about test functions, table tests, random testing, coverage, benchmarks, profiling, and examples.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 11.2:\n\nOriginal exercise idea, paraphrased: Build a set of tests for IntSet (\u00a76.5) that checks that its behavior after each operation is equivalent to a set based on built-in maps. Save your implementation for benchmarking in Exercise 11.7.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -4303,32 +4310,33 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 11.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 11.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 11.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 11.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 11.2: implementation is project-specific\") }",
+      "starterCode": "func Solve(s string) bool {\n    return false\n}",
+      "solutionCode": "func Solve(s string) bool { r:=[]rune(s); for i,j:=0,len(r)-1;i<j;i,j=i+1,j-1 { if r[i]!=r[j] {return false} }; return true }",
+      "testCode": "func main(){ assertEqual(Solve(\"level\"),true); assertEqual(Solve(\"\u4e16\u754c\u4e16\"),true); assertEqual(Solve(\"go\"),false) }",
       "examples": [
         {
-          "input": "Book Exercise 11.2",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "level",
+          "output": "true"
         }
       ],
       "sourceExercise": "11.2",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-11-3",
       "number": 114,
-      "title": "Exercise 11.3: TestRandomPalindromes only tests palindromes randomized",
+      "title": "Exercise 11.3: Random Test Reverse Twice",
       "chapter": "ch11",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "test"
+        "testing",
+        "slices"
       ],
-      "statement": "TestRandomPalindromes only tests palindromes. Build a randomized test that generates and verifies non-palindromes.",
+      "statement": "Reverse a slice twice and return the result.",
       "lessonTitle": "Book Exercise 11.3 study guide",
-      "lesson": "This entry follows Exercise 11.3 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 11, Testing. This chapter is about test functions, table tests, random testing, coverage, benchmarks, profiling, and examples.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 11.3:\n\nOriginal exercise idea, paraphrased: TestRandomPalindromes only tests palindromes. Build a randomized test that generates and verifies non-palindromes.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 11.3 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 11, Testing. This chapter is about test functions, table tests, random testing, coverage, benchmarks, profiling, and examples.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 11.3:\n\nOriginal exercise idea, paraphrased: TestRandomPalindromes only tests palindromes. Build a randomized test that generates and verifies non-palindromes.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -4340,18 +4348,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 11.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 11.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 11.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 11.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 11.3: implementation is project-specific\") }",
+      "starterCode": "func Solve(xs []int) []int {\n    return nil\n}",
+      "solutionCode": "func rev(xs []int){ for i,j:=0,len(xs)-1;i<j;i,j=i+1,j-1 {xs[i],xs[j]=xs[j],xs[i]} }\nfunc Solve(xs []int) []int { out:=append([]int{},xs...); rev(out); rev(out); return out }",
+      "testCode": "func main(){ assertEqual(Solve([]int{1,2,3}),[]int{1,2,3}); assertEqual(Solve([]int{}),[]int{}) }",
       "examples": [
         {
-          "input": "Book Exercise 11.3",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "[1,2,3]",
+          "output": "[1,2,3]"
         }
       ],
       "sourceExercise": "11.3",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-11-4",
@@ -4542,16 +4550,16 @@
     {
       "id": "exercise-12-2",
       "number": 120,
-      "title": "Exercise 12.2: Make display safe to use",
+      "title": "Exercise 12.2: Display Slice Length",
       "chapter": "ch12",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "recursion"
+        "reflection"
       ],
-      "statement": "Make display safe to use on cyclic data structures by bounding the number of steps it takes before abandoning the recursion. (In Section 13.3, we\u2019ll see another way to detect cycles.)",
+      "statement": "Return the length of slices, arrays, maps, strings, or -1 otherwise.",
       "lessonTitle": "Book Exercise 12.2 study guide",
-      "lesson": "This entry follows Exercise 12.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 12, Reflection. This chapter is about reflect.Type, reflect.Value, display functions, struct tags, S-expressions, and dynamic value inspection.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 12.2:\n\nOriginal exercise idea, paraphrased: Make display safe to use on cyclic data structures by bounding the number of steps it takes before abandoning the recursion. (In Section 13.3, we\u2019ll see another way to detect cycles.)\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 12.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 12, Reflection. This chapter is about reflect.Type, reflect.Value, display functions, struct tags, S-expressions, and dynamic value inspection.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 12.2:\n\nOriginal exercise idea, paraphrased: Make display safe to use on cyclic data structures by bounding the number of steps it takes before abandoning the recursion. (In Section 13.3, we\u2019ll see another way to detect cycles.)\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -4563,18 +4571,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 12.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.2: implementation is project-specific\") }",
+      "starterCode": "func Solve(v any) int {\n    return 0\n}",
+      "solutionCode": "import \"reflect\"\nfunc Solve(v any) int { if v==nil {return -1}; rv:=reflect.ValueOf(v); switch rv.Kind(){ case reflect.Slice,reflect.Array,reflect.Map,reflect.String: return rv.Len(); default: return -1 } }",
+      "testCode": "func main(){ assertEqual(Solve([]int{1,2}),2); assertEqual(Solve(\"go\"),2); assertEqual(Solve(3),-1) }",
       "examples": [
         {
-          "input": "Book Exercise 12.2",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "[]int{1,2}",
+          "output": "2"
         }
       ],
       "sourceExercise": "12.2",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-12-3",
@@ -4692,16 +4700,17 @@
     {
       "id": "exercise-12-6",
       "number": 124,
-      "title": "Exercise 12.6: Adapt encode so that as",
+      "title": "Exercise 12.6: Struct Field Names",
       "chapter": "ch12",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "reflection"
+        "reflection",
+        "structs"
       ],
-      "statement": "Adapt encode so that, as an optimization, it does not encode a field whose value is the zero value of its type.",
+      "statement": "Return exported field names of a struct value in declaration order.",
       "lessonTitle": "Book Exercise 12.6 study guide",
-      "lesson": "This entry follows Exercise 12.6 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 12, Reflection. This chapter is about reflect.Type, reflect.Value, display functions, struct tags, S-expressions, and dynamic value inspection.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 12.6:\n\nOriginal exercise idea, paraphrased: Adapt encode so that, as an optimization, it does not encode a field whose value is the zero value of its type.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 12.6 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 12, Reflection. This chapter is about reflect.Type, reflect.Value, display functions, struct tags, S-expressions, and dynamic value inspection.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 12.6:\n\nOriginal exercise idea, paraphrased: Adapt encode so that, as an optimization, it does not encode a field whose value is the zero value of its type.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -4713,18 +4722,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 12.6\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.6\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.6.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.6: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.6: implementation is project-specific\") }",
+      "starterCode": "func Solve(v any) []string {\n    return nil\n}",
+      "solutionCode": "import \"reflect\"\nfunc Solve(v any) []string { t:=reflect.TypeOf(v); if t==nil {return nil}; if t.Kind()==reflect.Pointer {t=t.Elem()}; if t.Kind()!=reflect.Struct {return nil}; out:=[]string{}; for i:=0;i<t.NumField();i++ { f:=t.Field(i); if f.PkgPath==\"\" {out=append(out,f.Name)} }; return out }",
+      "testCode": "type User struct{Name string; age int; Email string}\nfunc main(){ assertEqual(Solve(User{}),[]string{\"Name\",\"Email\"}); assertEqual(Solve(3),[]string(nil)) }",
       "examples": [
         {
-          "input": "Book Exercise 12.6",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "User{Name, age, Email}",
+          "output": "[Name, Email]"
         }
       ],
       "sourceExercise": "12.6",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-12-7",
@@ -5030,16 +5039,17 @@
     {
       "id": "exercise-13-2",
       "number": 133,
-      "title": "Exercise 13.2: function that reports whether its",
+      "title": "Exercise 13.2: Alignment Round Up",
       "chapter": "ch13",
-      "difficulty": "Project",
+      "difficulty": "Judgeable",
       "tags": [
-        "low-level"
+        "unsafe",
+        "alignment"
       ],
-      "statement": "Build a function that reports whether its argument is a cyclic data structure.",
+      "statement": "Round a size up to the next multiple of alignment.",
       "lessonTitle": "Book Exercise 13.2 study guide",
-      "lesson": "This entry follows Exercise 13.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 13, Low-Level Programming. This chapter is about unsafe.Sizeof, Alignof, Offsetof, unsafe.Pointer, cgo, and when low-level tricks are justified.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.",
-      "approach": "Book-following attack plan for Exercise 13.2:\n\nOriginal exercise idea, paraphrased: Build a function that reports whether its argument is a cyclic data structure.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.",
+      "lesson": "This entry follows Exercise 13.2 from The Go Programming Language.\n\nWhere it sits in the book: Chapter 13, Low-Level Programming. This chapter is about unsafe.Sizeof, Alignof, Offsetof, unsafe.Pointer, cgo, and when low-level tricks are justified.\n\nWhat the book is training here: not just syntax, but the habit of reading a small real program, changing one moving part, and observing the consequence. Many exercises in this book are intentionally not LeetCode puzzles. They are closer to real Go work: adjust a command-line tool, process files, stream HTTP responses, parse text, write a test, or make concurrent code behave.\n\nHow to study it:\n1. First identify the original program or concept the exercise is extending.\n2. Name the exact behavior that changes.\n3. Keep the rest of the program boring and unchanged.\n4. Run it with a tiny input before trying a large input.\n5. If the task involves I/O, errors, or concurrency, make the failure case visible.\n\nMental model: Go code is usually easiest when each value has one job. Inputs come from args/files/network, the program transforms them with simple loops/functions, and errors are checked at the boundary where they happen.\n\nJudgeable conversion: this book exercise has been reshaped into a deterministic Solve-style task so the core idea can be tested locally.",
+      "approach": "Book-following attack plan for Exercise 13.2:\n\nOriginal exercise idea, paraphrased: Build a function that reports whether its argument is a cyclic data structure.\n\nDo this like the book expects:\n- Locate the relevant example program/concept in the chapter.\n- Rebuild the smallest working version first.\n- Make one change at a time.\n- Prefer standard library tools over clever custom code.\n- Print or return intermediate values while learning, then clean up.\n\nIf this is open-ended or experimental, your \u201caccepted\u201d proof is not a hidden LeetCode test; it is a short reproducible run that demonstrates the behavior the exercise asks for.\n\nIn-place conversion note: this keeps the original book exercise slot, but focuses on the deterministic core logic that can be judged in the browser.",
       "pitfalls": [
         "Changing too much of the original example at once.",
         "Ignoring errors because the happy path worked once.",
@@ -5051,18 +5061,18 @@
         "Keep a command or sample input that proves your solution works."
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
-      "starterCode": "package main\n\n// Book exercise 13.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 13.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 13.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 13.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 13.2: implementation is project-specific\") }",
+      "starterCode": "func Solve(size, align uintptr) uintptr {\n    return 0\n}",
+      "solutionCode": "func Solve(size,align uintptr) uintptr { if align==0 {return size}; r:=size%align; if r==0 {return size}; return size+(align-r) }",
+      "testCode": "func main(){ assertEqual(Solve(5,4),uintptr(8)); assertEqual(Solve(8,4),uintptr(8)); assertEqual(Solve(7,0),uintptr(7)) }",
       "examples": [
         {
-          "input": "Book Exercise 13.2",
-          "output": "A working Go program or function demonstrating the requested behavior."
+          "input": "5, align 4",
+          "output": "8"
         }
       ],
       "sourceExercise": "13.2",
-      "exerciseMode": "project",
-      "verifier": "manual"
+      "exerciseMode": "judge",
+      "verifier": "local-tests"
     },
     {
       "id": "exercise-13-3",
