@@ -1,0 +1,15 @@
+# Build artifacts
+frontend/dist/
+backend/backend
+
+# Dependencies
+frontend/node_modules/
+
+# OS/editor
+.DS_Store
+*.log
+.env
+.env.*
+
+# Local temp
+.tmp/

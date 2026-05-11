@@ -63,7 +63,15 @@
           "output": "\"Hello, Go!\""
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve(\"Ada\"), \"Hello, Ada!\"); assertEqual(Solve(\"Go\"), \"Hello, Go!\") }"
+      "testCode": "func main(){ assertEqual(Solve(\"Ada\"), \"Hello, Ada!\"); assertEqual(Solve(\"Go\"), \"Hello, Go!\") }",
+      "lessonTitle": "Go as a small-program language",
+      "lesson": "Go rewards direct programs: declare data, loop over it, print or return a result. In early Go practice, focus less on clever abstractions and more on knowing exactly where values flow. A Go program starts at package main and func main, but problem solving usually means writing one small function that can be tested repeatedly.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Read the input shape, choose the plainest type, write a loop, and handle the empty case first. If you can explain every line aloud, you are writing Go correctly.",
+      "approach": "Approach: solve Hello, Gopher by choosing the simplest representation for strings, basics. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "temp-table",
@@ -90,7 +98,15 @@
           "output": "[0,100,10]"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]int{32,212,50}), []int{0,100,10}); assertEqual(Solve([]int{-40}), []int{-40}) }"
+      "testCode": "func main(){ assertEqual(Solve([]int{32,212,50}), []int{0,100,10}); assertEqual(Solve([]int{-40}), []int{-40}) }",
+      "lessonTitle": "Go as a small-program language",
+      "lesson": "Go rewards direct programs: declare data, loop over it, print or return a result. In early Go practice, focus less on clever abstractions and more on knowing exactly where values flow. A Go program starts at package main and func main, but problem solving usually means writing one small function that can be tested repeatedly.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Read the input shape, choose the plainest type, write a loop, and handle the empty case first. If you can explain every line aloud, you are writing Go correctly.",
+      "approach": "Approach: solve Temperature Table by choosing the simplest representation for loops, arithmetic. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "unique-lines",
@@ -117,7 +133,15 @@
           "output": "[\"a\",\"b\"]"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]string{\"a\",\"b\",\"a\"}), []string{\"a\",\"b\"}); assertEqual(Solve([]string{}), []string{}) }"
+      "testCode": "func main(){ assertEqual(Solve([]string{\"a\",\"b\",\"a\"}), []string{\"a\",\"b\"}); assertEqual(Solve([]string{}), []string{}) }",
+      "lessonTitle": "Go as a small-program language",
+      "lesson": "Go rewards direct programs: declare data, loop over it, print or return a result. In early Go practice, focus less on clever abstractions and more on knowing exactly where values flow. A Go program starts at package main and func main, but problem solving usually means writing one small function that can be tested repeatedly.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Read the input shape, choose the plainest type, write a loop, and handle the empty case first. If you can explain every line aloud, you are writing Go correctly.",
+      "approach": "Approach: solve Unique Lines by choosing the simplest representation for maps, slices. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "popcount8",
@@ -144,7 +168,15 @@
           "output": "3"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve(uint8(13)), 3); assertEqual(Solve(uint8(255)), 8); assertEqual(Solve(uint8(0)), 0) }"
+      "testCode": "func main(){ assertEqual(Solve(uint8(13)), 3); assertEqual(Solve(uint8(255)), 8); assertEqual(Solve(uint8(0)), 0) }",
+      "lessonTitle": "Names, declarations, and scope",
+      "lesson": "Go programs are built from declarations. A name exists only in its scope, and short declarations with := are convenient but can accidentally create a new local variable instead of updating an outer one. Learning scope early prevents many confusing bugs.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Prefer explicit variable names. Use := for first declarations and = for updates. Keep variables close to where they are used.",
+      "approach": "Approach: solve Byte Popcount by choosing the simplest representation for bits, functions. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "scope-shadow",
@@ -170,7 +202,15 @@
           "output": "16"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]int{1,2,3,4}), 16); assertEqual(Solve([]int{-2,5}), 1) }"
+      "testCode": "func main(){ assertEqual(Solve([]int{1,2,3,4}), 16); assertEqual(Solve([]int{-2,5}), 1) }",
+      "lessonTitle": "Names, declarations, and scope",
+      "lesson": "Go programs are built from declarations. A name exists only in its scope, and short declarations with := are convenient but can accidentally create a new local variable instead of updating an outer one. Learning scope early prevents many confusing bugs.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Prefer explicit variable names. Use := for first declarations and = for updates. Keep variables close to where they are used.",
+      "approach": "Approach: solve Shadow Sum by choosing the simplest representation for control-flow. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "comma-format",
@@ -196,7 +236,15 @@
           "output": "\"1,234,567\""
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve(\"1234567\"), \"1,234,567\"); assertEqual(Solve(\"12\"), \"12\"); assertEqual(Solve(\"123456\"), \"123,456\") }"
+      "testCode": "func main(){ assertEqual(Solve(\"1234567\"), \"1,234,567\"); assertEqual(Solve(\"12\"), \"12\"); assertEqual(Solve(\"123456\"), \"123,456\") }",
+      "lessonTitle": "Numbers, strings, bytes, and runes",
+      "lesson": "Strings in Go are immutable byte sequences, usually UTF-8 encoded. Indexing a string gives bytes, while ranging over a string gives runes. Numeric operations are explicit and integer division truncates toward zero.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Ask: am I processing bytes, ASCII characters, or Unicode runes? That single question prevents most string bugs.",
+      "approach": "Approach: solve Comma Format by choosing the simplest representation for strings. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "anagram",
@@ -223,7 +271,15 @@
           "output": "true"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve(\"silent\",\"listen\"), true); assertEqual(Solve(\"go\",\"goo\"), false); assertEqual(Solve(\"\u591c\u732b\",\"\u732b\u591c\"), true) }"
+      "testCode": "func main(){ assertEqual(Solve(\"silent\",\"listen\"), true); assertEqual(Solve(\"go\",\"goo\"), false); assertEqual(Solve(\"\u591c\u732b\",\"\u732b\u591c\"), true) }",
+      "lessonTitle": "Numbers, strings, bytes, and runes",
+      "lesson": "Strings in Go are immutable byte sequences, usually UTF-8 encoded. Indexing a string gives bytes, while ranging over a string gives runes. Numeric operations are explicit and integer division truncates toward zero.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Ask: am I processing bytes, ASCII characters, or Unicode runes? That single question prevents most string bugs.",
+      "approach": "Approach: solve Unicode Anagram by choosing the simplest representation for unicode, maps. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "rotate-slice",
@@ -249,7 +305,15 @@
           "output": "[2,3,4,1]"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]int{1,2,3,4},1), []int{2,3,4,1}); assertEqual(Solve([]int{1,2,3},3), []int{1,2,3}); assertEqual(Solve([]int{},2), []int{}) }"
+      "testCode": "func main(){ assertEqual(Solve([]int{1,2,3,4},1), []int{2,3,4,1}); assertEqual(Solve([]int{1,2,3},3), []int{1,2,3}); assertEqual(Solve([]int{},2), []int{}) }",
+      "lessonTitle": "Slices, maps, structs, and JSON-shaped data",
+      "lesson": "Composite types let you model real data. Slices are views over arrays, maps are hash tables with useful zero values, and structs give names to fields. Most Go interview-style problems become simple once you pick the right composite type.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Use slices for ordered sequences, maps for membership/counting, and structs when fields have meaning.",
+      "approach": "Approach: solve Rotate Slice by choosing the simplest representation for slices. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "wordfreq",
@@ -276,7 +340,15 @@
           "output": "{\"fun\":1,\"go\":2}"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]string{\"Go\",\"go\",\"Fun\"}), map[string]int{\"go\":2,\"fun\":1}) }"
+      "testCode": "func main(){ assertEqual(Solve([]string{\"Go\",\"go\",\"Fun\"}), map[string]int{\"go\":2,\"fun\":1}) }",
+      "lessonTitle": "Slices, maps, structs, and JSON-shaped data",
+      "lesson": "Composite types let you model real data. Slices are views over arrays, maps are hash tables with useful zero values, and structs give names to fields. Most Go interview-style problems become simple once you pick the right composite type.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Use slices for ordered sequences, maps for membership/counting, and structs when fields have meaning.",
+      "approach": "Approach: solve Word Frequency by choosing the simplest representation for maps, strings. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "tree-depth",
@@ -302,7 +374,15 @@
           "output": "3"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]any{1, []any{2, []any{3}}}), 3); assertEqual(Solve(7),0) }"
+      "testCode": "func main(){ assertEqual(Solve([]any{1, []any{2, []any{3}}}), 3); assertEqual(Solve(7),0) }",
+      "lessonTitle": "Functions and recursion",
+      "lesson": "Functions in Go are values with clear parameter and return types. Good Go functions are small, named around what they compute, and easy to test. Recursion is useful for tree-shaped or nested data but should have an obvious base case.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Write the base case before the recursive case. Return values instead of mutating global state.",
+      "approach": "Approach: solve Nested List Depth by choosing the simplest representation for recursion. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "defer-stack",
@@ -329,7 +409,15 @@
           "output": "6"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]int{-1,2,3}),6); assertEqual(Solve([]int{-1,0}),1) }"
+      "testCode": "func main(){ assertEqual(Solve([]int{-1,2,3}),6); assertEqual(Solve([]int{-1,0}),1) }",
+      "lessonTitle": "Functions and recursion",
+      "lesson": "Functions in Go are values with clear parameter and return types. Good Go functions are small, named around what they compute, and easy to test. Recursion is useful for tree-shaped or nested data but should have an obvious base case.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Write the base case before the recursive case. Return values instead of mutating global state.",
+      "approach": "Approach: solve Deferred Product by choosing the simplest representation for defer, loops. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "point-distance",
@@ -356,7 +444,15 @@
           "output": "5"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve(Point{1,2},Point{4,0}),5); assertEqual(Solve(Point{-1,-1},Point{1,1}),4) }"
+      "testCode": "func main(){ assertEqual(Solve(Point{1,2},Point{4,0}),5); assertEqual(Solve(Point{-1,-1},Point{1,1}),4) }",
+      "lessonTitle": "Methods and data behavior",
+      "lesson": "A method is a function with a receiver. Methods let a type own behavior without hiding data behind a large class hierarchy. Pointer receivers mutate or avoid copying; value receivers are good for small immutable values.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: If the method changes the receiver, use a pointer receiver. Otherwise keep it value-based unless the type is large.",
+      "approach": "Approach: solve Point Manhattan by choosing the simplest representation for structs, methods. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "set-union",
@@ -383,7 +479,15 @@
           "output": "[\"a\",\"b\",\"c\"]"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]string{\"b\",\"a\"},[]string{\"c\",\"a\"}), []string{\"a\",\"b\",\"c\"}) }"
+      "testCode": "func main(){ assertEqual(Solve([]string{\"b\",\"a\"},[]string{\"c\",\"a\"}), []string{\"a\",\"b\",\"c\"}) }",
+      "lessonTitle": "Methods and data behavior",
+      "lesson": "A method is a function with a receiver. Methods let a type own behavior without hiding data behind a large class hierarchy. Pointer receivers mutate or avoid copying; value receivers are good for small immutable values.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: If the method changes the receiver, use a pointer receiver. Otherwise keep it value-based unless the type is large.",
+      "approach": "Approach: solve String Set Union by choosing the simplest representation for methods, maps. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "byte-reader",
@@ -410,7 +514,15 @@
           "output": "6"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]string{\"go\",\"lang\"}),6); assertEqual(Solve([]string{\"\u03c0\"}),2) }"
+      "testCode": "func main(){ assertEqual(Solve([]string{\"go\",\"lang\"}),6); assertEqual(Solve([]string{\"\u03c0\"}),2) }",
+      "lessonTitle": "Interfaces as behavior contracts",
+      "lesson": "Interfaces describe behavior, not data. In Go, a type satisfies an interface implicitly by having the required methods. This makes small interfaces powerful: io.Reader, sort.Interface, fmt.Stringer.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Accept interfaces when you need behavior. Return concrete types when you create values.",
+      "approach": "Approach: solve Count Bytes by choosing the simplest representation for interfaces, io. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "sort-people",
@@ -437,7 +549,15 @@
           "output": "[{Ada 3},{Bob 2}]"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]Person{{\"Bob\",2},{\"Ada\",3},{\"Amy\",3}}), []Person{{\"Ada\",3},{\"Amy\",3},{\"Bob\",2}}) }"
+      "testCode": "func main(){ assertEqual(Solve([]Person{{\"Bob\",2},{\"Ada\",3},{\"Amy\",3}}), []Person{{\"Ada\",3},{\"Amy\",3},{\"Bob\",2}}) }",
+      "lessonTitle": "Interfaces as behavior contracts",
+      "lesson": "Interfaces describe behavior, not data. In Go, a type satisfies an interface implicitly by having the required methods. This makes small interfaces powerful: io.Reader, sort.Interface, fmt.Stringer.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Accept interfaces when you need behavior. Return concrete types when you create values.",
+      "approach": "Approach: solve Sort People by choosing the simplest representation for interfaces, sorting. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "pipeline-sum",
@@ -464,7 +584,15 @@
           "output": "14"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]int{1,2,3}),14); assertEqual(Solve([]int{-2,3}),13) }"
+      "testCode": "func main(){ assertEqual(Solve([]int{1,2,3}),14); assertEqual(Solve([]int{-2,3}),13) }",
+      "lessonTitle": "Goroutines, channels, and pipelines",
+      "lesson": "Concurrency in Go is about composing independent activities. Goroutines run functions concurrently; channels coordinate communication. Even when solving sequential exercises, pipeline thinking helps separate stages: produce, transform, collect.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Do not start goroutines just to look fancy. First design the data flow; then add concurrency only if it makes the flow clearer or faster.",
+      "approach": "Approach: solve Pipeline Sum by choosing the simplest representation for concurrency, channels. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     },
     {
       "id": "merge-channels",
@@ -491,7 +619,15 @@
           "output": "[1,2,3,4]"
         }
       ],
-      "testCode": "func main(){ assertEqual(Solve([]int{1,3},[]int{2,4}), []int{1,2,3,4}); assertEqual(Solve([]int{},[]int{1}), []int{1}) }"
+      "testCode": "func main(){ assertEqual(Solve([]int{1,3},[]int{2,4}), []int{1,2,3,4}); assertEqual(Solve([]int{},[]int{1}), []int{1}) }",
+      "lessonTitle": "Goroutines, channels, and pipelines",
+      "lesson": "Concurrency in Go is about composing independent activities. Goroutines run functions concurrently; channels coordinate communication. Even when solving sequential exercises, pipeline thinking helps separate stages: produce, transform, collect.\n\nStudy goal: understand the idea before touching the editor. For this problem, identify the input type, the output type, and the one transformation between them. Then write a tiny Go function that expresses that transformation directly.\n\nKey Go habit: Do not start goroutines just to look fancy. First design the data flow; then add concurrency only if it makes the flow clearer or faster.",
+      "approach": "Approach: solve Merge Sorted Streams by choosing the simplest representation for concurrency, merge. Start with the zero/empty input. Then add the main loop or helper. Keep the function deterministic: same input, same output, no hidden global state.",
+      "pitfalls": [
+        "Forgetting Go zero values can either help or hurt depending on the type.",
+        "Overengineering with extra structs/interfaces before the simple function works.",
+        "Not testing empty, one-element, and repeated-value cases."
+      ]
     }
   ]
 }
