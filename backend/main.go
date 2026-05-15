@@ -265,6 +265,10 @@ func runCode(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unknown problem", http.StatusNotFound)
 		return
 	}
+	if req.Mode == "submit" && !canSubmit(p) {
+		http.Error(w, "submit is only available for judgeable local-test exercises", http.StatusBadRequest)
+		return
+	}
 
 	select {
 	case runSlots <- struct{}{}:
@@ -282,6 +286,9 @@ func runCode(w http.ResponseWriter, r *http.Request) {
 		resp.Error = verr.Error()
 	}
 	writeJSON(w, resp)
+}
+func canSubmit(p *Problem) bool {
+	return p != nil && p.ExerciseMode == "judge" && p.Verifier == "local-tests"
 }
 func execute(code, tests, mode string) (string, error) {
 	if !strings.Contains(code, "package main") {

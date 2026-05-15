@@ -172,8 +172,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 1.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 1.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 1.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 1.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 1.3: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 1.3:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 1.3",
@@ -247,8 +247,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 1.5\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 1.5\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 1.5.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 1.5: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 1.5: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 1.5:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 1.5",
@@ -284,8 +284,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 1.6\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 1.6\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 1.6.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 1.6: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 1.6: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 1.6:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 1.6",
@@ -321,8 +321,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 1.7\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 1.7\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 1.7.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 1.7: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 1.7: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 1.7:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 1.7",
@@ -396,8 +396,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 1.9\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 1.9\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 1.9.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 1.9: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 1.9: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 1.9:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 1.9",
@@ -434,8 +434,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 1.10\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 1.10\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 1.10.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 1.10: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 1.10: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 1.10:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 1.10",
@@ -471,8 +471,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 1.11\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 1.11\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 1.11.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 1.11: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 1.11: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 1.11:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 1.11",
@@ -585,8 +585,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 2.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 2.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 2.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 2.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 2.2: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 2.2:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 2.2",
@@ -733,8 +733,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.1\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.1\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.1.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.1: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.1: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.1:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.1",
@@ -770,8 +770,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.2: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.2:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.2",
@@ -807,8 +807,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.3: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.3:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.3",
@@ -847,8 +847,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.4: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.4:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.4",
@@ -884,8 +884,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.5\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.5\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.5.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.5: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.5: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.5:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.5",
@@ -921,8 +921,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.6\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.6\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.6.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.6: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.6: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.6:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.6",
@@ -958,8 +958,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.7\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.7\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.7.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.7: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.7: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.7:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.7",
@@ -995,8 +995,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.8\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.8\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.8.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.8: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.8: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.8:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.8",
@@ -1033,8 +1033,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 3.9\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 3.9\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 3.9.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 3.9: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 3.9: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 3.9:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 3.9",
@@ -1259,8 +1259,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 4.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 4.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 4.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 4.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 4.2: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 4.2:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 4.2",
@@ -1333,8 +1333,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 4.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 4.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 4.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 4.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 4.4: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 4.4:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 4.4",
@@ -1559,8 +1559,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 4.10\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 4.10\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 4.10.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 4.10: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 4.10: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 4.10:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 4.10",
@@ -1596,8 +1596,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 4.11\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 4.11\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 4.11.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 4.11: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 4.11: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 4.11:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 4.11",
@@ -1635,8 +1635,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 4.12\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 4.12\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 4.12.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 4.12: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 4.12: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 4.12:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 4.12",
@@ -1673,8 +1673,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 4.13\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 4.13\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 4.13.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 4.13: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 4.13: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 4.13:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 4.13",
@@ -1710,8 +1710,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 4.14\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 4.14\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 4.14.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 4.14: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 4.14: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 4.14:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 4.14",
@@ -1747,8 +1747,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.1\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.1\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.1.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.1: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.1: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.1:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.1",
@@ -1785,8 +1785,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.2: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.2:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.2",
@@ -1822,8 +1822,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.3: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.3:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.3",
@@ -1859,8 +1859,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.4: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.4:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.4",
@@ -1896,8 +1896,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.5\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.5\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.5.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.5: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.5: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.5:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.5",
@@ -1933,8 +1933,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.6\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.6\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.6.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.6: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.6: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.6:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.6",
@@ -1971,8 +1971,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.7\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.7\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.7.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.7: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.7: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.7:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.7",
@@ -2008,8 +2008,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.8\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.8\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.8.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.8: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.8: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.8:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.8",
@@ -2122,8 +2122,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.11\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.11\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.11.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.11: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.11: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.11:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.11",
@@ -2159,8 +2159,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.12\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.12\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.12.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.12: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.12: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.12:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.12",
@@ -2196,8 +2196,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.13\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.13\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.13.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.13: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.13: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.13:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.13",
@@ -2234,8 +2234,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.14\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.14\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.14.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.14: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.14: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.14:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.14",
@@ -2347,8 +2347,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.17\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.17\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.17.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.17: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.17: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.17:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.17",
@@ -2385,8 +2385,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.18\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.18\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.18.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.18: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.18: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.18:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.18",
@@ -2422,8 +2422,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 5.19\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 5.19\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 5.19.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 5.19: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 5.19: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 5.19:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 5.19",
@@ -2611,8 +2611,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 6.5\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 6.5\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 6.5.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 6.5: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 6.5: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 6.5:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 6.5",
@@ -2724,8 +2724,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.3: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.3:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.3",
@@ -2837,8 +2837,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.6\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.6\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.6.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.6: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.6: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.6:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.6",
@@ -2874,8 +2874,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.7\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.7\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.7.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.7: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.7: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.7:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.7",
@@ -2912,8 +2912,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.8\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.8\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.8.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.8: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.8: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.8:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.8",
@@ -2951,8 +2951,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.9\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.9\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.9.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.9: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.9: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.9:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.9",
@@ -3026,8 +3026,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.11\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.11\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.11.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.11: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.11: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.11:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.11",
@@ -3064,8 +3064,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.12\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.12\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.12.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.12: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.12: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.12:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.12",
@@ -3101,8 +3101,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.13\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.13\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.13.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.13: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.13: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.13:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.13",
@@ -3138,8 +3138,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.14\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.14\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.14.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.14: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.14: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.14:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.14",
@@ -3175,8 +3175,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.15\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.15\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.15.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.15: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.15: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.15:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.15",
@@ -3212,8 +3212,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.16\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.16\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.16.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.16: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.16: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.16:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.16",
@@ -3249,8 +3249,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.17\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.17\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.17.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.17: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.17: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.17:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.17",
@@ -3289,8 +3289,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 7.18\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 7.18\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 7.18.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 7.18: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 7.18: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 7.18:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 7.18",
@@ -3365,8 +3365,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.2\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.2\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.2.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.2: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.2: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.2:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.2",
@@ -3405,8 +3405,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.3: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.3:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.3",
@@ -3518,8 +3518,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.6\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.6\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.6.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.6: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.6: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.6:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.6",
@@ -3556,8 +3556,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.7\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.7\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.7.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.7: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.7: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.7:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.7",
@@ -3594,8 +3594,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.8\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.8\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.8.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.8: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.8: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.8:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.8",
@@ -3631,8 +3631,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.9\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.9\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.9.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.9: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.9: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.9:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.9",
@@ -3669,8 +3669,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.10\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.10\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.10.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.10: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.10: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.10:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.10",
@@ -3706,8 +3706,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.11\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.11\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.11.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.11: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.11: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.11:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.11",
@@ -3743,8 +3743,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.12\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.12\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.12.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.12: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.12: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.12:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.12",
@@ -3781,8 +3781,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.13\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.13\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.13.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.13: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.13: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.13:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.13",
@@ -3818,8 +3818,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.14\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.14\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.14.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.14: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.14: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.14:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.14",
@@ -3857,8 +3857,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 8.15\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 8.15\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 8.15.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 8.15: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 8.15: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 8.15:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 8.15",
@@ -4008,8 +4008,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 9.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 9.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 9.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 9.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 9.4: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 9.4:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 9.4",
@@ -4046,8 +4046,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 9.5\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 9.5\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 9.5.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 9.5: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 9.5: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 9.5:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 9.5",
@@ -4083,8 +4083,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 9.6\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 9.6\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 9.6.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 9.6: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 9.6: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 9.6:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 9.6",
@@ -4197,8 +4197,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 10.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 10.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 10.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 10.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 10.3: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 10.3:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 10.3",
@@ -4235,8 +4235,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 10.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 10.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 10.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 10.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 10.4: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 10.4:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 10.4",
@@ -4386,8 +4386,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 11.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 11.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 11.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 11.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 11.4: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 11.4:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 11.4",
@@ -4423,8 +4423,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 11.5\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 11.5\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 11.5.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 11.5: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 11.5: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 11.5:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 11.5",
@@ -4460,8 +4460,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 11.6\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 11.6\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 11.6.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 11.6: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 11.6: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 11.6:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 11.6",
@@ -4498,8 +4498,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 11.7\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 11.7\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 11.7.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 11.7: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 11.7: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 11.7:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 11.7",
@@ -4610,8 +4610,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.3: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.3:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.3",
@@ -4647,8 +4647,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.4: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.4:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.4",
@@ -4685,8 +4685,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.5\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.5\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.5.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.5: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.5: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.5:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.5",
@@ -4760,8 +4760,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.7\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.7\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.7.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.7: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.7: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.7:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.7",
@@ -4799,8 +4799,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.8\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.8\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.8.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.8: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.8: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.8:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.8",
@@ -4836,8 +4836,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.9\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.9\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.9.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.9: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.9: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.9:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.9",
@@ -4875,8 +4875,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.10\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.10\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.10.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.10: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.10: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.10:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.10",
@@ -4912,8 +4912,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.11\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.11\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.11.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.11: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.11: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.11:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.11",
@@ -4949,8 +4949,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.12\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.12\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.12.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.12: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.12: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.12:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.12",
@@ -4986,8 +4986,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 12.13\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 12.13\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 12.13.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 12.13: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 12.13: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 12.13:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 12.13",
@@ -5101,8 +5101,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 13.3\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 13.3\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 13.3.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 13.3: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 13.3: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 13.3:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 13.3",
@@ -5138,8 +5138,8 @@
       ],
       "explanation": "Why this exercise exists:\n\nThe book uses this task to connect a Go concept to an actual program. The important part is not memorizing the final code. The important part is seeing how Go's standard library and simple control flow combine into useful tools.\n\nWhat to watch while solving:\n- Where does data enter the program?\n- What type represents it?\n- Is the program building a result in memory, streaming it, or printing as it goes?\n- What errors can happen, and where should they be handled?\n- Does the task require preserving order, counting, parsing, formatting, or coordinating concurrent work?\n\nAfter solving, rewrite your understanding in one sentence. If you cannot explain the change without reading the code line-by-line, you probably copied the shape without fully owning the idea.",
       "starterCode": "package main\n\n// Book exercise 13.4\n// Read the Study and Problem tabs, then replace this sketch with your implementation.\n// For command-line/server/image exercises, build the full program locally.\nfunc Solve() string {\n    return \"TODO: implement exercise 13.4\"\n}\n",
-      "solutionCode": "package main\n\n// Reference placeholder for exercise 13.4.\n// This course entry is intentionally project-style: implement the full program described\n// in the Study/Problem tab, then use Run mode to execute your version locally.\nfunc Solve() string {\n    return \"exercise 13.4: implementation is project-specific\"\n}\n",
-      "testCode": "func main(){ assertEqual(Solve(), \"exercise 13.4: implementation is project-specific\") }",
+      "solutionCode": "Manual project guidance for exercise 13.4:\n\n- Build the full program described in the Study and Problem tabs.\n- Run it with a small reproducible input or command.\n- Record the command, any sample files, and the observed output.\n- Mark the project complete only after the proof matches the exercise goal.\n",
+      "testCode": "",
       "examples": [
         {
           "input": "Book Exercise 13.4",

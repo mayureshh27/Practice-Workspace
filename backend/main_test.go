@@ -59,6 +59,28 @@ func TestRunCodeRejectsOversizedBody(t *testing.T) {
 	}
 }
 
+func TestRunCodeRejectsProjectSubmit(t *testing.T) {
+	config = Config{MaxBodyBytes: 1024, MaxCodeBytes: 1024}
+	store = Store{Problems: []Problem{{
+		ID:           "exercise-1-3",
+		ExerciseMode: "project",
+		Verifier:     "manual",
+		TestCode:     `func main(){ panic("should not execute") }`,
+	}}}
+
+	req := httptest.NewRequest(http.MethodPost, "/api/run", strings.NewReader(`{"problemId":"exercise-1-3","code":"package main","mode":"submit"}`))
+	rr := httptest.NewRecorder()
+
+	runCode(rr, req)
+
+	if rr.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, want %d", rr.Code, http.StatusBadRequest)
+	}
+	if !strings.Contains(rr.Body.String(), "judgeable local-test") {
+		t.Fatalf("response %q does not explain the submit restriction", rr.Body.String())
+	}
+}
+
 func TestRunCodeLimitsConcurrentRuns(t *testing.T) {
 	config = Config{MaxBodyBytes: 1024, MaxCodeBytes: 1024, RunTimeout: time.Second}
 	runSlots = make(chan struct{}, 1)
@@ -94,10 +116,10 @@ func TestSandboxRuntimeFallsBackWhenDockerUnusable(t *testing.T) {
 func TestImagePullDoesNotConsumeRunTimeout(t *testing.T) {
 	binDir := t.TempDir()
 	logPath := filepath.Join(t.TempDir(), "runtime.log")
-	writeFakeRuntime(t, binDir, "docker", "", 0, 40*time.Millisecond, logPath)
+	writeFakeRuntime(t, binDir, "docker", "", 0, 150*time.Millisecond, logPath)
 	t.Setenv("PATH", binDir)
 	config = Config{
-		RunTimeout:       time.Millisecond,
+		RunTimeout:       100 * time.Millisecond,
 		ImagePullTimeout: time.Second,
 		SandboxImage:     "example.test/goprac:latest",
 		OutputLimit:      1024,
