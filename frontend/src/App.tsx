@@ -3,11 +3,14 @@ import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {BookOpen, CheckCircle2, FileText, Play, Search, Send, Upload} from 'lucide-react';
+import {errorMessage,fetchJson,getBrowserStorage,readJsonStorage,readTextStorage,removeStorageItem,writeJsonStorage,writeTextStorage} from './appState';
 import './index.css';
 
 type Problem={id:string;number:number;title:string;chapter:string;difficulty:string;tags:string[];statement:string;problemText?:string;explanation:string;howItWorks?:string;syntax?:string;solve?:string;lessonTitle?:string;lesson?:string;approach?:string;pitfalls?:string[];hints:string[];starterCode:string;solutionCode:string;exerciseMode?:string;verifier?:string;examples:{input:string;output:string}[]}
 type Store={chapters:{id:string;title:string}[];problems:Problem[]}
 type FlowTab='explanation'|'how'|'syntax'|'problem'|'solve'
+type RunResp={verdict:string;output:string;error?:string;durationMs:number}
+type UploadedFile={name:string; text:string}
 const API=import.meta.env.VITE_API_URL||'http://localhost:8080';
 const flowTabs:{id:FlowTab;label:string}[]=[{id:'explanation',label:'Explanation'},{id:'how',label:'How it works'},{id:'syntax',label:"What's the syntax"},{id:'problem',label:'Problem'},{id:'solve',label:'Solve'}];
 
@@ -15,6 +18,8 @@ function md(text:string){return <ReactMarkdown remarkPlugins={[remarkGfm]}>{text
 function canSubmit(p:Problem){return p.exerciseMode==='judge'&&p.verifier==='local-tests'}
 function chipText(p:Problem){return p.exerciseMode==='judge'?'Judge':'Project'}
 function shortTitle(p:Problem){return p.title.replace(/^Exercise \d+\.\d+: /,'')}
+function isStringArray(value:unknown):value is string[]{return Array.isArray(value)&&value.every(item=>typeof item==='string')}
+function isUploadedFiles(value:unknown):value is UploadedFile[]{return Array.isArray(value)&&value.every(item=>!!item&&typeof item==='object'&&typeof (item as UploadedFile).name==='string'&&typeof (item as UploadedFile).text==='string')}
 function flowContent(p:Problem,tab:FlowTab){
   if(tab==='explanation') return `### Explanation\n\n${p.explanation}`;
   if(tab==='how') return `### How it works\n\n${p.howItWorks||p.lesson||''}`;
@@ -36,11 +41,13 @@ function App(){
   const [out,setOut]=useState('');
   const [verdict,setVerdict]=useState('');
   const [tab,setTab]=useState<FlowTab>('explanation');
-  const [uploaded,setUploaded]=useState<{name:string; text:string}[]>([]);
+  const [uploaded,setUploaded]=useState<UploadedFile[]>([]);
   const [proofReady,setProofReady]=useState(false);
-  const [solved,setSolved]=useState<string[]>(()=>JSON.parse(localStorage.getItem('solved')||'[]'));
+  const [solved,setSolved]=useState<string[]>(()=>readJsonStorage(getBrowserStorage(),'solved',[],isStringArray));
+  const [loadError,setLoadError]=useState('');
+  const [runningMode,setRunningMode]=useState('');
 
-  useEffect(()=>{fetch(API+'/api/problems').then(r=>r.json()).then(s=>{setStore(s); setPid(s.problems[0]?.id||''); setCode(s.problems[0]?.starterCode||'')})},[]);
+  useEffect(()=>{fetchJson<Store>(API+'/api/problems',undefined,'Problem list').then(s=>{setStore(s); setPid(s.problems[0]?.id||''); setCode(s.problems[0]?.starterCode||''); setLoadError('')}).catch(error=>setLoadError(errorMessage(error)))},[]);
 
   const problem=store.problems.find(p=>p.id===pid);
   const canSubmitProblem=!!problem&&canSubmit(problem);
@@ -50,9 +57,10 @@ function App(){
   const filtered=useMemo(()=>store.problems.filter(p=>(chapter==='all'||p.chapter===chapter)&&(mode==='all'||p.exerciseMode===mode)&&((p.title+p.tags.join(' ')+p.statement+(p.problemText||'')+(p.explanation||'')+(p.howItWorks||'')+(p.syntax||'')+(p.solve||'')+(p.lesson||'')+(p.approach||'')).toLowerCase().includes(query.toLowerCase()))),[store,query,chapter,mode]);
 
   function select(p:Problem){
+    const storage=getBrowserStorage();
     setPid(p.id);
-    setCode(localStorage.getItem('draft:'+p.id)||p.starterCode);
-    setUploaded(JSON.parse(localStorage.getItem('files:'+p.id)||'[]'));
+    setCode(readTextStorage(storage,'draft:'+p.id,p.starterCode));
+    setUploaded(readJsonStorage(storage,'files:'+p.id,[],isUploadedFiles));
     setProofReady(false);
     setOut('');
     setVerdict('');
@@ -65,28 +73,28 @@ function App(){
   function saveDraft(v:string|undefined){
     const c=v||'';
     setCode(c);
-    if(problem)localStorage.setItem('draft:'+problem.id,c);
+    if(problem)writeTextStorage(getBrowserStorage(),'draft:'+problem.id,c);
   }
   async function addFiles(list:FileList|null){
-    if(!problem||!list) return;
+    if(!problem||!list||runningMode) return;
     const files=await Promise.all(Array.from(list).map(async f=>({name:f.name,text:await f.text()})));
     const next=[...uploaded,...files];
     setUploaded(next);
-    localStorage.setItem('files:'+problem.id,JSON.stringify(next));
+    writeJsonStorage(getBrowserStorage(),'files:'+problem.id,next);
     setOut(`### Uploaded files\n\n${next.map(f=>`- **${f.name}** (${f.text.length} chars)`).join('\n')}\n\nUse these as your sample inputs while solving this file-based exercise.`);
     setVerdict('Files ready');
   }
   function clearFiles(){
     if(!problem) return;
     setUploaded([]);
-    localStorage.removeItem('files:'+problem.id);
+    removeStorageItem(getBrowserStorage(),'files:'+problem.id);
     setOut('');
     setVerdict('');
   }
   function markSolved(p:Problem){
     const ns=[...new Set([...solved,p.id])];
     setSolved(ns);
-    localStorage.setItem('solved',JSON.stringify(ns));
+    writeJsonStorage(getBrowserStorage(),'solved',ns);
   }
   function showProjectChecklist(){
     if(!problem) return;
@@ -95,7 +103,7 @@ function App(){
     setOut(`### Manual completion checklist\n\nBefore marking this project complete, keep a short reproducible proof:\n\n- The command or Run-mode input you used.\n- Any sample file or argument needed by the exercise.\n- The observed output or behavior.\n- A one-sentence note connecting the result to the exercise goal.\n\nProject exercises are not accepted by hidden tests. They are marked complete locally after you have reviewed this checklist.`);
   }
   function markComplete(){
-    if(!problem) return;
+    if(!problem||runningMode) return;
     if(canSubmit(problem)) return;
     if(!proofReady){showProjectChecklist(); return}
     if(!solved.includes(problem.id)) markSolved(problem);
@@ -104,16 +112,22 @@ function App(){
   }
   async function run(mode:string){
     if(mode==='submit'&&(!problem||!canSubmit(problem))){showProjectChecklist(); return}
+    if(!problem||runningMode) return;
+    setRunningMode(mode);
     setVerdict('Running...');
     setOut('');
-    const r=await fetch(API+'/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({problemId:pid,code,mode})});
-    const text=await r.text();
-    let j;
-    try{j=JSON.parse(text)}catch{j={verdict:'Error',output:'',error:text||r.statusText,durationMs:0}}
-    const body=(j.error?`### Error\n\n\`\`\`text\n${j.error}\n\`\`\`\n\n`:'')+`### Output\n\n\`\`\`text\n${j.output}\n\`\`\`\n\n**Time:** ${j.durationMs}ms`;
-    setVerdict(j.verdict);
-    setOut(body);
-    if(mode==='submit'&&j.verdict==='Accepted'&&problem) markSolved(problem);
+    try{
+      const j=await fetchJson<RunResp>(API+'/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({problemId:pid,code,mode})},'Run request');
+      const body=(j.error?`### Error\n\n\`\`\`text\n${j.error}\n\`\`\`\n\n`:'')+`### Output\n\n\`\`\`text\n${j.output}\n\`\`\`\n\n**Time:** ${j.durationMs}ms`;
+      setVerdict(j.verdict);
+      setOut(body);
+      if(mode==='submit'&&j.verdict==='Accepted') markSolved(problem);
+    }catch(error){
+      setVerdict('Error');
+      setOut(`### Request failed\n\n${errorMessage(error)}`);
+    }finally{
+      setRunningMode('');
+    }
   }
 
   return <div className="app-shell">
@@ -142,7 +156,7 @@ function App(){
         <div className="problem-list scrollbar">{filtered.map(p=><button key={p.id} onClick={()=>select(p)} className={`problem-row ${p.id===pid?'problem-active':''}`}><div><span className="problem-number">{p.number}.</span> {shortTitle(p)}</div><span>{chipText(p)} · {p.tags.slice(0,2).join(', ')}</span>{solved.includes(p.id)&&<CheckCircle2 size={15}/>}</button>)}</div>
       </aside>
 
-      <main className="workspace-main">{problem&&<>
+      <main className="workspace-main">{problem?<>
         <section className="learning-panel">
           <div className="section-header">
             <div className="section-kicker"><BookOpen size={16}/> Exercise workspace</div>
@@ -156,16 +170,16 @@ function App(){
         <section className="work-panel">
           <div className="editor-toolbar">
             <div><b>{needsFiles?'File workspace':'Go editor'}</b><span>{needsFiles?'Upload sample input files for this exercise':canSubmitProblem?'Drafts save locally':'Manual project completion'}</span></div>
-            <div className="run-actions">{needsFiles&&<label className="btn2 cursor-pointer"><Upload size={15}/> Upload<input type="file" multiple className="hidden" onChange={e=>addFiles(e.target.files)}/></label>}<button className="btn2" onClick={()=>run('run')}><Play size={15}/> Run</button>{canSubmitProblem?<button className="btn" onClick={()=>run('submit')}><Send size={15}/> Submit</button>:<button className="btn" onClick={markComplete}><CheckCircle2 size={15}/> {solved.includes(problem.id)?'Completed':proofReady?'Mark complete':'Proof checklist'}</button>}</div>
+            <div className="run-actions">{needsFiles&&<label className={`btn2 ${runningMode?'disabled':''} cursor-pointer`}><Upload size={15}/> Upload<input type="file" multiple className="hidden" disabled={!!runningMode} onChange={e=>addFiles(e.target.files)}/></label>}<button className="btn2" disabled={!!runningMode} onClick={()=>run('run')}><Play size={15}/> {runningMode==='run'?'Running...':'Run'}</button>{canSubmitProblem?<button className="btn" disabled={!!runningMode} onClick={()=>run('submit')}><Send size={15}/> {runningMode==='submit'?'Submitting...':'Submit'}</button>:<button className="btn" disabled={!!runningMode} onClick={markComplete}><CheckCircle2 size={15}/> {solved.includes(problem.id)?'Completed':proofReady?'Mark complete':'Proof checklist'}</button>}</div>
           </div>
           {needsFiles?<div className="file-workspace scrollbar">
-            <div className="drop-card"><Upload size={28}/><h3>Upload input files</h3><p>For file-based book exercises, upload sample files here instead of treating it like a pure LeetCode prompt. Files are saved in browser localStorage for this exercise.</p><label className="btn cursor-pointer mt-3 inline-flex">Choose files<input type="file" multiple className="hidden" onChange={e=>addFiles(e.target.files)}/></label></div>
+            <div className="drop-card"><Upload size={28}/><h3>Upload input files</h3><p>For file-based book exercises, upload sample files here instead of treating it like a pure LeetCode prompt. Files are saved in browser localStorage for this exercise.</p><label className={`btn ${runningMode?'disabled':''} cursor-pointer mt-3 inline-flex`}>Choose files<input type="file" multiple className="hidden" disabled={!!runningMode} onChange={e=>addFiles(e.target.files)}/></label></div>
             {uploaded.length>0&&<div className="uploaded-files"><div className="uploaded-head"><b>{uploaded.length} uploaded</b><button onClick={clearFiles}>Clear</button></div>{uploaded.map((f,i)=><div key={i} className="file-card"><div><FileText size={16}/><b>{f.name}</b><span>{f.text.length} chars</span></div><pre>{f.text.slice(0,2000)}{f.text.length>2000?'\n...':''}</pre></div>)}</div>}
             <div className="optional-editor"><span>Optional Go draft</span><div className="editor-frame compact"><Editor height="100%" defaultLanguage="go" theme="vs-dark" value={code} onChange={saveDraft} options={{fontSize:14,fontFamily:'JetBrains Mono, monospace',minimap:{enabled:false},scrollBeyondLastLine:false,renderLineHighlight:'all',padding:{top:16}}}/></div></div>
           </div>:<div className="editor-frame"><Editor height="100%" defaultLanguage="go" theme="vs-dark" value={code} onChange={saveDraft} options={{fontSize:14,fontFamily:'JetBrains Mono, monospace',minimap:{enabled:false},scrollBeyondLastLine:false,renderLineHighlight:'all',padding:{top:16}}}/></div>}
           <div className="output-panel markdown-body scrollbar"><div className={`verdict ${verdict==='Accepted'?'ok':verdict==='Error'?'bad':''}`}>{verdict||'Output'}</div>{out?md(out):md(needsFiles?"Upload files to preview them here. Use Run for optional Go drafts.":canSubmitProblem?"Run code to see formatted output. Submit runs this exercise against local tests.":"Use Run mode to produce a reproducible proof, then open the proof checklist before marking this project complete.")}</div>
         </section>
-      </>}</main>
+      </>:<section className="learning-panel"><div className="content-scroll markdown-body scrollbar"><h3>{loadError?'Unable to load exercises':'Loading exercises'}</h3><p>{loadError||'Fetching the problem catalog from the backend.'}</p></div></section>}</main>
     </div>
   </div>
 }

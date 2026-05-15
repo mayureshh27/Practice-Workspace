@@ -516,7 +516,7 @@ input:focus-visible{
   line-height:1;
   text-decoration:none;
   white-space:nowrap;
-  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease;
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,opacity .16s ease;
 }
 
 .btn{
@@ -538,6 +538,14 @@ input:focus-visible{
 
 .btn2:hover{
   background:var(--surface-2);
+}
+
+.btn:disabled,
+.btn2:disabled,
+.btn.disabled,
+.btn2.disabled{
+  opacity:.55;
+  cursor:not-allowed;
 }
 
 .editor-frame{
