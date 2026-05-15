@@ -16,7 +16,7 @@ function chipText(p:Problem){return p.exerciseMode==='judge'?'Judge':'Project'}
 function flowContent(p:Problem,tab:FlowTab){
   if(tab==='explanation') return `### Explanation\n\n${p.explanation}`;
   if(tab==='how') return `### How it works\n\n${p.howItWorks||p.lesson||''}`;
-  if(tab==='syntax') return `### What's the syntax\n\n${p.syntax||''}`;
+  if(tab==='syntax') return `### What's the syntax\n\n${p.syntax||p.lesson||p.approach||p.statement}`;
   if(tab==='problem') return `### Problem\n\n${p.problemText||p.statement}\n\n### Examples\n\n${p.examples.map(e=>`\`\`\`text\nInput: ${e.input}\nOutput: ${e.output}\n\`\`\``).join('\n\n')}\n\n### Hints\n\n${p.hints.map(h=>`- ${h}`).join('\n')}`;
   const reference=p.exerciseMode==='judge'&&p.solutionCode?`\n\n### Reference solution\n\n\`\`\`go\n${p.solutionCode}\n\`\`\``:'';
   return `### Solve\n\n${p.solve||p.approach||''}${reference}`;
