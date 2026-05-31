@@ -1,7 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { DomainScreen } from '../../components/ExplorerScreens'
-import { useQuery } from '@tanstack/react-query'
-import { api } from '../../api/workspaceApi'
 import { useWorkspaceStore } from '../../stores/workspaceStore'
 
 export const Route = createFileRoute('/domain/$domainId')({
@@ -11,17 +9,11 @@ export const Route = createFileRoute('/domain/$domainId')({
 function DomainRoute() {
   const { domainId } = Route.useParams()
 
-  const { data: domain, isLoading } = useQuery({
-    queryKey: ['domain', domainId],
-    queryFn: () => api.getDomain(domainId)
-  })
+  const domains = useWorkspaceStore(s => s.domains)
+  const domain = domains.find(d => d.id === domainId)
 
   const renameSubject = useWorkspaceStore(s => s.renameSubject)
   const deleteSubject = useWorkspaceStore(s => s.deleteSubject)
-
-  if (isLoading) {
-    return <div style={{padding: 40, textAlign: 'center', color: "var(--ws-muted)"}}>Loading...</div>
-  }
 
   if (!domain) {
     return <div style={{padding: 40, textAlign: 'center', color: "var(--ws-muted)"}}>Domain not found.</div>

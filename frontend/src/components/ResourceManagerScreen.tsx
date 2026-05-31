@@ -119,59 +119,64 @@ function ResourceManagerScreen() {
   const currentSources = ALL_SOURCES[activeTopic] || [];
 
   return (
-    <div className="h-full max-w-none p-6">
-      <div className="flex w-full items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-ws-ink mb-0">Resource Manager</h1>
-        <button type="button" className="bg-ws-success text-[#0a0a0b] font-semibold rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-110 transition-all cursor-pointer shadow-md">
-          <FileUp size={16} /> Add Source
+    <div className="p-4 h-full flex flex-col overflow-hidden bg-ws-floor text-ws-ink">
+      <div className="p-4 bg-ws-bench border border-ws-line rounded-xl shadow-md flex w-full items-center justify-between shrink-0 mb-4">
+        <div>
+          <h1 className="text-base font-extrabold text-ws-ink m-0 tracking-tight">Resource Manager</h1>
+          <p className="text-[11px] text-ws-muted m-0 mt-0.5">Manage source reference materials and ingestion indices</p>
+        </div>
+        <button type="button" className="bg-ws-glow text-ws-floor font-bold rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-110 transition-all cursor-pointer shadow-md text-[13px]">
+          <FileUp size={14} /> Add Source
         </button>
       </div>
       
-      <div className="flex w-full h-[calc(100%-60px)] gap-6">
-        {/* Hierarchy Tree */}
-        <div className="w-1/3 bg-ws-surface border border-ws-line rounded-lg flex flex-col overflow-hidden">
-          <div className="p-4 border-b border-ws-line bg-ws-surface-2">
-            <span className="font-medium text-ws-ink flex items-center gap-2"><FolderTree size={16} /> Curriculum Tree</span>
+      <div className="flex-1 flex w-full h-[calc(100%-70px)] gap-4 overflow-hidden">
+        {/* Hierarchy Tree Panel */}
+        <div className="w-1/3 bg-ws-bench border border-ws-line rounded-xl shadow-md flex flex-col overflow-hidden shrink-0">
+          <div className="p-4 border-b border-ws-line bg-ws-bench/50 shrink-0">
+            <span className="font-bold text-[13px] tracking-tight text-ws-ink flex items-center gap-2">
+              <FolderTree size={14} className="text-ws-glow" /> Curriculum Tree
+            </span>
           </div>
-          <div className="p-2 flex-1 overflow-auto">
+          <div className="p-3 flex-1 overflow-y-auto scrollbar">
             {renderTree(TREE_DATA)}
           </div>
         </div>
         
         {/* Detail Panel */}
-        <div className="w-2/3 bg-ws-surface border border-ws-line rounded-lg flex flex-col overflow-hidden">
-          <div className="p-4 border-b border-ws-line bg-ws-surface-2">
-            <span className="font-medium text-ws-ink flex items-center gap-2">
-              Topic Sources
+        <div className="w-2/3 bg-ws-bench border border-ws-line rounded-xl shadow-md flex flex-col overflow-hidden shrink-0">
+          <div className="p-4 border-b border-ws-line bg-ws-bench/50 shrink-0">
+            <span className="font-bold text-[13px] tracking-tight text-ws-ink flex items-center gap-2">
+              <FileText size={14} className="text-ws-glow" /> Topic Sources
             </span>
           </div>
-          <div className="p-4 flex-1 overflow-auto flex flex-col gap-4">
+          <div className="p-4 flex-1 overflow-y-auto flex flex-col gap-3 scrollbar">
             {currentSources.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-ws-muted">
-                <FileText size={32} className="mb-4 opacity-50" />
-                <p>No sources assigned to this topic.</p>
+              <div className="flex-1 flex flex-col items-center justify-center text-ws-muted p-10">
+                <FileText size={32} className="mb-3 opacity-30" />
+                <p className="text-xs">No sources assigned to this topic.</p>
               </div>
             ) : currentSources.map(s => (
-              <div key={s.id} className="p-4 border border-ws-line rounded-lg bg-ws-bg flex gap-4">
-                <div className="mt-1">
-                  {s.status === 'indexed' && <CheckCircle size={20} className="text-ws-success" />}
-                  {s.status === 'extracting' && <Clock size={20} className="text-ws-muted" />}
-                  {s.status === 'chunking' && <AlertTriangle size={20} className="text-ws-warning" />}
+              <div key={s.id} className="p-4 border border-ws-line rounded-lg bg-ws-bg flex gap-4 transition-all hover:border-ws-glow/50 shadow-sm">
+                <div className="mt-0.5">
+                  {s.status === 'indexed' && <CheckCircle size={18} className="text-emerald-400" />}
+                  {s.status === 'extracting' && <Clock size={18} className="text-ws-muted animate-pulse" />}
+                  {s.status === 'chunking' && <AlertTriangle size={18} className="text-amber-400 animate-pulse" />}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-ws-ink text-base">{s.name}</span>
-                    <span className="text-[11px] text-ws-muted uppercase tracking-wider">{s.status}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1.5 gap-2">
+                    <span className="font-bold text-ws-ink text-sm tracking-tight truncate">{s.name}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 bg-ws-bench border border-ws-line rounded font-bold text-ws-muted uppercase tracking-wider shrink-0">{s.status}</span>
                   </div>
-                  <div className="flex gap-6 text-[11px] text-ws-muted">
+                  <div className="flex gap-4 text-[11px] text-ws-muted">
                     <span>{s.chunks} chunks</span>
                     <span>{s.citations} citations</span>
                     <span>{s.artifacts} artifacts generated</span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-muted text-sm font-semibold cursor-pointer hover:border-ws-success hover:text-ws-success transition-all py-1 px-3 text-center !w-auto">Inspect</button>
-                  <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-muted text-sm font-semibold cursor-pointer hover:border-ws-success hover:text-ws-success transition-all py-1 px-3 text-center !w-auto">Reassign</button>
+                <div className="flex flex-col gap-1.5 shrink-0">
+                  <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-muted text-xs font-semibold cursor-pointer hover:border-ws-glow hover:text-ws-ink transition-all py-1.5 px-3 text-center !w-auto">Inspect</button>
+                  <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-muted text-xs font-semibold cursor-pointer hover:border-ws-glow hover:text-ws-ink transition-all py-1.5 px-3 text-center !w-auto">Reassign</button>
                 </div>
               </div>
             ))}

@@ -1,0 +1,15 @@
+{
+  "name": "get_concept_context",
+  "description": "Return concept definitions, prerequisite chains (depth-capped at 8), current mastery scores, and prerequisite gap concepts below threshold.",
+  "parameters": {
+    "type": "object",
+    "required": ["concept_ids"],
+    "properties": {
+      "concept_ids": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "List of concept IDs to look up in the Knowledge Graph."
+      }
+    }
+  }
+}

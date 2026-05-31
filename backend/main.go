@@ -122,7 +122,7 @@ func loadConfig() Config {
 	return Config{
 		BindAddr:          env("GOPRAC_BIND_ADDR", "127.0.0.1"),
 		Port:              env("PORT", "8080"),
-		AllowedOrigins:    parseOrigins(env("GOPRAC_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")),
+		AllowedOrigins:    parseOrigins(env("GOPRAC_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000")),
 		MaxBodyBytes:      int64(envInt("GOPRAC_MAX_BODY_BYTES", 128*1024)),
 		MaxCodeBytes:      envInt("GOPRAC_MAX_CODE_BYTES", 64*1024),
 		MaxConcurrentRuns: envInt("GOPRAC_MAX_CONCURRENT_RUNS", 2),

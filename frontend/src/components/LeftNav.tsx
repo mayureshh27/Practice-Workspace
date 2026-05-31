@@ -1,10 +1,8 @@
-import {Search, ChevronRight, ChevronDown, ChevronLeft, FolderOpen, Folder, LayoutGrid, Workflow, GitBranch, Pin, Archive, Trash2, Edit2, Plus, MoreHorizontal, BookOpen, Layers, FileCode, History, Settings2, Check, ArrowUpRight} from 'lucide-react';
+import {Search, ChevronRight, ChevronDown, ChevronLeft, FolderOpen, Folder, LayoutGrid, Workflow, GitBranch, Pin, Archive, Trash2, Edit2, Plus, MoreHorizontal, BookOpen, Layers, FileCode, History, Settings2, Check, ArrowUpRight, PanelLeftClose, PanelLeftOpen} from 'lucide-react';
 import {useState, useMemo} from 'react';
 import type {RecentItem} from '../workspaceTypes';
 
 import { useWorkspaceStore } from '../stores/workspaceStore';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../api/workspaceApi';
 import { useUIStore } from '../stores/uiStore';
 import { Link, useRouterState, useNavigate, useRouter } from '@tanstack/react-router';
 
@@ -16,6 +14,7 @@ function LeftNav() {
   const onToggleArchiveDomain = useWorkspaceStore(s => s.toggleArchiveDomain);
   
   const collapsed = useUIStore(s => s.leftCollapsed);
+  const toggleLeftCollapsed = useUIStore(s => s.toggleLeftCollapsed);
   const onSearchTrigger = () => useUIStore.getState().setSearchModalOpen(true);
   
   const setCreationModal = useUIStore(s => s.setCreationModal);
@@ -33,10 +32,8 @@ function LeftNav() {
   const navigate = useNavigate();
   const router = useRouter();
   
-  const { data: domains = [], isLoading: isLoadingDomains } = useQuery({
-    queryKey: ['domains'],
-    queryFn: api.getDomains,
-  });
+  const domains = useWorkspaceStore(s => s.domains);
+  const isLoadingDomains = false;
 
   const canGoBack = true; // window.history logic handled by router
   const canGoForward = true;
@@ -115,25 +112,13 @@ function LeftNav() {
         key={item.id}
         to={toStr as any}
         params={paramsObj}
-        style={{
-          textDecoration: 'none',
-          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-          padding: `5px 8px 5px ${paddingLeft}px`, background: 'none', border: 'none', borderRadius: "4px",
-          color: "var(--ws-soft)", fontSize: 12, cursor: 'pointer', textAlign: 'left',
-          textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap',
-          transition: 'background 100ms ease'
-        }}
-        onMouseEnter={e => (e.currentTarget.style.background = "var(--ws-surface-2)")}
-        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+        className="no-underline flex items-center gap-2 w-full py-1 pr-2 rounded text-ws-soft text-xs cursor-pointer text-left overflow-hidden text-ellipsis whitespace-nowrap transition-colors hover:bg-ws-surface-2"
+        style={{ paddingLeft: `${paddingLeft}px` }}
       >
-        <span className="text-sm font-medium" style={{overflow: 'hidden', textOverflow: 'ellipsis', flex: 1}}>
+        <span className="text-sm font-medium overflow-hidden text-ellipsis flex-1">
           {item.label}
         </span>
-        <span style={{
-          fontSize: 9, opacity: 0.6, color: "var(--ws-accent)",
-          padding: '1px 4px', background: "rgba(16,185,129,0.1)", border: '1px solid rgba(16, 185, 129, 0.25)',
-          borderRadius: 3, textTransform: 'capitalize', flexShrink: 0
-        }}>
+        <span className="text-[9px] opacity-60 text-ws-accent px-1.5 py-0.5 bg-ws-accent/10 border border-ws-accent/25 rounded capitalize shrink-0">
           {item.type}
         </span>
       </Link>
@@ -160,12 +145,12 @@ function LeftNav() {
     });
 
     return (
-      <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
+      <div className="flex flex-col gap-3">
         {['Today', 'Yesterday', 'Older'].map(g => {
           if (groups[g].length === 0) return null;
           return (
             <div key={g}>
-              <div style={{fontSize: 10, color: "var(--ws-muted)", marginBottom: 4, paddingLeft: 8}}>{g}</div>
+              <div className="text-[10px] text-ws-muted mb-1 pl-2">{g}</div>
               {groups[g].map(item => renderRecentItem(item))}
             </div>
           );
@@ -189,7 +174,7 @@ function LeftNav() {
     });
 
     return (
-      <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
+      <div className="flex flex-col gap-3">
         {Array.from(domainMap.entries()).map(([dId, items]) => {
           const domain = domains.find(d => d.id === dId);
           if (!domain) return null;
@@ -209,15 +194,13 @@ function LeftNav() {
 
           return (
             <div key={dId}>
-              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 8px', color: "var(--ws-soft)", fontSize: 11, fontWeight: 500}}>
-                <div style={{display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden'}}>
-                  <span style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{domain.name}</span>
+              <div className="flex items-center justify-between px-2 py-1 text-ws-soft text-[11px] font-medium">
+                <div className="flex items-center gap-1.5 overflow-hidden">
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap">{domain.name}</span>
                   <Link 
                     to="/domain/$domainId"
                     params={{ domainId: domain.id }}
-                    style={{background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', color: "var(--ws-muted)"}}
-                    onMouseEnter={e => e.currentTarget.style.color = "var(--ws-accent)"}
-                    onMouseLeave={e => e.currentTarget.style.color = "var(--ws-muted)"}
+                    className="bg-transparent border-none cursor-pointer p-0.5 flex text-ws-muted hover:text-ws-accent"
                     title="Go to domain"
                   >
                     <ArrowUpRight size={10} />
@@ -243,15 +226,13 @@ function LeftNav() {
                 });
 
                 return (
-                  <div key={sId} style={{marginLeft: 8, marginTop: 4}}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: 6, padding: '2px 8px', color: "var(--ws-muted)", fontSize: 11}}>
-                      <span style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{subject.name}</span>
+                  <div key={sId} className="ml-2 mt-1">
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 text-ws-muted text-[11px]">
+                      <span className="overflow-hidden text-ellipsis whitespace-nowrap">{subject.name}</span>
                       <Link 
                         to="/subject/$domainId/$subjectId"
                         params={{ domainId: domain.id, subjectId: subject.id }}
-                        style={{background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', color: "var(--ws-muted)"}}
-                        onMouseEnter={e => e.currentTarget.style.color = "var(--ws-accent)"}
-                        onMouseLeave={e => e.currentTarget.style.color = "var(--ws-muted)"}
+                        className="bg-transparent border-none cursor-pointer p-0.5 flex text-ws-muted hover:text-ws-accent"
                         title="Go to subject"
                       >
                         <ArrowUpRight size={10} />
@@ -262,15 +243,13 @@ function LeftNav() {
                        const chapter = subject.chapters.find(c => c.id === cId);
                        if (!chapter) return null;
                        return (
-                         <div key={cId} style={{marginLeft: 8, marginTop: 4}}>
-                           <div style={{display: 'flex', alignItems: 'center', gap: 6, padding: '2px 8px', color: "var(--ws-muted)", fontSize: 10}}>
-                             <span style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{chapter.name}</span>
+                         <div key={cId} className="ml-2 mt-1">
+                           <div className="flex items-center gap-1.5 px-2 py-0.5 text-ws-muted text-[10px]">
+                             <span className="overflow-hidden text-ellipsis whitespace-nowrap">{chapter.name}</span>
                              <Link 
                                to="/chapter/$domainId/$subjectId/$chapterId"
                                params={{ domainId: domain.id, subjectId: subject.id, chapterId: chapter.id }}
-                               style={{background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', color: "var(--ws-muted)"}}
-                               onMouseEnter={e => e.currentTarget.style.color = "var(--ws-accent)"}
-                               onMouseLeave={e => e.currentTarget.style.color = "var(--ws-muted)"}
+                               className="bg-transparent border-none cursor-pointer p-0.5 flex text-ws-muted hover:text-ws-accent"
                                title="Go to chapter"
                              >
                                <ArrowUpRight size={10} />
@@ -288,7 +267,7 @@ function LeftNav() {
         })}
         {noDomainItems.length > 0 && (
           <div>
-            <div style={{fontSize: 10, color: "var(--ws-muted)", marginBottom: 4, paddingLeft: 8}}>Other</div>
+            <div className="text-[10px] text-ws-muted mb-1 pl-2">Other</div>
             {noDomainItems.map(item => renderRecentItem(item))}
           </div>
         )}
@@ -297,24 +276,50 @@ function LeftNav() {
   };
 
   return (
-    <nav className="flex flex-col bg-ws-bg border-r border-ws-line transition-[width]" style={{width: collapsed ? 48 : 220}} aria-label="Domain navigation" onClick={closeContext}>
+    <nav className={`flex flex-col bg-ws-bg border-r border-ws-line transition-[width] duration-300 ${collapsed ? 'w-12' : 'w-[220px]'}`} aria-label="Domain navigation" onClick={closeContext}>
+      {/* Integrated Platform Header & Collapse Switch */}
+      {collapsed ? (
+        <div className="flex items-center justify-center h-11 shrink-0">
+          <button
+            type="button"
+            className="flex items-center justify-center w-7 h-7 text-ws-muted rounded hover:text-ws-ink hover:bg-ws-surface-2 transition-colors"
+            onClick={toggleLeftCollapsed}
+            title="Expand sidebar"
+          >
+            <PanelLeftOpen size={14} />
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between h-11 px-3 shrink-0">
+          <span className="font-bold text-[13px] text-ws-ink tracking-tight">Practice Workspace</span>
+          <button
+            type="button"
+            className="flex items-center justify-center w-7 h-7 text-ws-muted rounded hover:text-ws-ink hover:bg-ws-surface-2 transition-colors"
+            onClick={toggleLeftCollapsed}
+            title="Collapse sidebar"
+          >
+            <PanelLeftClose size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Search + nav arrows */}
       {!collapsed && (
         <div className="flex items-center gap-1 p-2">
-          <button type="button" className="flex items-center justify-center rounded hover:bg-ws-surface-2 text-ws-muted hover:text-ws-ink transition-colors" onClick={onBack} disabled={!canGoBack} style={{width: 24, height: 24, opacity: canGoBack ? 1 : 0.3}} title="Back">
+          <button type="button" className={`flex items-center justify-center rounded hover:bg-ws-surface-2 text-ws-muted hover:text-ws-ink transition-colors w-6 h-6 ${canGoBack ? 'opacity-100' : 'opacity-30'}`} onClick={onBack} disabled={!canGoBack} title="Back">
             <ChevronLeft size={14} />
           </button>
-          <button type="button" className="flex items-center justify-center rounded hover:bg-ws-surface-2 text-ws-muted hover:text-ws-ink transition-colors" onClick={onForward} disabled={!canGoForward} style={{width: 24, height: 24, opacity: canGoForward ? 1 : 0.3}} title="Forward">
+          <button type="button" className={`flex items-center justify-center rounded hover:bg-ws-surface-2 text-ws-muted hover:text-ws-ink transition-colors w-6 h-6 ${canGoForward ? 'opacity-100' : 'opacity-30'}`} onClick={onForward} disabled={!canGoForward} title="Forward">
             <ChevronRight size={14} />
           </button>
           <div className="relative flex-1 min-w-0 ml-1">
-            <Search size={11} className="absolute left-1.5 top-1.5 text-ws-muted" />
+            <Search size={14} className="absolute left-1.5 top-1.5 text-ws-muted" />
             <input
               type="text"
               placeholder="Search..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-5 pr-1.5 py-1 text-[11px] bg-ws-bg text-ws-ink border border-ws-line rounded outline-none focus:border-ws-success/50 focus:ring-1 focus:ring-ws-success/50 placeholder-zinc-600 transition-all"
+              className="w-full pl-6 pr-1.5 py-1 text-[13px] bg-ws-bg text-ws-ink border border-ws-line rounded outline-none focus:border-ws-success/50 focus:ring-1 focus:ring-ws-success/50 placeholder-zinc-600 transition-all"
             />
           </div>
         </div>
@@ -332,7 +337,7 @@ function LeftNav() {
                 title={showArchived ? 'Hide archived' : 'Show archived'}
                 className={`flex p-0.5 rounded hover:bg-ws-surface-2 transition-colors ${showArchived ? 'text-ws-success' : 'text-ws-muted'}`}
               >
-                <Archive size={11} />
+                <Archive size={14} />
               </button>
               <button
                 type="button"
@@ -340,7 +345,7 @@ function LeftNav() {
                 title="New domain"
                 className="flex p-0.5 rounded hover:bg-ws-surface-2 text-ws-muted transition-colors"
               >
-                <Plus size={11} />
+                <Plus size={14} />
               </button>
             </div>
           </div>
@@ -355,42 +360,25 @@ function LeftNav() {
                 {/* Topmost Domain Folder */}
                 <Link
                   to="/"
-                  style={{
-                    textDecoration: 'none',
-                    display: 'flex', justifyContent: 'center', padding: '8px 0',
-                    cursor: 'pointer', borderRadius: "4px",
-                    background: isDomainsActive ? "rgba(16,185,129,0.1)" : 'transparent',
-                    marginBottom: 6
-                  }}
-                  onMouseEnter={e => { if (!isDomainsActive) e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                  onMouseLeave={e => { if (!isDomainsActive) e.currentTarget.style.background = 'transparent'; }}
+                  className={`no-underline flex items-center justify-center h-8 w-8 mx-auto cursor-pointer rounded mb-2 transition-colors ${isDomainsActive ? 'bg-ws-accent/10' : 'bg-transparent hover:bg-ws-surface-2'}`}
                   title="All Domains"
                 >
-                  <Folder size={18} style={{color: isDomainsActive ? "var(--ws-accent)" : "var(--ws-soft)"}} />
+                  <Folder size={16} className={isDomainsActive ? 'text-ws-accent' : 'text-ws-soft'} />
                 </Link>
 
                 {/* Global search launcher icon */}
                 <div
-                  style={{
-                    display: 'flex', justifyContent: 'center', padding: '8px 0',
-                    cursor: 'pointer', borderRadius: "4px",
-                    background: 'transparent',
-                    marginBottom: 12,
-                    borderBottom: '1px solid var(--ws-edge-soft)',
-                    paddingBottom: 14
-                  }}
+                  className="flex items-center justify-center h-8 w-8 mx-auto cursor-pointer rounded mb-3 border-b border-ws-edge-soft pb-2 bg-transparent hover:bg-ws-surface-2 transition-colors"
                   onClick={() => onSearchTrigger?.()}
-                  onMouseEnter={e => e.currentTarget.style.background = "var(--ws-surface-2)"}
-                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   title="Search specializations and concepts (Ctrl+K)"
                 >
-                  <Search size={18} style={{color: "var(--ws-soft)"}} />
+                  <Search size={16} className="text-ws-soft" />
                 </div>
               </>
             );
           })()
         ) : isLoadingDomains ? (
-          <div style={{padding: '16px 8px', textAlign: 'center', color: "var(--ws-muted)", fontSize: 11}}>
+          <div className="flex items-center px-3 h-8 text-ws-muted text-[13px]">
             Loading...
           </div>
         ) : (
@@ -399,25 +387,18 @@ function LeftNav() {
             const isDomainActive = location.pathname === `/domain/${domain.id}`;
 
           return (
-            <div key={domain.id} style={{marginBottom: 2}}>
+            <div key={domain.id} className="mb-1">
               {/* Domain row */}
               <div
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px',
-                  borderRadius: "4px", cursor: 'pointer',
-                  background: isDomainActive ? "rgba(16,185,129,0.1)" : 'transparent',
-                  opacity: domain.archived ? 0.5 : 1,
-                  textDecoration: 'none',
-                  color: 'inherit'
-                }}
+                className={`flex items-center gap-2 h-8 px-2.5 rounded cursor-pointer no-underline text-inherit ${isDomainActive ? 'bg-ws-accent/10 text-ws-accent' : 'bg-transparent text-ws-soft'} ${domain.archived ? 'opacity-50' : 'opacity-100'} hover:bg-ws-surface-2 transition-colors`}
                 onClick={() => { toggleExpand(domain.id); navigate({to: '/domain/$domainId', params: { domainId: domain.id }}); }}
                 onContextMenu={e => handleContextMenu(e, domain.id)}
               >
-                <span style={{color: "var(--ws-muted)", display: 'flex', flexShrink: 0, width: 14, justifyContent: 'center'}}>
-                  {isDomainExpanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+                <span className="text-ws-muted flex shrink-0 w-3.5 justify-center">
+                  {isDomainExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                 </span>
-                <span style={{color: "var(--ws-muted)", display: 'flex', flexShrink: 0}}>
-                  {isDomainExpanded ? <FolderOpen size={14} style={{color: "var(--ws-accent)"}} /> : <Folder size={14} />}
+                <span className="text-ws-muted flex shrink-0">
+                  {isDomainExpanded ? <FolderOpen size={14} className="text-ws-accent" /> : <Folder size={14} />}
                 </span>
                 {renaming === domain.id ? (
                   <input
@@ -428,34 +409,28 @@ function LeftNav() {
                     onBlur={finishRename}
                     onClick={e => e.stopPropagation()}
                     autoFocus
-                    style={{
-                      flex: 1, padding: '1px 4px', background: "var(--ws-bg)",
-                      border: '1px solid var(--ws-glow)', borderRadius: 2,
-                      color: "var(--ws-ink)", fontSize: 12, outline: 'none', minWidth: 0,
-                    }}
+                    className="flex-1 px-1 py-0.5 bg-ws-bg border border-ws-glow rounded text-ws-ink text-[13px] outline-none min-w-0 h-6"
                   />
                 ) : (
-                  <span style={{fontSize: 12, fontWeight: 600, color: "var(--ws-ink)", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0}}>
+                  <span className="text-[13px] font-semibold text-ws-ink flex-1 overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
                     {domain.name}
                   </span>
                 )}
-                {domain.pinned && <Pin size={10} style={{color: "var(--ws-accent)", flexShrink: 0}} />}
+                {domain.pinned && <Pin size={12} className="text-ws-accent shrink-0" />}
                 <button
                   type="button"
                   onClick={e => { e.stopPropagation(); onOpenCreateModal('subject', domain.id); }}
                   title="Add subject"
-                  style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', flexShrink: 0, padding: 2, marginRight: 2, opacity: 0.6}}
-                  onMouseEnter={e => e.currentTarget.style.color = "var(--ws-accent)"}
-                  onMouseLeave={e => e.currentTarget.style.color = "var(--ws-muted)"}
+                  className="bg-transparent border-none cursor-pointer text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-all"
                 >
-                  <Plus size={12} />
+                  <Plus size={14} />
                 </button>
                 <button
                   type="button"
                   onClick={e => handleContextMenu(e, domain.id)}
-                  style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', flexShrink: 0, padding: 0, opacity: 0.6}}
+                  className="bg-transparent border-none cursor-pointer text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-all"
                 >
-                  <MoreHorizontal size={12} />
+                  <MoreHorizontal size={14} />
                 </button>
               </div>
 
@@ -465,37 +440,27 @@ function LeftNav() {
                 const isSubActive = location.pathname === `/subject/${domain.id}/${subject.id}`;
 
                 return (
-                  <div key={subject.id} style={{marginLeft: 14}}>
+                  <div key={subject.id} className="ml-3.5 mb-0.5">
                     <div
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px',
-                        borderRadius: "4px", cursor: 'pointer',
-                        background: isSubActive ? "rgba(16,185,129,0.1)" : 'transparent',
-                        textDecoration: 'none',
-                        color: 'inherit'
-                      }}
+                      className={`flex items-center gap-2 h-8 px-2 rounded cursor-pointer no-underline text-inherit ${isSubActive ? 'bg-ws-accent/10 text-ws-accent' : 'bg-transparent text-ws-soft'} hover:bg-ws-surface-2 transition-colors`}
                       onClick={() => { toggleExpand(subject.id); navigate({to: '/subject/$domainId/$subjectId', params: { domainId: domain.id, subjectId: subject.id }}); }}
-                      onMouseEnter={e => { if (!isSubActive) e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                      onMouseLeave={e => { if (!isSubActive) e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <span style={{color: "var(--ws-muted)", display: 'flex', flexShrink: 0, width: 14, justifyContent: 'center'}}>
-                        {isSubExpanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+                      <span className="text-ws-muted flex shrink-0 w-3.5 justify-center">
+                        {isSubExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                       </span>
-                      <span style={{color: "var(--ws-muted)", display: 'flex', flexShrink: 0}}>
-                        <BookOpen size={14} style={{color: isSubActive ? "var(--ws-accent)" : "var(--ws-muted)"}} />
+                      <span className="text-ws-muted flex shrink-0">
+                        <BookOpen size={14} className={isSubActive ? 'text-ws-accent' : 'text-ws-muted'} />
                       </span>
-                      <span style={{fontSize: 12, fontWeight: 500, color: isSubActive ? "var(--ws-ink)" : "var(--ws-soft)", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0}}>
+                      <span className={`text-[13px] font-medium flex-1 overflow-hidden text-ellipsis whitespace-nowrap min-w-0 ${isSubActive ? 'text-ws-ink' : 'text-ws-soft'}`}>
                         {subject.name}
                       </span>
                       <button
                         type="button"
                         onClick={e => { e.stopPropagation(); onOpenCreateModal('chapter', domain.id, subject.id); }}
                         title="Add chapter"
-                        style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', flexShrink: 0, padding: 2, opacity: 0.6}}
-                        onMouseEnter={e => e.currentTarget.style.color = "var(--ws-accent)"}
-                        onMouseLeave={e => e.currentTarget.style.color = "var(--ws-muted)"}
+                        className="bg-transparent border-none cursor-pointer text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-all"
                       >
-                        <Plus size={11} />
+                        <Plus size={14} />
                       </button>
                     </div>
 
@@ -505,25 +470,18 @@ function LeftNav() {
                       const isChActive = location.pathname === `/chapter/${domain.id}/${subject.id}/${chapter.id}`;
 
                       return (
-                        <div key={chapter.id} style={{marginLeft: 14}}>
+                        <div key={chapter.id} className="ml-3.5 mb-0.5">
                           <div
-                            style={{
-                              display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px',
-                              borderRadius: "4px", cursor: 'pointer',
-                              background: isChActive ? "rgba(16,185,129,0.1)" : 'transparent',
-                              textDecoration: 'none', color: 'inherit'
-                            }}
+                            className={`flex items-center gap-2 h-8 px-2 rounded cursor-pointer no-underline text-inherit ${isChActive ? 'bg-ws-accent/10 text-ws-accent' : 'bg-transparent text-ws-soft'} hover:bg-ws-surface-2 transition-colors`}
                             onClick={() => { toggleExpand(chapter.id); navigate({to: '/chapter/$domainId/$subjectId/$chapterId', params: { domainId: domain.id, subjectId: subject.id, chapterId: chapter.id }}); }}
-                            onMouseEnter={e => { if (!isChActive) e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                            onMouseLeave={e => { if (!isChActive) e.currentTarget.style.background = 'transparent'; }}
                           >
-                            <span style={{color: "var(--ws-muted)", display: 'flex', flexShrink: 0, width: 14, justifyContent: 'center'}}>
-                              {isChExpanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+                            <span className="text-ws-muted flex shrink-0 w-3.5 justify-center">
+                              {isChExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                             </span>
-                            <span style={{color: "var(--ws-muted)", display: 'flex', flexShrink: 0}}>
-                              <Layers size={14} style={{color: isChActive ? "var(--ws-accent)" : "var(--ws-muted)"}} />
+                            <span className="text-ws-muted flex shrink-0">
+                              <Layers size={14} className={isChActive ? 'text-ws-accent' : 'text-ws-muted'} />
                             </span>
-                            <span style={{fontSize: 12, fontWeight: 500, color: isChActive ? "var(--ws-ink)" : "var(--ws-soft)", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0}}>
+                            <span className={`text-[13px] font-medium flex-1 overflow-hidden text-ellipsis whitespace-nowrap min-w-0 ${isChActive ? 'text-ws-ink' : 'text-ws-soft'}`}>
                               {chapter.name}
                             </span>
                           </div>
@@ -535,21 +493,13 @@ function LeftNav() {
                             return (
                               <div
                                 key={topic.id}
-                                style={{
-                                  display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px',
-                                  borderRadius: "4px", cursor: 'pointer',
-                                  background: isTopicActive ? "rgba(16,185,129,0.1)" : 'transparent',
-                                  textDecoration: 'none', color: 'inherit'
-                                }}
+                                className={`flex items-center gap-2 h-8 px-2 ml-3.5 rounded cursor-pointer no-underline text-inherit ${isTopicActive ? 'bg-ws-accent/10 text-ws-accent' : 'bg-transparent text-ws-soft'} hover:bg-ws-surface-2 transition-colors`}
                                 onClick={() => navigate({to: '/topic/$domainId/$subjectId/$chapterId/$topicId', params: { domainId: domain.id, subjectId: subject.id, chapterId: chapter.id, topicId: topic.id }})}
-                                onMouseEnter={e => { if (!isTopicActive) e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                                onMouseLeave={e => { if (!isTopicActive) e.currentTarget.style.background = 'transparent'; }}
                               >
-                                <span style={{display: 'flex', flexShrink: 0, width: 14}} />
-                                <span style={{color: "var(--ws-muted)", display: 'flex', flexShrink: 0}}>
-                                  <FileCode size={14} style={{color: isTopicActive ? "var(--ws-accent)" : "var(--ws-muted)"}} />
+                                <span className="text-ws-muted flex shrink-0">
+                                  <FileCode size={14} className={isTopicActive ? 'text-ws-accent' : 'text-ws-muted'} />
                                 </span>
-                                <span style={{fontSize: 12, fontWeight: 400, color: isTopicActive ? "var(--ws-ink)" : "var(--ws-muted)", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0}}>
+                                <span className={`text-[13px] flex-1 overflow-hidden text-ellipsis whitespace-nowrap min-w-0 ${isTopicActive ? 'text-ws-ink' : 'text-ws-muted'} ${isTopicActive ? 'font-medium' : 'font-normal'}`}>
                                   {topic.name}
                                 </span>
                               </div>
@@ -566,97 +516,79 @@ function LeftNav() {
         }))}
 
         {filteredDomains.length === 0 && (
-          <div style={{padding: '16px 8px', textAlign: 'center', color: "var(--ws-muted)", fontSize: 11}}>
+          <div className="py-4 px-2 text-center text-ws-muted text-[11px]">
             {search ? 'No results' : 'No domains yet'}
           </div>
         )}
 
         {/* Global nav items at bottom */}
-        <div style={{marginTop: 16, borderTop: '1px solid var(--ws-edge-soft)', paddingTop: 8}}>
-          {!collapsed && <div className="text-xs font-bold text-ws-muted uppercase tracking-wider px-3 mb-2 mt-4">Tools</div>}
+        <div className="mt-4 border-t border-ws-edge-soft pt-2">
+          {!collapsed && <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider px-3 mb-2 mt-4">Tools</div>}
           <Link
             to="/notebook"
-            className={`ws-nav-item${location.pathname.startsWith('/notebook') ? ' active' : ''}`}
-            style={collapsed ? { justifyContent: 'center', padding: '8px 0', textDecoration: 'none' } : { textDecoration: 'none' }}
+            className={`ws-nav-item no-underline ${location.pathname.startsWith('/notebook') ? 'active' : ''} ${collapsed ? 'justify-center py-2' : ''}`}
             title="Notebooks"
           >
-            <BookOpen size={16} />
-            {!collapsed && <span className="text-sm font-medium">Notebooks</span>}
+            <BookOpen size={14} />
+            {!collapsed && <span className="text-[13px] font-medium">Notebooks</span>}
           </Link>
           <Link
             to="/workflows"
-            className={`ws-nav-item${location.pathname.startsWith('/workflow') ? ' active' : ''}`}
-            style={collapsed ? { justifyContent: 'center', padding: '8px 0', textDecoration: 'none' } : { textDecoration: 'none' }}
+            className={`ws-nav-item no-underline ${location.pathname.startsWith('/workflow') ? 'active' : ''} ${collapsed ? 'justify-center py-2' : ''}`}
             title="Workflows"
           >
-            <Workflow size={16} />
-            {!collapsed && <span className="text-sm font-medium">Workflows</span>}
+            <Workflow size={14} />
+            {!collapsed && <span className="text-[13px] font-medium">Workflows</span>}
           </Link>
           <Link
             to="/artifacts"
-            className={`ws-nav-item${location.pathname.startsWith('/artifact') ? ' active' : ''}`}
-            style={collapsed ? { justifyContent: 'center', padding: '8px 0', textDecoration: 'none' } : { textDecoration: 'none' }}
+            className={`ws-nav-item no-underline ${location.pathname.startsWith('/artifact') ? 'active' : ''} ${collapsed ? 'justify-center py-2' : ''}`}
             title="Artifacts"
           >
-            <LayoutGrid size={16} />
-            {!collapsed && <span className="text-sm font-medium">Artifacts</span>}
+            <LayoutGrid size={14} />
+            {!collapsed && <span className="text-[13px] font-medium">Artifacts</span>}
           </Link>
           <Link
             to="/graph"
-            className={`ws-nav-item${location.pathname.startsWith('/graph') ? ' active' : ''}`}
-            style={collapsed ? { justifyContent: 'center', padding: '8px 0', textDecoration: 'none' } : { textDecoration: 'none' }}
+            className={`ws-nav-item no-underline ${location.pathname.startsWith('/graph') ? 'active' : ''} ${collapsed ? 'justify-center py-2' : ''}`}
             title="Knowledge Graph"
           >
-            <GitBranch size={16} />
-            {!collapsed && <span className="text-sm font-medium">Knowledge Graph</span>}
+            <GitBranch size={14} />
+            {!collapsed && <span className="text-[13px] font-medium">Knowledge Graph</span>}
           </Link>
         </div>
 
         {/* Recents Section */}
         {!collapsed && recentItems && recentItems.length > 0 && (
-          <div style={{marginTop: 16, borderTop: '1px solid var(--ws-edge-soft)', paddingTop: 8, paddingBottom: 16}}>
-            <div className="text-xs font-bold text-ws-muted uppercase tracking-wider px-3 mb-2 mt-4" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4}}>
-              <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
-                <History size={11} className="text-ws-glow" />
+          <div className="mt-4 border-t border-ws-edge-soft pt-2 pb-4">
+            <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider px-3 mb-1 mt-4 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <History size={14} className="text-ws-glow" />
                 <span>Recent Activity</span>
               </div>
-              <div style={{position: 'relative'}}>
+              <div className="relative">
                 <button 
                   type="button"
-                  className="bg-transparent border-none text-ws-muted cursor-pointer p-1 rounded hover:text-ws-soft" 
+                  className="bg-transparent border-none text-ws-muted cursor-pointer p-1 rounded hover:text-ws-accent w-5 h-5 flex items-center justify-center transition-colors" 
                   onClick={(e) => { e.stopPropagation(); setShowRecentMenu(!showRecentMenu); }}
-                  style={{width: 20, height: 20, background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                  onMouseEnter={e => e.currentTarget.style.color = "var(--ws-accent)"}
-                  onMouseLeave={e => e.currentTarget.style.color = "var(--ws-muted)"}
                 >
-                  <Settings2 size={12} />
+                  <Settings2 size={14} />
                 </button>
                 
                 {showRecentMenu && (
                   <>
-                    <div style={{position: 'fixed', inset: 0, zIndex: 999}} onClick={(e) => { e.stopPropagation(); setShowRecentMenu(false); }} />
-                    <div style={{
-                      position: 'absolute', right: 0, top: 22, zIndex: 1000,
-                      background: "var(--ws-bg)", border: '1px solid var(--ws-edge)',
-                      borderRadius: "6px", padding: 4, minWidth: 120,
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                    }} onClick={e => e.stopPropagation()}>
-                      <div style={{padding: '4px 8px', fontSize: 10, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: 0.5}}>Group by</div>
+                    <div className="fixed inset-0 z-[999]" onClick={(e) => { e.stopPropagation(); setShowRecentMenu(false); }} />
+                    <div className="absolute right-0 top-5.5 z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[120px] shadow-2xl" onClick={e => e.stopPropagation()}>
+                      <div className="px-2 py-1.5 text-[10px] text-ws-muted uppercase tracking-wider">Group by</div>
                       {['None', 'Date', 'Project'].map(g => (
                          <button
                            key={g}
                            type="button"
                            onClick={() => { setRecentGroupBy(g as any); setShowRecentMenu(false); }}
-                           style={{
-                             display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
-                             padding: '6px 10px', background: 'none', border: 'none', borderRadius: "4px",
-                             color: "var(--ws-soft)", fontSize: 12, cursor: 'pointer', textAlign: 'left',
-                           }}
-                           onMouseEnter={e => (e.currentTarget.style.background = "var(--ws-surface-2)")}
-                           onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                           className="flex items-center justify-between w-full px-2.5 py-1.5 bg-transparent border-none rounded text-ws-soft hover:bg-ws-surface-2 text-xs cursor-pointer text-left transition-colors"
                          >
-                           {g}
-                           {recentGroupBy === g && <Check size={12} style={{color: "var(--ws-accent)"}} />}
+                           <span>{g}</span>
+                           {recentGroupBy === g && <Check size={14} className="text-ws-accent" />}
                          </button>
                       ))}
                     </div>
@@ -666,7 +598,7 @@ function LeftNav() {
             </div>
             
             {recentGroupBy === 'None' && (
-              <div style={{display: 'flex', flexDirection: 'column'}}>
+              <div className="flex flex-col">
                 {recentItems.map(item => renderRecentItem(item))}
               </div>
             )}
@@ -679,13 +611,11 @@ function LeftNav() {
       {/* Context menu */}
       {contextMenu && (
         <>
-          <div style={{position: 'fixed', inset: 0, zIndex: 999}} onClick={closeContext} />
-          <div style={{
-            position: 'fixed', left: contextMenu.x, top: contextMenu.y, zIndex: 1000,
-            background: "var(--ws-bg)", border: '1px solid var(--ws-edge)',
-            borderRadius: "6px", padding: 4, minWidth: 140,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-          }}>
+          <div className="fixed inset-0 z-[999]" onClick={closeContext} />
+          <div 
+            className="fixed z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[140px] shadow-2xl"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+          >
             {[
               {icon: Pin, label: domains.find(d => d.id === contextMenu.id)?.pinned ? 'Unpin' : 'Pin', action: () => { onTogglePinDomain(contextMenu.id); closeContext(); }},
               {icon: Archive, label: domains.find(d => d.id === contextMenu.id)?.archived ? 'Unarchive' : 'Archive', action: () => { onToggleArchiveDomain(contextMenu.id); closeContext(); }},
@@ -696,16 +626,9 @@ function LeftNav() {
                 key={item.label}
                 type="button"
                 onClick={item.action}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                  padding: '6px 10px', background: 'none', border: 'none', borderRadius: "4px",
-                  color: (item as {danger?: boolean}).danger ? "#ef4444" : "var(--ws-soft)",
-                  fontSize: 12, cursor: 'pointer', textAlign: 'left',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = "var(--ws-surface-2)")}
-                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                className={`flex items-center gap-2 w-full px-2.5 py-1.5 bg-transparent border-none rounded text-[13px] cursor-pointer text-left transition-colors hover:bg-ws-surface-2 ${item.danger ? 'text-[#ef4444]' : 'text-ws-soft'}`}
               >
-                <item.icon size={12} /> {item.label}
+                <item.icon size={14} /> {item.label}
               </button>
             ))}
           </div>

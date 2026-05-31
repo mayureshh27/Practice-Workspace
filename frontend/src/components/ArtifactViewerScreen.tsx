@@ -40,171 +40,149 @@ function ArtifactsScreen({artifacts, domains, onDelete}: Props) {
   }, [artifacts, domainFilter, subjectFilter, typeFilter, statusFilter, search]);
 
   return (
-    <div style={{padding: 24, maxWidth: 1000, margin: '0 auto', height: '100%', overflow: 'auto'}}>
-      <div style={{marginBottom: 24}}>
-        <h1 style={{fontSize: 20, fontWeight: 700, color: "var(--ws-ink)", margin: '0 0 4px'}}>Artifacts</h1>
-        <p style={{fontSize: 12, color: "var(--ws-muted)", margin: 0}}>{filtered.length} of {artifacts.length} artifacts</p>
-      </div>
-
-      {/* Sleek Horizontal Filter Panel */}
-      <div style={{
-        background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-        borderRadius: 'var(--ws-r-lg)', padding: '16px', marginBottom: 24,
-        display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
-      }}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingRight: 8, borderRight: '1px solid var(--ws-edge)'}}>
-          <Filter size={16} style={{color: "var(--ws-accent)"}} />
-          <span style={{fontSize: 13, fontWeight: 700, textTransform: 'uppercase', color: "var(--ws-ink)", letterSpacing: '0.04em'}}>Filters</span>
+    <div className="p-4 h-full flex flex-col overflow-hidden bg-ws-floor text-ws-ink">
+      <div className="flex-1 flex flex-col overflow-hidden bg-ws-bench border border-ws-line rounded-xl shadow-md p-6 max-w-[1200px] mx-auto w-full">
+        
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6 shrink-0">
+          <div>
+            <h1 className="text-xl font-extrabold text-ws-ink m-0 mb-1.5 tracking-tight flex items-center gap-2">
+              <LayoutGrid size={18} className="text-ws-glow" />
+              Artifacts & Materials
+            </h1>
+            <p className="text-[13px] text-ws-muted m-0">
+              Browse, filter, and review practice session outputs, generation results, and structured resources.
+            </p>
+          </div>
+          <span className="text-xs font-mono px-2.5 py-1 bg-ws-floor border border-ws-line rounded-md text-ws-muted">
+            {filtered.length} / {artifacts.length} artifacts
+          </span>
         </div>
 
-        <div style={{display: 'flex', gap: 10, flexWrap: 'wrap', flex: '1 1 auto', alignItems: 'center'}}>
-          <CustomSelect 
-            value={domainFilter} 
-            onChange={val => { setDomainFilter(val); setSubjectFilter('all'); }}
-            options={[
-              { value: 'all', label: 'All Domains' },
-              ...domains.map(d => ({ value: d.id, label: d.name }))
-            ]}
-            style={selectStyle}
-          />
+        {/* Sleek Horizontal Filter Panel */}
+        <div className="flex gap-4 flex-wrap items-center bg-ws-floor border border-ws-line rounded-lg p-4 mb-6 shrink-0">
+          <div className="flex items-center gap-2 pr-4 border-r border-ws-line shrink-0">
+            <Filter size={14} className="text-ws-glow" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-ws-ink">Filters</span>
+          </div>
 
-          <CustomSelect 
-            value={subjectFilter} 
-            onChange={val => setSubjectFilter(val)}
-            options={[
-              { value: 'all', label: 'All Subjects' },
-              ...subjects.map(s => ({ value: s.id, label: s.name }))
-            ]}
-            style={{...selectStyle, opacity: (domainFilter === 'all' && subjects.length === 0) ? 0.5 : 1}}
-            disabled={domainFilter === 'all' && subjects.length === 0}
-          />
+          <div className="flex flex-1 gap-3 flex-wrap items-center">
+            <CustomSelect 
+              value={domainFilter} 
+              onChange={val => { setDomainFilter(val); setSubjectFilter('all'); }}
+              options={[
+                { value: 'all', label: 'All Domains' },
+                ...domains.map(d => ({ value: d.id, label: d.name }))
+              ]}
+              className="bg-ws-bench border border-ws-line rounded-md px-3 py-1.5 text-xs text-ws-ink outline-none cursor-pointer hover:border-ws-glow/50 transition-colors"
+            />
 
-          <CustomSelect 
-            value={typeFilter} 
-            onChange={val => setTypeFilter(val)}
-            options={[
-              { value: 'all', label: 'All Types' },
-              ...types.map(t => ({ value: t, label: t }))
-            ]}
-            style={selectStyle}
-          />
+            <CustomSelect 
+              value={subjectFilter} 
+              onChange={val => setSubjectFilter(val)}
+              options={[
+                { value: 'all', label: 'All Subjects' },
+                ...subjects.map(s => ({ value: s.id, label: s.name }))
+              ]}
+              disabled={domainFilter === 'all' && subjects.length === 0}
+              className="bg-ws-bench border border-ws-line rounded-md px-3 py-1.5 text-xs text-ws-ink outline-none cursor-pointer hover:border-ws-glow/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            />
 
-          <CustomSelect 
-            value={statusFilter} 
-            onChange={val => setStatusFilter(val)}
-            options={[
-              { value: 'all', label: 'All Status' },
-              { value: 'approved', label: 'Approved' },
-              { value: 'reviewed', label: 'Reviewed' },
-              { value: 'draft', label: 'Draft' }
-            ]}
-            style={selectStyle}
-          />
+            <CustomSelect 
+              value={typeFilter} 
+              onChange={val => setTypeFilter(val)}
+              options={[
+                { value: 'all', label: 'All Types' },
+                ...types.map(t => ({ value: t, label: t }))
+              ]}
+              className="bg-ws-bench border border-ws-line rounded-md px-3 py-1.5 text-xs text-ws-ink outline-none cursor-pointer hover:border-ws-glow/50 transition-colors"
+            />
+
+            <CustomSelect 
+              value={statusFilter} 
+              onChange={val => setStatusFilter(val)}
+              options={[
+                { value: 'all', label: 'All Status' },
+                { value: 'approved', label: 'Approved' },
+                { value: 'reviewed', label: 'Reviewed' },
+                { value: 'draft', label: 'Draft' }
+              ]}
+              className="bg-ws-bench border border-ws-line rounded-md px-3 py-1.5 text-xs text-ws-ink outline-none cursor-pointer hover:border-ws-glow/50 transition-colors"
+            />
+          </div>
+
+          <div className="relative w-full max-w-[280px] shrink-0">
+            <Search size={13} className="absolute left-3 top-2.5 text-ws-muted" />
+            <input
+              type="text"
+              placeholder="Search artifacts..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 bg-ws-bench border border-ws-line rounded-md text-xs text-ws-ink placeholder-ws-muted outline-none focus:border-ws-glow transition-all"
+            />
+          </div>
         </div>
 
-        <div style={{position: 'relative', flex: '1 1 250px', minWidth: 200, maxWidth: 400}}>
-          <Search size={14} style={{position: 'absolute', left: 12, top: 10, color: "var(--ws-muted)"}} />
-          <input
-            type="text"
-            placeholder="Search artifacts..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{
-              padding: '8px 16px 8px 36px', background: "var(--ws-bg)",
-              border: '1px solid var(--ws-edge-soft)', borderRadius: "6px",
-              color: "var(--ws-ink)", outline: 'none', fontSize: 13, width: '100%',
-              transition: 'border-color 150ms ease, box-shadow 150ms ease'
-            }}
-            onFocus={e => { e.currentTarget.style.borderColor = "var(--ws-accent)"; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(16, 185, 129, 0.08)'; }}
-            onBlur={e => { e.currentTarget.style.borderColor = "var(--ws-line)"; e.currentTarget.style.boxShadow = 'none'; }}
-          />
-        </div>
-      </div>
+        {/* Artifact grid */}
+        <div className="flex-1 overflow-y-auto pr-1">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+            {filtered.map(artifact => {
+              const domain = domains.find(d => d.id === artifact.domainId);
+              const subject = domain?.subjects.find(s => s.id === artifact.subjectId);
 
-      {/* Artifact grid */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12}}>
-        {filtered.map(artifact => {
-          const domain = domains.find(d => d.id === artifact.domainId);
-          const subject = domain?.subjects.find(s => s.id === artifact.subjectId);
-
-          return (
-            <div
-              key={artifact.id}
-              style={{
-                background: "var(--ws-bg)", border: `1px solid ${selectedId === artifact.id ? "var(--ws-accent)" : "var(--ws-line)"}`,
-                borderRadius: 'var(--ws-r-lg)', padding: 16, cursor: 'pointer',
-                transition: 'border-color 150ms ease',
-              }}
-              onClick={() => setSelectedId(selectedId === artifact.id ? null : artifact.id)}
-            >
-              <div style={{display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8}}>
-                <LayoutGrid size={14} style={{color: "var(--ws-muted)", flexShrink: 0}} />
-                <span style={{fontSize: 14, fontWeight: 600, color: "var(--ws-ink)", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
-                  {artifact.name}
-                </span>
-                <button
-                  type="button"
-                  onClick={e => { e.stopPropagation(); onDelete(artifact.id); }}
-                  style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', padding: 2}}
+              return (
+                <div
+                  key={artifact.id}
+                  className={`bg-ws-floor border rounded-lg p-4 cursor-pointer transition-all hover:border-ws-glow ${selectedId === artifact.id ? 'border-ws-glow shadow-md shadow-ws-glow/5' : 'border-ws-line'}`}
+                  onClick={() => setSelectedId(selectedId === artifact.id ? null : artifact.id)}
                 >
-                  <Trash2 size={12} />
-                </button>
-              </div>
+                  <div className="flex items-center gap-2 mb-2 shrink-0">
+                    <LayoutGrid size={13} className="text-ws-muted shrink-0" />
+                    <span className="text-[13px] font-bold text-ws-ink flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                      {artifact.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={e => { e.stopPropagation(); onDelete(artifact.id); }}
+                      className="bg-transparent border-none text-ws-muted hover:text-red-500 cursor-pointer p-0.5"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
 
-              <div style={{display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8}}>
-                <span style={{
-                  padding: '2px 6px', fontSize: 10, fontWeight: 700, borderRadius: "4px",
-                  color: artifact.status === 'approved' ? "var(--ws-accent)" : artifact.status === 'reviewed' ? 'var(--ws-info)' : "var(--ws-muted)",
-                  background: artifact.status === 'approved' ? 'rgba(16,185,129,0.1)' : artifact.status === 'reviewed' ? 'rgba(59,130,246,0.1)' : "var(--ws-surface-2)",
-                  border: `1px solid ${artifact.status === 'approved' ? "var(--ws-accent)" : artifact.status === 'reviewed' ? 'var(--ws-info)' : "var(--ws-surface-2)"}`,
-                  textTransform: 'capitalize',
-                }}>
-                  {artifact.status}
-                </span>
-                <span style={{fontSize: 11, color: "var(--ws-muted)"}}>{artifact.type}</span>
-                <span style={{fontSize: 11, color: "var(--ws-muted)", marginLeft: 'auto'}}>{artifact.time}</span>
-              </div>
+                  <div className="flex items-center gap-2 mb-3 shrink-0 flex-wrap">
+                    <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border uppercase tracking-wider ${artifact.status === 'approved' ? "text-ws-glow border-ws-glow/30 bg-ws-glow/5" : artifact.status === 'reviewed' ? 'text-sky-400 border-sky-500/30 bg-sky-500/5' : "text-ws-muted border-ws-line bg-ws-bench/50"}`}>
+                      {artifact.status}
+                    </span>
+                    <span className="text-[10px] text-ws-muted">{artifact.type}</span>
+                    <span className="text-[10px] text-ws-muted ml-auto shrink-0">{artifact.time}</span>
+                  </div>
 
-              <div style={{fontSize: 11, color: "var(--ws-muted)"}}>
-                {domain?.name} {subject ? `› ${subject.name}` : ''}
-              </div>
+                  <div className="text-[10px] text-ws-muted truncate">
+                    {domain?.name} {subject ? `› ${subject.name}` : ''}
+                  </div>
 
-              {selectedId === artifact.id && (
-                <div style={{
-                  marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--ws-edge-soft)',
-                  display: 'flex', gap: 8,
-                }}>
-                  <button type="button" style={{...btnStyle, color: "var(--ws-accent)", borderColor: 'rgba(16, 185, 129, 0.25)'}}>
-                    <Eye size={12} /> View
-                  </button>
+                  {selectedId === artifact.id && (
+                    <div className="mt-3 pt-3 border-t border-ws-line flex gap-2" onClick={e => e.stopPropagation()}>
+                      <button type="button" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-ws-bench border border-ws-line rounded-md text-ws-glow text-[11px] font-bold hover:border-ws-glow transition-all">
+                        <Eye size={12} /> View Material
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </div>
 
-      {filtered.length === 0 && (
-        <div style={{padding: 60, textAlign: 'center', color: "var(--ws-muted)", fontSize: 13}}>
-          No artifacts match your filters
+          {filtered.length === 0 && (
+            <div className="p-16 text-center text-ws-muted text-xs italic">
+              No artifacts match your filters
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
-
-const selectStyle: React.CSSProperties = {
-  padding: '6px 32px 6px 12px', background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-  borderRadius: "6px", color: "var(--ws-ink)", fontSize: 13, outline: 'none',
-  cursor: 'pointer', transition: 'all 150ms ease', flex: '1 1 140px', minWidth: 120, maxWidth: 200,
-  appearance: 'auto',
-};
-
-const btnStyle: React.CSSProperties = {
-  display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px',
-  background: 'none', border: '1px solid var(--ws-edge-soft)', borderRadius: "4px",
-  fontSize: 11, fontWeight: 600, cursor: 'pointer',
-};
 
 export default ArtifactsScreen;

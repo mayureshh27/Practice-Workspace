@@ -108,51 +108,23 @@ function WorkflowManagerScreen({workflows, onNavigate, onDelete, onDuplicate}: P
   };
 
   return (
-    <div style={{
-      display: 'flex', 
-      width: '100%', 
-      height: '100%', 
-      background: "var(--ws-bg)", 
-      overflow: 'hidden'
-    }}>
+    <div className="flex w-full h-full bg-ws-floor overflow-hidden p-4 gap-4 text-ws-ink">
       
-      {/* LEFT COLUMN: List pane */}
-      <div style={{
-        width: 380,
-        borderRight: '1px solid var(--ws-edge-soft)',
-        background: "var(--ws-bg)",
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        flexShrink: 0
-      }}>
+      {/* LEFT COLUMN: List pane panel */}
+      <div className="w-[380px] bg-ws-bench border border-ws-line rounded-xl shadow-md flex flex-col overflow-hidden shrink-0">
         
         {/* Header */}
-        <div style={{
-          padding: '20px 16px 16px', 
-          borderBottom: '1px solid var(--ws-edge-soft)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-          flexShrink: 0
-        }}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <div className="p-4 border-b border-ws-line flex flex-col gap-3 shrink-0 bg-ws-bench/50">
+          <div className="flex justify-between items-center">
             <div>
-              <h1 style={{fontSize: 15, fontWeight: 700, color: "var(--ws-ink)", margin: 0}}>Workflow Manager</h1>
-              <p style={{fontSize: 10.5, color: "var(--ws-muted)", margin: '2px 0 0'}}>{workflows.length} templates configured</p>
+              <h1 className="text-[14px] font-extrabold text-ws-ink m-0 tracking-tight">Workflow Manager</h1>
+              <p className="text-[11px] text-ws-muted m-0 mt-0.5">{workflows.length} templates configured</p>
             </div>
             
             <button
               type="button"
               onClick={() => onNavigate({level: 'workflow-editor'})}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px',
-                background: "var(--ws-accent)", color: "var(--ws-bg)", border: 'none',
-                borderRadius: "6px", fontWeight: 700, fontSize: 11, cursor: 'pointer',
-                transition: 'all 120ms ease'
-              }}
-              onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
-              onMouseLeave={e => { e.currentTarget.style.filter = 'none'; }}
+              className="inline-flex items-center gap-1.5 px-3 h-8 bg-ws-glow text-ws-floor font-bold rounded-md text-[11px] cursor-pointer shadow-sm transition-all hover:brightness-110"
             >
               <Plus size={12} /> New Template
             </button>
@@ -164,152 +136,94 @@ function WorkflowManagerScreen({workflows, onNavigate, onDelete, onDuplicate}: P
             placeholder="Search templates or target types..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{
-              width: '100%', padding: '8px 12px',
-              background: "var(--ws-bg)", border: '1px solid var(--ws-edge)',
-              borderRadius: "6px", color: "var(--ws-ink)", outline: 'none', fontSize: 11.5,
-              transition: 'border-color 150ms ease'
-            }}
-            onFocus={e => { e.currentTarget.style.borderColor = "var(--ws-accent)"; }}
-            onBlur={e => { e.currentTarget.style.borderColor = "var(--ws-surface-2)"; }}
+            className="w-full px-3 py-2 bg-ws-bg border border-ws-line rounded-md text-ws-ink outline-none text-xs focus:border-ws-glow transition-all"
           />
         </div>
 
         {/* Scrollable list */}
-        <div style={{flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 8}} className="scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2 scrollbar">
           {filtered.map(wf => {
             const isSelected = wf.id === selectedId;
             return (
               <div 
                 key={wf.id} 
                 onClick={() => { setSelectedId(wf.id); setIsSimulating(false); setSimStep(0); }}
-                style={{
-                  display: 'flex', flexDirection: 'column', gap: 8, padding: 12,
-                  background: isSelected ? "var(--ws-surface-2)" : 'transparent', 
-                  border: '1px solid',
-                  borderColor: isSelected ? "var(--ws-surface-2)" : "var(--ws-line)",
-                  borderRadius: 'var(--ws-r-lg)', cursor: 'pointer',
-                  transition: 'all 150ms ease'
-                }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.borderColor = 'var(--ws-edge-strong)'; }}
-                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.borderColor = "var(--ws-line)"; }}
+                className={`flex flex-col gap-2.5 p-3.5 border rounded-lg cursor-pointer transition-all duration-150 shadow-sm ${isSelected ? "bg-ws-bg border-ws-glow" : "bg-ws-bg/40 border-ws-line hover:border-ws-glow/50 hover:bg-ws-bg/70"}`}
               >
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                  <span style={{fontSize: 12.5, fontWeight: 700, color: "var(--ws-ink)"}}>{wf.name}</span>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: 4, padding: '2px 6px',
-                    background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)', borderRadius: 4,
-                    fontSize: 9, color: "var(--ws-soft)", fontWeight: 600
-                  }}>
+                <div className="flex justify-between items-center">
+                  <span className="text-[13px] font-bold text-ws-ink tracking-tight">{wf.name}</span>
+                  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-ws-bench border border-ws-line rounded text-[10px] text-ws-muted font-bold">
                     {getTargetIcon(wf.targetType)}
-                    <span>{wf.targetType}</span>
+                    <span className="ml-1">{wf.targetType}</span>
                   </div>
                 </div>
 
-                <p style={{fontSize: 11, color: "var(--ws-muted)", margin: 0, lineHeight: 1.45, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                <p className="text-[11px] text-ws-muted m-0 leading-relaxed line-clamp-2">
                   {wf.description}
                 </p>
 
-                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--ws-edge-soft)', paddingTop: 8, marginTop: 4}}>
-                  <div style={{display: 'flex', alignItems: 'center', gap: 10, fontSize: 9.5, color: "var(--ws-muted)"}}>
-                    <span style={{display: 'flex', alignItems: 'center', gap: 3}}>
-                      <Shield size={10} /> {wf.evalGates} Gates
+                <div className="flex items-center justify-between border-t border-ws-line pt-2.5 mt-1.5">
+                  <div className="flex items-center gap-2.5 text-[10px] text-ws-muted">
+                    <span className="flex items-center gap-1">
+                      <Shield size={11} /> {wf.evalGates} Gates
                     </span>
                     {wf.lastRun && (
-                      <span style={{display: 'flex', alignItems: 'center', gap: 3}}>
-                        <Clock size={10} /> {wf.lastRun}
+                      <span className="flex items-center gap-1">
+                        <Clock size={11} /> {wf.lastRun}
                       </span>
                     )}
                   </div>
-                  <ArrowRight size={12} style={{color: isSelected ? "var(--ws-accent)" : "var(--ws-muted)", transition: 'transform 150ms ease'}} />
+                  <ArrowRight size={12} className={`transition-transform duration-150 ${isSelected ? "text-ws-glow translate-x-0.5" : "text-ws-muted"}`} />
                 </div>
               </div>
             );
           })}
 
           {filtered.length === 0 && (
-            <div style={{padding: 40, textAlign: 'center', color: "var(--ws-muted)", fontSize: 12, fontStyle: 'italic'}}>
+            <div className="p-10 text-center text-ws-muted text-xs italic">
               {search ? `No templates found matching "${search}"` : 'No templates added yet.'}
             </div>
           )}
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Inspector Details pane */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflow: 'hidden'
-      }}>
+      {/* RIGHT COLUMN: Inspector Details panel */}
+      <div className="flex-1 bg-ws-bench border border-ws-line rounded-xl shadow-md flex flex-col overflow-hidden shrink-0">
         {selectedWf ? (
-          <div style={{flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden'}}>
+          <div className="flex-1 flex flex-col overflow-hidden">
             
             {/* Header info */}
-            <div style={{
-              padding: 20, 
-              borderBottom: '1px solid var(--ws-edge-soft)', 
-              background: "var(--ws-bg)",
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'flex-start',
-              flexShrink: 0
-            }}>
+            <div className="p-5 border-b border-ws-line bg-ws-bench/50 flex justify-between items-start shrink-0 gap-4">
               <div>
-                <div style={{display: 'flex', alignItems: 'center', gap: 8}}>
-                  <h2 style={{fontSize: 16, fontWeight: 800, color: "var(--ws-ink)", margin: 0}}>{selectedWf.name}</h2>
-                  <span style={{
-                    padding: '2px 8px', background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-                    borderRadius: 4, fontSize: 10, fontWeight: 700, color: "var(--ws-accent)"
-                  }}>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-extrabold text-ws-ink m-0 tracking-tight">{selectedWf.name}</h2>
+                  <span className="px-2 py-0.5 bg-ws-bg border border-ws-line rounded text-[10px] font-bold text-ws-glow">
                     Active Blueprint
                   </span>
                 </div>
-                <p style={{fontSize: 11.5, color: "var(--ws-soft)", margin: '4px 0 0'}}>{selectedWf.description}</p>
+                <p className="text-xs text-ws-muted m-0 mt-1 leading-normal">{selectedWf.description}</p>
               </div>
 
               {/* Controls bar */}
-              <div style={{display: 'flex', gap: 6}}>
+              <div className="flex gap-1.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => onNavigate({level: 'workflow-editor', workflowId: selectedWf.id})}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px',
-                    background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-                    borderRadius: "6px", color: "var(--ws-soft)", fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                    transition: 'all 120ms ease'
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "var(--ws-bg)"; }}
+                  className="flex items-center gap-1.5 px-3 h-8 bg-ws-bg border border-ws-line rounded-md text-ws-ink text-xs font-semibold hover:bg-ws-surface-2 transition-colors"
                 >
                   <Settings2 size={12} /> Edit Template
                 </button>
                 <button
                   type="button"
                   onClick={() => onDuplicate(selectedWf.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px',
-                    background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-                    borderRadius: "6px", color: "var(--ws-soft)", fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                    transition: 'all 120ms ease'
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "var(--ws-bg)"; }}
+                  className="flex items-center gap-1.5 px-3 h-8 bg-ws-bg border border-ws-line rounded-md text-ws-ink text-xs font-semibold hover:bg-ws-surface-2 transition-colors"
                 >
                   <Copy size={12} /> Duplicate
                 </button>
                 <button
                   type="button"
                   onClick={() => onDelete(selectedWf.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px',
-                    background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-                    borderRadius: "6px", color: "#ef4444", fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                    transition: 'all 120ms ease'
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "var(--ws-bg)"; }}
+                  className="flex items-center gap-1.5 px-3 h-8 bg-ws-bg border border-ws-line rounded-md text-red-400 text-xs font-semibold hover:bg-ws-surface-2 transition-colors"
                 >
                   <Trash2 size={12} /> Delete
                 </button>
@@ -317,95 +231,69 @@ function WorkflowManagerScreen({workflows, onNavigate, onDelete, onDuplicate}: P
             </div>
 
             {/* Inspector panels: Scrollable internally */}
-            <div style={{flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 20}} className="scrollbar">
+            <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5 scrollbar">
               
               {/* Pipeline Blueprint Visualizer */}
-              <div>
-                <div style={{fontSize: 10, fontWeight: 700, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10}}>
+              <div className="flex flex-col gap-2.5">
+                <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider px-1">
                   Execution Pipeline Blueprint
                 </div>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '16px 20px',
-                  background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)', borderRadius: 'var(--ws-r-lg)'
-                }}>
+                <div className="flex items-center gap-2.5 p-4 bg-ws-bg border border-ws-line rounded-lg shadow-sm">
                   {/* Step 1: Sources */}
-                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', textAlign: 'center'}}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: '50%', background: "var(--ws-bg)",
-                      border: '1px solid var(--ws-edge-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: "var(--ws-soft)"
-                    }}>
+                  <div className="flex-1 flex flex-col gap-1 items-center text-center">
+                    <div className="w-8 h-8 rounded-full bg-ws-bench border border-ws-line flex items-center justify-center text-ws-muted shadow-sm">
                       <Database size={13} />
                     </div>
-                    <span style={{fontSize: 10.5, fontWeight: 700, color: "var(--ws-ink)"}}>1. Active Sources</span>
-                    <span style={{fontSize: 9, color: "var(--ws-muted)"}}>Index source chunks</span>
+                    <span className="text-[11px] font-bold text-ws-ink mt-1">1. Active Sources</span>
+                    <span className="text-[9px] text-ws-muted">Index source chunks</span>
                   </div>
 
-                  <ArrowRight size={14} style={{color: 'var(--ws-edge-strong)'}} />
+                  <ArrowRight size={14} className="text-ws-muted" />
 
                   {/* Step 2: Prompt Compiler */}
-                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', textAlign: 'center'}}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: '50%', background: "var(--ws-bg)",
-                      border: '1px solid var(--ws-edge-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: "var(--ws-soft)"
-                    }}>
+                  <div className="flex-1 flex flex-col gap-1 items-center text-center">
+                    <div className="w-8 h-8 rounded-full bg-ws-bench border border-ws-line flex items-center justify-center text-ws-muted shadow-sm">
                       <FileText size={13} />
                     </div>
-                    <span style={{fontSize: 10.5, fontWeight: 700, color: "var(--ws-ink)"}}>2. Prompt Compiler</span>
-                    <span style={{fontSize: 9, color: "var(--ws-muted)"}}>Inject context & prompt</span>
+                    <span className="text-[11px] font-bold text-ws-ink mt-1">2. Prompt Compiler</span>
+                    <span className="text-[9px] text-ws-muted">Inject context & prompt</span>
                   </div>
 
-                  <ArrowRight size={14} style={{color: 'var(--ws-edge-strong)'}} />
+                  <ArrowRight size={14} className="text-ws-muted" />
 
                   {/* Step 3: Eval Checks */}
-                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', textAlign: 'center'}}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: '50%', background: "var(--ws-bg)",
-                      border: '1px solid var(--ws-edge-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: "var(--ws-accent)"
-                    }}>
+                  <div className="flex-1 flex flex-col gap-1 items-center text-center">
+                    <div className="w-8 h-8 rounded-full bg-ws-bench border border-ws-line flex items-center justify-center text-ws-glow shadow-sm">
                       <Shield size={13} />
                     </div>
-                    <span style={{fontSize: 10.5, fontWeight: 700, color: "var(--ws-ink)"}}>3. Evaluation Gates</span>
-                    <span style={{fontSize: 9, color: "var(--ws-muted)"}}>{selectedWf.evalGates} active gate filters</span>
+                    <span className="text-[11px] font-bold text-ws-ink mt-1">3. Evaluation Gates</span>
+                    <span className="text-[9px] text-ws-muted">{selectedWf.evalGates} active gate filters</span>
                   </div>
 
-                  <ArrowRight size={14} style={{color: 'var(--ws-edge-strong)'}} />
+                  <ArrowRight size={14} className="text-ws-muted" />
 
                   {/* Step 4: Persistent Target */}
-                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', textAlign: 'center'}}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: '50%', background: "var(--ws-bg)",
-                      border: '1px solid var(--ws-edge-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'hsl(140, 60%, 45%)'
-                    }}>
+                  <div className="flex-1 flex flex-col gap-1 items-center text-center">
+                    <div className="w-8 h-8 rounded-full bg-ws-bench border border-ws-line flex items-center justify-center text-emerald-400 shadow-sm">
                       <Check size={13} />
                     </div>
-                    <span style={{fontSize: 10.5, fontWeight: 700, color: "var(--ws-ink)"}}>4. Artifact Output</span>
-                    <span style={{fontSize: 9, color: "var(--ws-muted)"}}>{selectedWf.targetType} file</span>
+                    <span className="text-[11px] font-bold text-ws-ink mt-1">4. Artifact Output</span>
+                    <span className="text-[9px] text-ws-muted">{selectedWf.targetType} file</span>
                   </div>
                 </div>
               </div>
 
               {/* Readonly Prompt Template Codeblock */}
-              <div>
-                <div style={{fontSize: 10, fontWeight: 700, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10}}>
+              <div className="flex flex-col gap-2.5">
+                <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider px-1">
                   Prompt Instructions Blueprint
                 </div>
-                <div style={{
-                  background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)', borderRadius: 'var(--ws-r-lg)',
-                  overflow: 'hidden', display: 'flex', flexDirection: 'column'
-                }}>
-                  <div style={{padding: '8px 16px', background: "var(--ws-bg)", borderBottom: '1px solid var(--ws-edge-soft)', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <span style={{fontSize: 10, fontFamily: 'monospace', color: "var(--ws-muted)"}}>prompt_template.txt</span>
-                    <span style={{fontSize: 9, color: "var(--ws-muted)", textTransform: 'uppercase'}}>read-only</span>
+                <div className="bg-ws-bg border border-ws-line rounded-lg overflow-hidden flex flex-col shadow-sm">
+                  <div className="px-4 py-2 bg-ws-bench/35 border-b border-ws-line flex justify-between items-center">
+                    <span className="text-[10px] font-mono text-ws-muted">prompt_template.txt</span>
+                    <span className="text-[9px] text-ws-muted uppercase font-bold tracking-wider">read-only</span>
                   </div>
-                  <pre style={{
-                    margin: 0, padding: 16, fontSize: 11, fontFamily: 'var(--font-mono, monospace)',
-                    color: "var(--ws-ink)", overflowX: 'auto', whiteSpace: 'pre-wrap', lineHeight: 1.5,
-                    maxHeight: 200, background: 'none'
-                  }}>
+                  <pre className="m-0 p-4 text-[11px] font-mono text-ws-ink overflow-x-auto whiteSpace-pre-wrap leading-relaxed max-h-[160px] bg-transparent">
 {`Given the following source material from {{chapter}} of {{subject}}, generate {{count}} ${selectedWf.targetType.toLowerCase()}s at {{difficulty}} level.
 
 The output should test the learner's understanding of the core concepts, specifically focusing on any identified blind spots.
@@ -416,30 +304,22 @@ Format the output strictly according to the PracticeArtifact JSON schema.`}
               </div>
 
               {/* dry-run compiler simulator */}
-              <div>
-                <div style={{fontSize: 10, fontWeight: 700, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10}}>
+              <div className="flex flex-col gap-2.5">
+                <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider px-1">
                   Test Workflow Loop Compiler Simulator
                 </div>
-                <div style={{
-                  border: '1px solid var(--ws-edge-soft)', borderRadius: 'var(--ws-r-lg)',
-                  background: "var(--ws-bg)", padding: 16, display: 'flex', flexDirection: 'column', gap: 12
-                }}>
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <div style={{display: 'flex', flexDirection: 'column', gap: 2}}>
-                      <span style={{fontSize: 12, fontWeight: 700, color: "var(--ws-ink)"}}>Run dry-run simulation</span>
-                      <span style={{fontSize: 10.5, color: "var(--ws-muted)"}}>Simulate compiling over a mock subject dataset to test filters.</span>
+                <div className="border border-ws-line rounded-lg bg-ws-bg/40 p-4 flex flex-col gap-3 shadow-sm">
+                  <div className="flex justify-between items-center gap-4">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[13px] font-bold text-ws-ink">Run dry-run simulation</span>
+                      <span className="text-[11px] text-ws-muted">Simulate compiling over a mock subject dataset to test filters.</span>
                     </div>
 
                     <button
                       type="button"
                       onClick={handleRunSimulation}
                       disabled={isSimulating}
-                      style={{
-                        padding: '8px 16px', background: isSimulating ? "var(--ws-bg)" : "var(--ws-accent)",
-                        color: isSimulating ? "var(--ws-muted)" : "var(--ws-bg)", border: 'none',
-                        borderRadius: "6px", fontSize: 11.5, fontWeight: 700, cursor: isSimulating ? 'not-allowed' : 'pointer',
-                        display: 'flex', alignItems: 'center', gap: 6, transition: 'all 120ms ease'
-                      }}
+                      className={`inline-flex items-center gap-1.5 px-4 h-9 font-bold rounded-md text-xs cursor-pointer transition-all ${isSimulating ? "bg-ws-bench border border-ws-line text-ws-muted" : "bg-ws-glow text-ws-floor hover:brightness-110 shadow-sm"}`}
                     >
                       {isSimulating ? (
                         <>
@@ -457,36 +337,25 @@ Format the output strictly according to the PracticeArtifact JSON schema.`}
 
                   {/* Simulator display console */}
                   {(simLogs.length > 0) && (
-                    <div style={{
-                      background: "var(--ws-bg)", border: '1px solid var(--ws-edge)', borderRadius: "6px",
-                      padding: 12, display: 'flex', flexDirection: 'column', gap: 8,
-                      fontFamily: 'monospace', fontSize: 11
-                    }}>
+                    <div className="bg-ws-bg border border-ws-line rounded-lg p-3 flex flex-col gap-2 font-mono text-[11px] shadow-inner">
                       {simLogs.map((log, idx) => {
                         const showIndicator = () => {
-                          if (log.status === 'success') return <span style={{color: 'hsl(140, 60%, 45%)'}}>✓</span>;
-                          if (log.status === 'running') return <RefreshCw size={10} className="animate-spin" style={{color: "var(--ws-accent)"}} />;
-                          return <span style={{color: "var(--ws-muted)"}}>○</span>;
+                          if (log.status === 'success') return <span className="text-emerald-400 font-bold">✓</span>;
+                          if (log.status === 'running') return <RefreshCw size={10} className="animate-spin text-ws-glow" />;
+                          return <span className="text-ws-muted">○</span>;
                         };
                         
                         return (
-                          <div key={idx} style={{
-                            display: 'flex', gap: 8, alignItems: 'center',
-                            color: log.status === 'running' ? "var(--ws-ink)" : log.status === 'success' ? 'var(--ws-soft)' : "var(--ws-muted)"
-                          }}>
-                            <div style={{width: 14, display: 'flex', justifyContent: 'center'}}>{showIndicator()}</div>
+                          <div key={idx} className={`flex gap-2.5 items-center transition-colors ${log.status === 'running' ? "text-ws-ink" : log.status === 'success' ? "text-ws-muted/80" : "text-ws-muted"}`}>
+                            <div className="w-3.5 flex justify-center shrink-0">{showIndicator()}</div>
                             <span>{log.message}</span>
                           </div>
                         );
                       })}
 
                       {simStep >= simLogs.length && (
-                        <div style={{
-                          marginTop: 8, padding: 8, background: 'rgba(71,217,159,0.1)',
-                          border: '1px solid var(--ws-signal-pass, hsl(140, 60%, 40%))', borderRadius: 4,
-                          color: "var(--ws-ink)", fontSize: 10.5, display: 'flex', alignItems: 'center', gap: 6
-                        }}>
-                          <Check size={12} style={{color: 'hsl(140, 60%, 45%)'}} />
+                        <div className="mt-2.5 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-md text-ws-ink text-[11px] flex items-center gap-2">
+                          <Check size={12} className="text-emerald-400 shrink-0" />
                           <span>
                             {selectedWf.targetType === 'Practice Solver' 
                               ? 'Sandbox compiler verification loops completed successfully! Exercise solved and verified locally.' 
@@ -503,12 +372,9 @@ Format the output strictly according to the PracticeArtifact JSON schema.`}
 
           </div>
         ) : (
-          <div style={{
-            flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-            justifyContent: 'center', gap: 12, padding: 40, color: "var(--ws-muted)"
-          }}>
-            <Settings2 size={36} style={{color: 'var(--ws-edge-strong)'}} />
-            <div style={{fontSize: 12, textAlign: 'center'}}>
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 p-10 text-ws-muted">
+            <Settings2 size={32} className="text-ws-muted/40" />
+            <div className="text-xs text-center max-w-sm leading-relaxed">
               Select a workflow template from the left directory to view details, configure gates, or execute custom compilation pipelines.
             </div>
           </div>

@@ -80,24 +80,24 @@ function WorkPanel({
     <section className={`flex flex-col h-full overflow-hidden bg-ws-bg border border-ws-line rounded-lg ${!mainEditorExpanded ? 'editor-collapsed' : ''}`}>
       
       {/* Editor top header actions toolbar */}
-      <div className="flex justify-between items-center bg-ws-bg border-b border-ws-line px-5 py-4 shrink-0">
+      <div className="flex justify-between items-center bg-ws-floor border-b border-ws-line px-4 py-3 shrink-0">
         
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setMainEditorExpanded(!mainEditorExpanded)}
-            className="flex items-center justify-center w-6 h-6 rounded border border-ws-line text-ws-muted hover:bg-ws-bg hover:text-ws-ink transition-colors"
+            className="flex items-center justify-center w-7 h-7 rounded border border-ws-line text-ws-muted hover:bg-ws-bg hover:text-ws-ink transition-colors"
             title={mainEditorExpanded ? "Collapse Editor" : "Expand Editor"}
           >
             {mainEditorExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
           
           <div className="flex flex-col">
-            <b className="text-[13.5px] font-extrabold text-ws-ink tracking-tight">
+            <b className="text-[13px] font-bold text-ws-ink tracking-tight">
               {needsFiles ? 'File workspace' : 'Go editor'}
             </b>
-            <span className="text-[10.5px] text-ws-muted mt-px">
-              {needsFiles ? 'Upload sample input files for this exercise' : canSubmitProblem ? 'Drafts save locally' : 'Manual project completion'}
+            <span className="text-[11px] text-ws-muted">
+              {needsFiles ? 'Upload sample input files' : canSubmitProblem ? 'Drafts save locally' : 'Manual project completion'}
             </span>
           </div>
         </div>
@@ -106,13 +106,13 @@ function WorkPanel({
         <div className="flex items-center gap-1.5">
           {needsFiles && (
             <label 
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11.5px] font-bold text-ws-muted bg-ws-surface-2 border border-ws-line rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:scale-[1.025] hover:text-ws-ink hover:border-ws-line-strong'}`}
+              className={`inline-flex items-center gap-1.5 px-3 h-8 text-[13px] font-medium text-ws-muted bg-ws-surface-2 border border-ws-line rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:text-ws-ink hover:border-ws-line-strong'}`}
               onMouseEnter={() => setIsUploadHovered(true)}
               onMouseLeave={() => setIsUploadHovered(false)}
             >
               <Upload 
-                size={13} 
-                className={`transition-transform duration-200 ${isUploadHovered ? '-translate-y-px scale-105 text-ws-ink' : ''}`}
+                size={14} 
+                className={`transition-transform duration-200 ${isUploadHovered ? '-translate-y-px text-ws-ink' : ''}`}
               /> 
               <span>Upload</span>
               <input
@@ -127,14 +127,14 @@ function WorkPanel({
           
           <button 
             type="button" 
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11.5px] font-bold text-ws-muted bg-ws-surface-2 border border-ws-line rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:scale-[1.025] hover:text-ws-ink hover:border-ws-line-strong'}`}
+            className={`inline-flex items-center gap-1.5 px-3 h-8 text-[13px] font-medium text-ws-muted bg-ws-surface-2 border border-ws-line rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:text-ws-ink hover:border-ws-line-strong'}`}
             disabled={!!runningMode} 
             onClick={onResetDraft}
             onMouseEnter={() => setIsResetHovered(true)}
             onMouseLeave={() => setIsResetHovered(false)}
           >
             <RotateCcw 
-              size={13} 
+              size={14} 
               className={`transition-transform duration-300 ease-in-out ${isResetHovered ? '-rotate-180 text-ws-ink' : ''}`}
             /> 
             <span>Reset</span>
@@ -142,14 +142,14 @@ function WorkPanel({
 
           <button 
             type="button" 
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11.5px] font-bold text-ws-muted bg-ws-surface-2 border border-ws-line rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:scale-[1.025] hover:text-ws-ink hover:border-ws-line-strong'}`}
+            className={`inline-flex items-center gap-1.5 px-3 h-8 text-[13px] font-medium text-ws-muted bg-ws-surface-2 border border-ws-line rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:text-ws-ink hover:border-ws-line-strong'}`}
             disabled={!!runningMode} 
             onClick={() => onRun('run')}
             onMouseEnter={() => setIsRunHovered(true)}
             onMouseLeave={() => setIsRunHovered(false)}
           >
             <Play 
-              size={13} 
+              size={14} 
               className={`text-ws-success transition-transform duration-200 ${isRunHovered ? 'translate-x-px scale-110' : ''}`}
             /> 
             <span className={isRunHovered ? 'text-ws-ink' : ''}>{runningMode === 'run' ? 'Running...' : 'Run'}</span>
@@ -158,14 +158,14 @@ function WorkPanel({
           {canSubmitProblem ? (
             <button 
               type="button" 
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11.5px] font-[750] text-[#0a0a0b] bg-ws-success border border-ws-success rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:scale-[1.025] hover:shadow-[0_0_10px_rgba(16,185,129,0.4)]'}`}
+              className={`inline-flex items-center gap-1.5 px-3 h-8 text-[13px] font-bold text-[#0a0a0b] bg-ws-success border border-ws-success rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:shadow-[0_0_10px_rgba(16,185,129,0.4)]'}`}
               disabled={!!runningMode} 
               onClick={() => onRun('submit')}
               onMouseEnter={() => setIsSubmitHovered(true)}
               onMouseLeave={() => setIsSubmitHovered(false)}
             >
               <Send 
-                size={13} 
+                size={14} 
                 className={`transition-transform duration-200 ${isSubmitHovered ? 'translate-x-px -translate-y-px scale-110' : ''}`}
               /> 
               <span>{runningMode === 'submit' ? 'Submitting...' : 'Submit'}</span>
@@ -173,14 +173,14 @@ function WorkPanel({
           ) : (
             <button 
               type="button" 
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11.5px] font-[750] text-[#0a0a0b] bg-ws-success border border-ws-success rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:scale-[1.025] hover:shadow-[0_0_10px_rgba(16,185,129,0.4)]'}`}
+              className={`inline-flex items-center gap-1.5 px-3 h-8 text-[13px] font-bold text-[#0a0a0b] bg-ws-success border border-ws-success rounded-md cursor-pointer transition-all duration-150 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:scale-[1.025] hover:shadow-[0_0_10px_rgba(16,185,129,0.4)]'}`}
               disabled={!!runningMode} 
               onClick={onMarkComplete}
               onMouseEnter={() => setIsSubmitHovered(true)}
               onMouseLeave={() => setIsSubmitHovered(false)}
             >
               <CheckCircle2 
-                size={13} 
+                size={14} 
                 className={`transition-transform duration-200 ${isSubmitHovered ? 'scale-110' : ''}`}
               /> 
               <span>{solved ? 'Completed' : proofReady ? 'Mark complete' : 'Proof checklist'}</span>
@@ -195,20 +195,20 @@ function WorkPanel({
             
             {/* Glowing drag-and-drop target zone area */}
             <div 
-              className={`text-center px-5 py-6 rounded-lg border border-dashed transition-all duration-180 ${isDragging ? 'bg-ws-surface-2 border-ws-success shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'bg-ws-bg border-ws-line'}`}
+              className={`text-center px-4 py-6 rounded-lg border border-dashed transition-all duration-180 ${isDragging ? 'bg-ws-surface-2 border-ws-success shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'bg-ws-bg border-ws-line'}`}
               onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={(e) => { e.preventDefault(); setIsDragging(false); onAddFiles(e.dataTransfer.files); }}
             >
-              <Upload size={28} className={`text-ws-success mx-auto mb-2.5 transition-transform duration-200 ${isDragging ? '-translate-y-0.5' : ''}`} />
-              <h3 className="text-[14px] font-extrabold text-ws-ink m-0 mb-1.5 tracking-tight">
+              <Upload size={24} className={`text-ws-success mx-auto mb-2.5 transition-transform duration-200 ${isDragging ? '-translate-y-0.5' : ''}`} />
+              <h3 className="text-[13px] font-bold text-ws-ink m-0 mb-1.5 tracking-tight">
                 Upload sample input files
               </h3>
-              <p className="text-[11.5px] text-ws-muted m-0 mb-3.5 leading-[1.6] max-w-[460px] mx-auto">
+              <p className="text-xs text-ws-muted m-0 mb-3.5 leading-relaxed max-w-[460px] mx-auto">
                 For file-based textbook problems, drop files here to save them to browser localStorage. Draft Go solvers will have local access.
               </p>
               <label 
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11.5px] font-[750] text-[#0a0a0b] bg-ws-success border border-ws-success rounded-md cursor-pointer transition-all duration-120 hover:brightness-110 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                className={`inline-flex items-center gap-1.5 px-3.5 h-8 text-[13px] font-bold text-[#0a0a0b] bg-ws-success border border-ws-success rounded-md cursor-pointer transition-all duration-120 hover:brightness-110 ${runningMode ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
               >
                 <span>Choose files</span>
                 <input
@@ -225,14 +225,14 @@ function WorkPanel({
             {uploaded.length > 0 && (
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center mb-0.5">
-                  <b className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-widest text-ws-muted">
-                    <FileText size={12} className="text-ws-success" />
+                  <b className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-ws-muted">
+                    <FileText size={14} className="text-ws-success" />
                     <span>{uploaded.length} uploaded files</span>
                   </b>
                   <button 
                     type="button" 
                     onClick={onClearFiles} 
-                    className="text-ws-success text-[11px] font-bold bg-transparent border-none cursor-pointer hover:text-ws-success transition-colors duration-120"
+                    className="text-ws-success text-[13px] font-bold bg-transparent border-none cursor-pointer hover:text-ws-success transition-colors duration-120"
                   >
                     Clear All
                   </button>
@@ -250,13 +250,13 @@ function WorkPanel({
                     >
                       <div
                         onClick={() => toggleFileCard(fileKey)}
-                        className={`flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer bg-ws-bg hover:bg-ws-surface-2 transition-colors duration-150 ${isExpanded ? 'border-b border-ws-line' : ''}`}
+                        className={`flex items-center gap-2 h-8 px-2.5 cursor-pointer bg-ws-bg hover:bg-ws-surface-2 transition-colors duration-150 ${isExpanded ? 'border-b border-ws-line' : ''}`}
                       >
                         <FileText size={14} className="text-ws-success shrink-0" />
-                        <b className="text-[12px] font-bold text-ws-ink flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                        <b className="text-[13px] font-bold text-ws-ink flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
                           {file.name}
                         </b>
-                        <span className="text-[10.5px] text-ws-muted shrink-0 pr-1">
+                        <span className="text-[11px] text-ws-muted shrink-0 pr-1">
                           {file.text.length} chars
                         </span>
                         
@@ -267,7 +267,7 @@ function WorkPanel({
                           className={`flex items-center justify-center p-1 rounded bg-transparent border border-ws-line cursor-pointer transition-colors duration-120 ${isCopied ? 'text-ws-success' : 'text-ws-muted hover:text-ws-ink'}`}
                           title="Copy file content"
                         >
-                          {isCopied ? <Check size={11} /> : <Copy size={11} />}
+                          {isCopied ? <Check size={12} /> : <Copy size={12} />}
                         </button>
 
                         <div className="text-ws-muted shrink-0 p-0.5">
@@ -277,7 +277,7 @@ function WorkPanel({
                       
                       {isExpanded && (
                         <pre 
-                          className="m-0 px-4 py-3 text-[11px] font-mono text-ws-muted bg-ws-bg overflow-x-auto max-h-[220px] leading-[1.6] scrollbar"
+                          className="m-0 px-4 py-3 text-[11px] font-mono text-ws-muted bg-ws-bg overflow-x-auto max-h-[220px] leading-relaxed scrollbar"
                         >
                           {file.text.slice(0, 2000)}{file.text.length > 2000 ? '\n\n[... content truncated for display ...]' : ''}
                         </pre>
@@ -292,9 +292,9 @@ function WorkPanel({
             <div className="flex flex-col bg-ws-bg border border-ws-line rounded-md overflow-hidden mt-1">
               <div
                 onClick={() => setEditorExpanded(!editorExpanded)}
-                className={`flex items-center justify-between px-3.5 py-2.5 cursor-pointer bg-ws-bg hover:bg-ws-surface-2 transition-colors duration-150 ${editorExpanded ? 'border-b border-ws-line' : ''}`}
+                className={`flex items-center justify-between px-3.5 py-2 cursor-pointer bg-ws-bg hover:bg-ws-surface-2 transition-colors duration-150 ${editorExpanded ? 'border-b border-ws-line' : ''}`}
               >
-                <span className="text-[10.5px] font-extrabold text-ws-ink uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-ws-ink uppercase tracking-wider">
                   Optional Go draft editor
                 </span>
                 <div className="text-ws-muted">
@@ -313,7 +313,7 @@ function WorkPanel({
                       value={code}
                       onChange={onSaveDraft}
                       options={{
-                        fontSize: 14,
+                        fontSize: 13,
                         fontFamily: 'JetBrains Mono, monospace',
                         minimap: { enabled: false },
                         scrollBeyondLastLine: false,
@@ -329,10 +329,10 @@ function WorkPanel({
                   </div>
                   
                   {/* Floating Monaco micro-toolbar */}
-                  <div className="flex justify-between items-center bg-ws-bg border-t border-ws-line px-3.5 h-6 shrink-0 text-[10px] text-ws-muted font-mono">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex items-center gap-1">
-                        <span className="w-1.25 h-1.25 rounded-full bg-ws-success" />
+                  <div className="flex justify-between items-center bg-ws-bg border-t border-ws-line px-3 h-8 shrink-0 text-xs text-ws-muted font-mono">
+                    <div className="flex items-center gap-2">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-ws-success" />
                         <span>Go Playground Sandbox</span>
                       </span>
                     </div>
@@ -356,7 +356,7 @@ function WorkPanel({
                 value={code}
                 onChange={onSaveDraft}
                 options={{
-                  fontSize: 14,
+                  fontSize: 13,
                   fontFamily: 'JetBrains Mono, monospace',
                   minimap: { enabled: false },
                   scrollBeyondLastLine: false,
@@ -372,9 +372,9 @@ function WorkPanel({
             </div>
             
             {/* Bottom floating micro-toolbar details bar */}
-            <div className="flex justify-between items-center bg-ws-bg border-t border-ws-line px-4 h-7 shrink-0 text-[10.5px] text-ws-muted font-mono">
+            <div className="flex justify-between items-center bg-ws-bg border-t border-ws-line px-4 h-8 shrink-0 text-xs text-ws-muted font-mono">
               <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-ws-success" />
                   <span>Go Editor (Auto-saved)</span>
                 </span>

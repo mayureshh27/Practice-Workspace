@@ -1,0 +1,19 @@
+{
+  "name": "source_search_exact",
+  "description": "BM25-only exact-token search for error messages, function names, and variable names. Do NOT use for conceptual questions.",
+  "parameters": {
+    "type": "object",
+    "required": ["tokens", "source_ids"],
+    "properties": {
+      "tokens": {
+        "type": "string",
+        "description": "The exact token string to search for — an error message, function name, or variable name."
+      },
+      "source_ids": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Mandatory list of source IDs to search within. Omitting is a TypeError."
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # Build artifacts
 frontend/dist/
-backend/backend
+.venv
 
 # Dependencies
 frontend/node_modules/
@@ -14,3 +14,19 @@ frontend/node_modules/
 # Local temp / extracted copyrighted reference text
 .tmp/
 book_extract/
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Database files
+*.db
+*.db_test
+qdrant_db/
+
+# Stale backup directory
+frontend/.git_disabled/
+
+# VS Code
+.vscode/

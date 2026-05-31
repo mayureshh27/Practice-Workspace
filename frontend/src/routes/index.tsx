@@ -1,7 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { RootScreen } from '../components/ExplorerScreens'
-import { useQuery } from '@tanstack/react-query'
-import { api } from '../api/workspaceApi'
 import { useWorkspaceStore } from '../stores/workspaceStore'
 
 export const Route = createFileRoute('/')({
@@ -9,19 +7,12 @@ export const Route = createFileRoute('/')({
 })
 
 function IndexScreen() {
-  const { data: domains = [], isLoading } = useQuery({
-    queryKey: ['domains'],
-    queryFn: api.getDomains,
-  })
+  const domains = useWorkspaceStore(s => s.domains)
   const renameDomain = useWorkspaceStore(s => s.renameDomain);
   const deleteDomain = useWorkspaceStore(s => s.deleteDomain);
   const togglePinDomain = useWorkspaceStore(s => s.togglePinDomain);
   const toggleArchiveDomain = useWorkspaceStore(s => s.toggleArchiveDomain);
   const navigate = useNavigate();
-
-  if (isLoading) {
-    return <div style={{padding: 40, textAlign: 'center', color: "var(--ws-muted)"}}>Loading domains...</div>
-  }
 
   return (
     <RootScreen

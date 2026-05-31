@@ -11,6 +11,8 @@ function NotebookRoute() {
   const { domainId, subjectId } = Route.useParams()
   const domains = useWorkspaceStore(s => s.domains)
   const addTopic = useWorkspaceStore(s => s.addTopic)
+  const addArtifact = useWorkspaceStore(s => s.addArtifact)
+  const addResource = useWorkspaceStore(s => s.addResource)
   const navigate = useNavigate()
 
   const domain = domains.find(d => d.id === domainId)
@@ -30,7 +32,8 @@ function NotebookRoute() {
         }
       }}
       onAddTopic={(domId, subjId, chapId, name) => addTopic(domId, subjId, chapId, name)}
-      onAddArtifact={() => {}}
+      onAddArtifact={addArtifact}
+      onAddResource={addResource}
     />
   )
 }

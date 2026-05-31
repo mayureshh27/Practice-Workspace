@@ -1,14 +1,33 @@
 [project]
-name = "backend"
+name = "pracda-go-backend"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "chromadb>=1.5.9",
+    # Core API
     "fastapi>=0.136.1",
-    "litellm>=1.85.1",
-    "networkx>=3.6.1",
     "pydantic>=2.13.4",
+    "pydantic-settings>=2.9.1",
+    "sqlmodel>=0.0.28",
+    "httpx>=0.28.1",
+    # AI runtime (ADR-0003: Pydantic AI first)
+    "pydantic-ai>=1.0.0",
+    # Observability (optional-local, no LOGFIRE_TOKEN required)
+    "logfire[fastapi,httpx,pydantic-ai,sqlite3]>=3.14.0",
+    # Kept for ingestion-pipeline compatibility
+    "litellm>=1.85.1",
     "pypdf>=6.12.1",
     "python-dotenv>=1.2.2",
-    "uvicorn>=0.47.0",
+    "qdrant-client>=1.18.0",
+    "kuzu>=0.11.3",
+    "rapidfuzz>=3.14.5",
+    "sentence-transformers>=5.5.1",
+]
+
+[tool.fastapi]
+entrypoint = "app.main:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=1.0",
 ]

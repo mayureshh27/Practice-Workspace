@@ -1,0 +1,25 @@
+{
+  "name": "source_search",
+  "description": "Search source chunks using hybrid semantic+sparse retrieval (BM25 + MiniLM dense + RRF fusion). Use for conceptual questions.",
+  "parameters": {
+    "type": "object",
+    "required": ["query", "source_ids"],
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "The search query — a conceptual question or topic description."
+      },
+      "source_ids": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "Mandatory list of source IDs to search within. Omitting is a TypeError."
+      },
+      "mode": {
+        "type": "string",
+        "enum": ["semantic", "hybrid"],
+        "default": "hybrid",
+        "description": "Retrieval mode. Default hybrid uses BM25 sparse + MiniLM dense + RRF fusion."
+      }
+    }
+  }
+}

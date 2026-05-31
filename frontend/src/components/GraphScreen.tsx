@@ -40,7 +40,7 @@ function GraphScreen() {
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
   return (
-    <div className="flex flex-col w-full h-full bg-ws-bg relative">
+    <div className="p-4 h-full flex flex-col overflow-hidden bg-ws-floor text-ws-ink gap-4">
       <style>{`
         .ws-graph-node {
           background: #0d1117;
@@ -62,10 +62,10 @@ function GraphScreen() {
           height: 8px;
           border-radius: 50%;
         }
-        .ws-graph-node.mastered { border-color: var(--ws-accent); }
-        .ws-graph-node.mastered::before { background: var(--ws-accent); }
-        .ws-graph-node.practiced { border-color: var(--ws-accent); box-shadow: 0 0 0 2px rgba(16,185,129,0.3); }
-        .ws-graph-node.practiced::before { background: var(--ws-accent); }
+        .ws-graph-node.mastered { border-color: var(--ws-glow); }
+        .ws-graph-node.mastered::before { background: var(--ws-glow); }
+        .ws-graph-node.practiced { border-color: var(--ws-glow); box-shadow: 0 0 0 2px rgba(20,184,166,0.3); }
+        .ws-graph-node.practiced::before { background: var(--ws-glow); }
         .ws-graph-node.unseen { opacity: 0.7; }
         .ws-graph-node.unseen::before { background: #a1a1aa; }
         .ws-graph-node.blind-spot { border-color: #eab308; }
@@ -80,56 +80,58 @@ function GraphScreen() {
         .react-flow__controls-button:last-child { border-bottom: none; }
       `}</style>
 
-      {/* Filters Overlay */}
-      <div className="absolute top-6 left-6 z-10 bg-ws-surface border border-ws-line-soft rounded-lg p-4 shadow-md w-80">
-        <h3 className="font-medium text-ws-ink mb-4 flex items-center gap-2"><Filter size={16} /> Graph Filters</h3>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-[11px] text-ws-ink-tertiary mb-1">Domain</label>
-            <CustomSelect 
-              value="Robotics Learning"
-              onChange={() => {}}
-              options={[
-                { value: 'Robotics Learning', label: 'Robotics Learning' },
-                { value: 'CMU MRSD Prep', label: 'CMU MRSD Prep' }
-              ]}
-              style={{ width: '100%', padding: '6px' }}
-            />
-          </div>
+      {/* Interactive Graph Canvas Bento Panel */}
+      <div className="flex-1 bg-ws-bench border border-ws-line rounded-xl shadow-md overflow-hidden relative flex flex-col">
+        {/* Filters Overlay floating inside */}
+        <div className="absolute top-4 left-4 z-10 bg-ws-bench border border-ws-line rounded-lg p-4 shadow-lg w-80">
+          <h3 className="font-bold text-[13px] tracking-tight text-ws-ink mb-3 flex items-center gap-2">
+            <Filter size={14} className="text-ws-glow" /> Graph Filters
+          </h3>
           
-          <div>
-            <label className="block text-[11px] text-ws-ink-tertiary mb-1">Subject</label>
-            <CustomSelect 
-              value="Modern Robotics"
-              onChange={() => {}}
-              options={[
-                { value: 'Modern Robotics', label: 'Modern Robotics' },
-                { value: 'All Subjects', label: 'All Subjects' }
-              ]}
-              style={{ width: '100%', padding: '6px' }}
-            />
-          </div>
+          <div className="flex flex-col gap-3">
+            <div>
+              <label className="block text-[10px] font-bold text-ws-muted uppercase tracking-wider mb-1">Domain</label>
+              <CustomSelect 
+                value="Robotics Learning"
+                onChange={() => {}}
+                options={[
+                  { value: 'Robotics Learning', label: 'Robotics Learning' },
+                  { value: 'CMU MRSD Prep', label: 'CMU MRSD Prep' }
+                ]}
+                style={{ width: '100%', padding: '6px', fontSize: '11px' }}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-[10px] font-bold text-ws-muted uppercase tracking-wider mb-1">Subject</label>
+              <CustomSelect 
+                value="Modern Robotics"
+                onChange={() => {}}
+                options={[
+                  { value: 'Modern Robotics', label: 'Modern Robotics' },
+                  { value: 'All Subjects', label: 'All Subjects' }
+                ]}
+                style={{ width: '100%', padding: '6px', fontSize: '11px' }}
+              />
+            </div>
 
-          <div>
-            <label className="block text-[11px] text-ws-ink-tertiary mb-2">Show Elements</label>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm text-ws-ink-secondary cursor-pointer">
-                <input type="checkbox" defaultChecked /> Concepts
-              </label>
-              <label className="flex items-center gap-2 text-sm text-ws-ink-secondary cursor-pointer">
-                <input type="checkbox" defaultChecked /> Prerequisites
-              </label>
-              <label className="flex items-center gap-2 text-sm text-ws-ink-secondary cursor-pointer">
-                <input type="checkbox" /> Sources
-              </label>
+            <div>
+              <label className="block text-[10px] font-bold text-ws-muted uppercase tracking-wider mb-2">Show Elements</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="flex items-center gap-2 text-xs text-ws-ink cursor-pointer select-none">
+                  <input type="checkbox" defaultChecked className="accent-ws-glow rounded w-3 h-3" /> Concepts
+                </label>
+                <label className="flex items-center gap-2 text-xs text-ws-ink cursor-pointer select-none">
+                  <input type="checkbox" defaultChecked className="accent-ws-glow rounded w-3 h-3" /> Prerequisites
+                </label>
+                <label className="flex items-center gap-2 text-xs text-ws-ink cursor-pointer select-none">
+                  <input type="checkbox" className="accent-ws-glow rounded w-3 h-3" /> Sources
+                </label>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Interactive Graph Canvas */}
-      <div className="flex-1">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -141,46 +143,46 @@ function GraphScreen() {
           attributionPosition="bottom-right"
         >
           <Background color="#3f3f46" gap={24} size={2} />
-          <Controls showInteractive={false} position="top-right" style={{margin: '24px'}} />
+          <Controls showInteractive={false} position="top-right" style={{margin: '16px'}} />
         </ReactFlow>
       </div>
 
-      {/* Node Detail */}
-      <div className="h-48 border-t border-ws-line bg-ws-surface p-6 flex gap-6 transition-opacity duration-300">
+      {/* Node Detail Bento Panel */}
+      <div className="h-44 bg-ws-bench border border-ws-line rounded-xl shadow-md p-5 flex gap-6 shrink-0 overflow-hidden">
         {selectedNode ? (
           <>
-            <div className="w-1/3 border-r border-ws-line-soft pr-6 flex flex-col justify-center">
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`w-3 h-3 rounded-full ${selectedNode.data.status === 'mastered' ? 'bg-ws-success' : selectedNode.data.status === 'practiced' ? 'bg-ws-success' : selectedNode.data.status === 'blind-spot' ? 'bg-ws-warning' : 'bg-ws-muted'}`}></div>
-                <h2 className="text-xl font-bold text-ws-ink">{selectedNode.data.label as string}</h2>
+            <div className="w-1/3 border-r border-ws-line pr-6 flex flex-col justify-center shrink-0">
+              <div className="flex items-center gap-2 mb-1.5 shrink-0">
+                <div className={`w-2.5 h-2.5 rounded-full ${selectedNode.data.status === 'mastered' ? 'bg-ws-glow animate-pulse' : selectedNode.data.status === 'practiced' ? 'bg-ws-glow' : selectedNode.data.status === 'blind-spot' ? 'bg-amber-400' : 'bg-ws-muted'}`}></div>
+                <h2 className="text-base font-extrabold text-ws-ink m-0 tracking-tight">{selectedNode.data.label as string}</h2>
               </div>
-              <div className="text-ws-ink-secondary text-sm mb-4">Chapter 2 · {Math.floor(Math.random() * 5) + 1} exercises</div>
+              <div className="text-ws-muted text-xs mb-3">Chapter 2 · {Math.floor(Math.random() * 5) + 1} exercises</div>
               <div className="flex gap-2">
-                <button type="button" className="bg-ws-success text-[#0a0a0b] font-medium rounded-md py-1.5 px-4 text-sm hover:brightness-110 transition-all">Practice</button>
-                <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-muted font-semibold cursor-pointer hover:border-ws-success hover:text-ws-success transition-all !w-auto py-1.5 px-3 text-sm">Sources</button>
+                <button type="button" className="bg-ws-glow text-ws-floor font-bold rounded-md py-1.5 px-4 text-[11px] hover:brightness-110 shadow-sm cursor-pointer transition-all">Practice</button>
+                <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-ink hover:bg-ws-surface-2 transition-all font-semibold cursor-pointer py-1.5 px-3 text-[11px]">Sources</button>
               </div>
             </div>
             
-            <div className="flex-1 flex flex-col justify-center">
+            <div className="flex-1 flex flex-col justify-center shrink-0">
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <div className="text-[11px] text-ws-ink-tertiary uppercase tracking-wider mb-1">Status</div>
-                  <div className="text-ws-ink font-medium capitalize">{selectedNode.data.status as string}</div>
+                  <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider mb-1">Status</div>
+                  <div className="text-xs text-ws-ink font-bold capitalize">{selectedNode.data.status as string}</div>
                 </div>
                 <div>
-                  <div className="text-[11px] text-ws-ink-tertiary uppercase tracking-wider mb-1">Attempts</div>
-                  <div className="text-ws-ink font-medium">{Math.floor(Math.random() * 10)} attempts</div>
+                  <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider mb-1">Attempts</div>
+                  <div className="text-xs text-ws-ink font-bold">{Math.floor(Math.random() * 10)} attempts</div>
                 </div>
                 <div>
-                  <div className="text-[11px] text-ws-ink-tertiary uppercase tracking-wider mb-1">Last Practiced</div>
-                  <div className="text-ws-ink font-medium">{Math.floor(Math.random() * 5) + 1} days ago</div>
+                  <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider mb-1">Last Practiced</div>
+                  <div className="text-xs text-ws-ink font-bold">{Math.floor(Math.random() * 5) + 1} days ago</div>
                 </div>
               </div>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-ws-ink-muted">
-            <span className="flex items-center gap-2"><GitBranch size={20} /> Select a node in the graph to view details.</span>
+          <div className="flex-1 flex items-center justify-center text-ws-muted">
+            <span className="flex items-center gap-2 text-xs"><GitBranch size={16} className="text-ws-glow" /> Select a node in the graph to view details.</span>
           </div>
         )}
       </div>

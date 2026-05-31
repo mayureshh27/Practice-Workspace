@@ -10,40 +10,40 @@ export type Resource = {
 export type Topic = {
   id: string;
   name: string;
-  lastMessage?: string;
-  pinned?: boolean;
-  archived?: boolean;
+  lastMessage?: string | null;
+  pinned?: boolean | null;
+  archived?: boolean | null;
 };
 
 export type Chapter = {
   id: string;
   name: string;
   topics: Topic[];
-  pinned?: boolean;
-  archived?: boolean;
-  description?: string;
-  instructions?: string;
-  memory?: string;
+  pinned?: boolean | null;
+  archived?: boolean | null;
+  description?: string | null;
+  instructions?: string | null;
+  memory?: string | null;
 };
 
 export type Subject = {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   chapters: Chapter[];
   resources: Resource[];
-  instructions?: string;
-  memory?: string;
-  pinned?: boolean;
-  archived?: boolean;
+  instructions?: string | null;
+  memory?: string | null;
+  pinned?: boolean | null;
+  archived?: boolean | null;
 };
 
 export type Domain = {
   id: string;
   name: string;
   subjects: Subject[];
-  pinned?: boolean;
-  archived?: boolean;
+  pinned?: boolean | null;
+  archived?: boolean | null;
 };
 
 /* ── Navigation ──────────────────────────────────────────────────── */

@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import WorkflowManagerScreen from '../components/WorkflowManagerScreen'
 import { useWorkspaceStore } from '../stores/workspaceStore'
 
@@ -10,11 +10,19 @@ function WorkflowsRoute() {
   const workflows = useWorkspaceStore(s => s.workflows)
   const deleteWorkflow = useWorkspaceStore(s => s.deleteWorkflow)
   const duplicateWorkflow = useWorkspaceStore(s => s.duplicateWorkflow)
+  const navigate = useNavigate()
 
   return (
     <WorkflowManagerScreen
       workflows={workflows}
-      onNavigate={() => {}}
+      onNavigate={(loc) => {
+        if (loc.level === 'workflow-editor') {
+          navigate({
+            to: '/workflow-editor',
+            search: { id: loc.workflowId }
+          })
+        }
+      }}
       onDelete={deleteWorkflow}
       onDuplicate={duplicateWorkflow}
     />

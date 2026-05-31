@@ -1,8 +1,11 @@
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { HotkeysProvider } from '@tanstack/react-hotkeys'
+import { useEffect } from 'react'
 
 import { useUIStore } from '../stores/uiStore'
+import { useWorkspaceStore } from '../stores/workspaceStore'
+
 import WorkspaceTopBar from '../components/WorkspaceTopBar'
 import LeftNav from '../components/LeftNav'
 import BottomDock from '../components/BottomDock'
@@ -19,7 +22,17 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const setSearchModalOpen = useUIStore(s => s.setSearchModalOpen);
-  const leftCollapsed = useUIStore(s => s.leftCollapsed);
+  const fetchGoProblems = useWorkspaceStore(s => s.fetchGoProblems);
+  const syncDomainsFromBackend = useWorkspaceStore(s => s.syncDomainsFromBackend);
+  const fetchMastery = useWorkspaceStore(s => s.fetchMastery);
+  const fetchBlindSpots = useWorkspaceStore(s => s.fetchBlindSpots);
+
+  useEffect(() => {
+    fetchGoProblems();
+    syncDomainsFromBackend();
+    fetchMastery();
+    fetchBlindSpots();
+  }, [fetchGoProblems, syncDomainsFromBackend, fetchMastery, fetchBlindSpots]);
 
   // Global keyboard shortcuts via native listeners (avoids TanStack hotkey type constraints)
   if (typeof window !== 'undefined') {
@@ -29,7 +42,7 @@ function RootComponent() {
   return (
     <HotkeysProvider>
       <div
-        className="h-dvh max-h-dvh flex flex-col overflow-hidden bg-ws-bg text-ws-ink font-sans text-[13px] leading-relaxed antialiased"
+        className="h-dvh max-h-dvh flex overflow-hidden bg-ws-bg text-ws-ink font-sans text-[13px] leading-relaxed antialiased"
         onKeyDown={(e) => {
           if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
             e.preventDefault();
@@ -38,25 +51,20 @@ function RootComponent() {
         }}
         tabIndex={-1}
       >
-        <WorkspaceTopBar />
+        <LeftNav />
 
-        <div className="flex-1 flex overflow-hidden min-h-0">
-          <LeftNav />
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          <WorkspaceTopBar />
 
-          <div
-            className="flex-1 flex flex-col min-w-0 overflow-hidden"
-            style={{ marginLeft: leftCollapsed ? 0 : undefined }}
-          >
-            <div className="flex-1 overflow-auto bg-ws-bg">
-              <Outlet />
-            </div>
-
-            <BottomDock />
+          <div className="flex-1 overflow-auto bg-ws-bg">
+            <Outlet />
           </div>
 
-          <RightDockPanel />
-          <RightDockRail />
+          <BottomDock />
         </div>
+
+        <RightDockPanel />
+        <RightDockRail />
       </div>
       <TanStackRouterDevtools position="bottom-right" />
       <SearchPalette />
