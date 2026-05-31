@@ -59,13 +59,28 @@ from .pipeline_stages import CATALOG_PATH, CatalogMerger, ReviewQueue, Validator
 
 def _make_pipeline(args, exercise_first: bool = False):
     cls = ExerciseFirstPipeline if exercise_first else IngestionPipeline
+    # Optional: wire Qdrant and Kuzu if available
+    qdrant_router = None
+    graph_layer = None
+    try:
+        from app.harness.qdrant_router import QdrantRetrievalRouter
+        qdrant_router = QdrantRetrievalRouter()
+    except Exception:
+        pass
+    try:
+        from app.harness.kuzu_graph_layer import KuzuGraphLayer
+        graph_layer = KuzuGraphLayer()
+    except Exception:
+        pass
     return cls(
-        model       = args.model,
-        api_key     = getattr(args, "api_key", None),
-        chapter     = args.chapter,
-        title       = getattr(args, "title", "") or args.chapter,
-        auto_commit = getattr(args, "commit", False),
-        max_chunks  = getattr(args, "max_chunks", 40),
+        model        = args.model,
+        api_key      = getattr(args, "api_key", None),
+        chapter      = args.chapter,
+        title        = getattr(args, "title", "") or args.chapter,
+        auto_commit  = getattr(args, "commit", False),
+        max_chunks   = getattr(args, "max_chunks", 40),
+        qdrant_router=qdrant_router,
+        graph_layer  =graph_layer,
     )
 
 def _add_common(p: argparse.ArgumentParser):

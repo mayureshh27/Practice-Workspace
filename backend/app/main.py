@@ -5,9 +5,10 @@ Startup sequence:
   2. Configure Logfire (noop if no LOGFIRE_TOKEN)
   3. Initialise SQLite database and create tables
   4. Seed workspace data
-  5. Initialise harness primitives (Tool Registry, Context Gate, Socratic Gate)
-  6. Instrument FastAPI, HTTPX, SQLite, Pydantic AI
-  7. Register routers
+  5. Initialise Model Router
+  6. Initialise harness primitives (Tool Registry, Context Gate, Socratic Gate)
+  7. Instrument FastAPI, HTTPX, SQLite, Pydantic AI
+  8. Register routers
 """
 
 from collections.abc import AsyncGenerator
@@ -25,11 +26,11 @@ from app.storage import workspace_repo
 from app.harness.tool_registry import FileToolRegistry
 from app.harness.context_gate import DefaultContextGate
 from app.harness.eval_gate import SocraticGate
+from app.harness.model_router import DefaultModelRouter
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Application lifespan — runs once at startup and shutdown."""
     settings = get_settings()
 
     # ── Database ────────────────────────────────────────────────────
@@ -43,6 +44,26 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         domain_count=len(domains),
     )
 
+    # ── Model Router ────────────────────────────────────────────────
+    model_router = DefaultModelRouter()
+    app.state.model_router = model_router
+    logfire.info("Model Router initialised with default provider configuration")
+
+    # ── Concrete Graph & Retrieval Layers ──────────────────────────
+    try:
+        from app.harness.qdrant_router import QdrantRetrievalRouter
+        from app.harness.kuzu_graph_layer import KuzuGraphLayer
+
+        retrieval_router = QdrantRetrievalRouter()
+        graph_layer = KuzuGraphLayer(use_graphiti=True)
+    except Exception as exc:
+        logfire.warning(
+            "Graph/Retrieval layers not available: {error} — running without",
+            error=str(exc),
+        )
+        retrieval_router = None
+        graph_layer = None
+
     # ── Harness primitives ──────────────────────────────────────────
     tool_registry = FileToolRegistry()
     context_gate = DefaultContextGate(
@@ -52,15 +73,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             "Workspace. Guide learners through technical concepts using "
             "questions and hints. Never give direct answers or solution code."
         ),
+        graph_layer=graph_layer,
     )
     socratic_gate = SocraticGate()
 
-    # Concrete Graph & Retrieval Layers
-    from app.harness.qdrant_router import QdrantRetrievalRouter
-    from app.harness.kuzu_graph_layer import KuzuGraphLayer
-    
-    retrieval_router = QdrantRetrievalRouter()
-    graph_layer = KuzuGraphLayer()
+    # ── Artifacts store (populated by workflow agents) ──────────────
+    app.state.artifacts: list[dict] = []
 
     # Store on app.state so route handlers can access them
     app.state.tool_registry = tool_registry
@@ -76,14 +94,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     yield
 
-    # Shutdown — nothing to clean up yet.
-
 
 def create_app() -> FastAPI:
-    """Build and configure the FastAPI application."""
     settings = get_settings()
 
-    # ── Logfire — configure first, always (Logfire skill rule) ───────
     logfire.configure(
         send_to_logfire="if-token-present",
         environment=settings.environment,
@@ -95,11 +109,9 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # ── Logfire instrumentation — after configure, before app starts ─
     logfire.instrument_fastapi(app)
     logfire.instrument_httpx()
 
-    # ── CORS ────────────────────────────────────────────────────────
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins,
@@ -108,22 +120,25 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # ── Register routers ────────────────────────────────────────────
     from app.api.health import router as health_router
     from app.api.workspace import router as workspace_router
     from app.api.events import router as events_router
     from app.api.chat import router as chat_router
     from app.api.mastery import router as mastery_router
+    from app.api.sources import router as sources_router
+    from app.api.artifacts import router as artifacts_router
+    from app.api.concepts import router as concepts_router
 
     app.include_router(health_router)
     app.include_router(workspace_router)
     app.include_router(events_router)
     app.include_router(chat_router)
     app.include_router(mastery_router)
+    app.include_router(sources_router)
+    app.include_router(artifacts_router)
+    app.include_router(concepts_router)
 
     return app
 
 
-# Module-level app instance — used by ``fastapi dev`` and ``fastapi run``
-# via the ``[tool.fastapi] entrypoint`` in pyproject.toml.
 app = create_app()

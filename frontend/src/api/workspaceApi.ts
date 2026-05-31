@@ -95,6 +95,59 @@ export type ChatMessageResponse = z.infer<typeof ChatMessageResponseSchema>;
 export type ConceptMasteryDTO = z.infer<typeof ConceptMasterySchema>;
 export type BlindSpotDTO = z.infer<typeof BlindSpotSchema>;
 
+// ── Sources schemas ─────────────────────────────────────────────────
+
+export const ChunkPreviewSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+});
+
+export const SourceSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  type: z.string(),
+  chunkCount: z.number(),
+  inContext: z.boolean(),
+  chunks: z.array(ChunkPreviewSchema),
+});
+
+export type SourceDTO = z.infer<typeof SourceSchema>;
+export type ChunkPreviewDTO = z.infer<typeof ChunkPreviewSchema>;
+
+// ── Artifacts schemas ───────────────────────────────────────────────
+
+export const ArtifactSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  type: z.string(),
+  status: z.string(),
+  time: z.string(),
+});
+
+export type ArtifactDTO = z.infer<typeof ArtifactSchema>;
+
+// ── Concept Graph schemas ───────────────────────────────────────────
+
+export const ConceptNodeDTOSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  mastery: z.string(),
+});
+
+export const ConceptEdgeDTOSchema = z.object({
+  fromId: z.string(),
+  toId: z.string(),
+});
+
+export const ConceptGraphSchema = z.object({
+  nodes: z.array(ConceptNodeDTOSchema),
+  edges: z.array(ConceptEdgeDTOSchema),
+});
+
+export type ConceptGraphDTO = z.infer<typeof ConceptGraphSchema>;
+export type ConceptNodeDTO = z.infer<typeof ConceptNodeDTOSchema>;
+export type ConceptEdgeDTO = z.infer<typeof ConceptEdgeDTOSchema>;
+
 // --- API Base URL ---
 // Set VITE_API_BASE_URL to point to the FastAPI backend.
 // Defaults to local backend on port 8000.
@@ -267,5 +320,39 @@ export const api = {
     if (!res.ok) throw new Error(`Failed to fetch blind spots: ${res.status}`);
     const data = await res.json();
     return z.array(BlindSpotSchema).parse(data);
+  },
+
+  // ── Sources ──────────────────────────────────────────────────────
+
+  getSources: async (): Promise<SourceDTO[]> => {
+    const res = await fetch(`${API_BASE}/api/sources/`);
+    if (!res.ok) throw new Error(`Failed to fetch sources: ${res.status}`);
+    const data = await res.json();
+    return z.array(SourceSchema).parse(data);
+  },
+
+  getSourceChunks: async (sourceId: string): Promise<ChunkPreviewDTO[]> => {
+    const res = await fetch(`${API_BASE}/api/sources/${sourceId}/chunks`);
+    if (!res.ok) throw new Error(`Failed to fetch chunks: ${res.status}`);
+    const data = await res.json();
+    return z.array(ChunkPreviewSchema).parse(data);
+  },
+
+  // ── Artifacts ────────────────────────────────────────────────────
+
+  getArtifacts: async (): Promise<ArtifactDTO[]> => {
+    const res = await fetch(`${API_BASE}/api/artifacts/`);
+    if (!res.ok) throw new Error(`Failed to fetch artifacts: ${res.status}`);
+    const data = await res.json();
+    return z.array(ArtifactSchema).parse(data);
+  },
+
+  // ── Concepts / Graph ─────────────────────────────────────────────
+
+  getConceptGraph: async (): Promise<ConceptGraphDTO> => {
+    const res = await fetch(`${API_BASE}/api/concepts/graph`);
+    if (!res.ok) throw new Error(`Failed to fetch concept graph: ${res.status}`);
+    const data = await res.json();
+    return ConceptGraphSchema.parse(data);
   },
 };

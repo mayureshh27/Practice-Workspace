@@ -24,8 +24,10 @@ class Settings(BaseSettings):
     logfire_token: str | None = None
     environment: str = "development"
 
-    # ── Model routing (BYOK) ────────────────────────────────────────
+    # ── Model routing (BYOK via ModelRouter Contract) ───────────────
     default_model: str = "google:gemini-2.5-flash"
+    model_router_providers: list[str] = ["google", "openai", "anthropic", "ollama"]
+    model_router_default_task: str = "tutor"
 
     # ── CORS ────────────────────────────────────────────────────────
     allowed_origins: list[str] = [

@@ -1,29 +1,27 @@
 import {LayoutGrid, Trash2, Filter} from 'lucide-react';
 import {useState} from 'react';
-
-type Artifact = { id: string; title: string; type: string; status: 'approved' | 'draft' | 'reviewed'; time: string; };
-
-const INITIAL_ARTIFACTS: Artifact[] = [
-  {id: '1', title: 'Kinematics Basics Quiz', type: 'Quiz', status: 'approved', time: '2h ago'},
-  {id: '2', title: 'Chapter 2 Definitions', type: 'Flashcards', status: 'draft', time: '1d ago'},
-  {id: '3', title: 'C-Space Diagram', type: 'Mind Map', status: 'reviewed', time: '3d ago'},
-  {id: '4', title: 'DOF Practice Pack', type: 'Exercises', status: 'approved', time: '4d ago'},
-  {id: '5', title: 'Rigid Body Rotation Notes', type: 'Summary', status: 'draft', time: '5d ago'},
-];
+import {useQuery} from '@tanstack/react-query';
+import {artifactsQueries} from '../../api/queries';
 
 const STATUSES = ['all', 'approved', 'reviewed', 'draft'] as const;
 
 function ArtifactsPanel() {
-  const [artifacts, setArtifacts] = useState<Artifact[]>(INITIAL_ARTIFACTS);
+  const {data: artifacts = [], isLoading} = useQuery(artifactsQueries.list());
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
-  const filtered = statusFilter === 'all' ? artifacts : artifacts.filter(a => a.status === statusFilter);
+  const visible = artifacts.filter(a => !deletedIds.has(a.id));
+  const filtered = statusFilter === 'all' ? visible : visible.filter(a => a.status === statusFilter);
 
   const handleDelete = (id: string) => {
-    setArtifacts(prev => prev.filter(a => a.id !== id));
+    setDeletedIds(prev => new Set(prev).add(id));
     if (selectedId === id) setSelectedId(null);
   };
+
+  if (isLoading) {
+    return <div className="flex flex-col h-full p-4 gap-4"><p className="text-ws-muted text-sm">Loading artifacts...</p></div>;
+  }
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">

@@ -49,3 +49,19 @@ class RetrievalRouter(Protocol):
         *,
         source_ids: list[str],
     ) -> list[ChunkResult]: ...
+
+    def list_sources(self) -> list[dict]:
+        """Return metadata for all indexed sources.
+
+        Each entry has at minimum: id, title, type.
+        Used by the SourcesPanel UI (not by agent tools).
+        """
+        ...
+
+    def list_chunk_previews(self, source_id: str) -> list[dict]:
+        """Return chunk previews for a source.
+
+        Each entry has: id, preview, chunk_index.
+        Used by the SourcesPanel UI (not by agent tools).
+        """
+        ...

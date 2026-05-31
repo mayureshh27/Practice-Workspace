@@ -5,6 +5,8 @@ Uses local-first embedded storage by default if Qdrant Docker container is offli
 
 from __future__ import annotations
 import os
+import uuid
+from pathlib import Path
 import logfire
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -31,6 +33,7 @@ class QdrantRetrievalRouter:
 
         self.collection_name = "source_chunks"
         self._ensure_collection()
+        self._sources: dict[str, dict] = {}  # source_id -> metadata
 
     def _is_docker_running(self) -> bool:
         # Simple health check to check if port 6333 is open
@@ -69,6 +72,138 @@ class QdrantRetrievalRouter:
                 val = int(hashlib.md5(f"{text}-{i}".encode()).hexdigest(), 16)
                 res.append((val % 2000 - 1000) / 1000.0)
             return res
+
+    def index_chunks(
+        self,
+        chunks: list[dict],
+        source_metadata: dict[str, dict] | None = None,
+    ) -> list[str]:
+        """Index source chunks into the Qdrant collection.
+
+        Each chunk dict must have at minimum:
+          - text: str (content to embed)
+          - source_id: str
+          - chunk_index: int
+          - page_or_timestamp: str | None
+
+        Chunks exceeding 800 tokens have their full content written to
+        ``tmp/chunks/{chunk_id}.md`` with only the first 200 tokens
+        stored in Qdrant as the preview (ADR-0023).
+
+        ``source_metadata`` is an optional dict mapping source_id to
+        metadata dicts with ``title`` and ``type`` keys. Used by the
+        SourcesPanel UI.
+
+        Returns the list of chunk IDs that were indexed.
+        """
+        from app.harness.context_gate import _count_tokens
+
+        chunk_ids: list[str] = []
+        points: list[models.PointStruct] = []
+
+        tmp_dir = Path("tmp/chunks")
+        tmp_dir.mkdir(parents=True, exist_ok=True)
+
+        if source_metadata:
+            self._sources.update(source_metadata)
+
+        for chunk in chunks:
+            text = chunk.get("text", "")
+            source_id = chunk.get("source_id", "")
+            chunk_index = chunk.get("chunk_index", 0)
+            page_or_ts = chunk.get("page_or_timestamp")
+
+            chunk_id = str(uuid.uuid4())
+            chunk_ids.append(chunk_id)
+
+            # Large chunk protocol (ADR-0023)
+            token_count = _count_tokens(text)
+            file_path: str | None = None
+            preview = text[:200]  # fallback
+
+            if token_count > 800:
+                # Write full content to temp file
+                chunk_file = tmp_dir / f"{chunk_id}.md"
+                chunk_file.write_text(text, encoding="utf-8")
+                file_path = str(chunk_file)
+                # Store only first 200 tokens as preview
+                preview = " ".join(text.split()[:200])
+
+            vector = self._get_embedding(text)
+
+            payload = {
+                "source_id": source_id,
+                "chunk_index": chunk_index,
+                "page_or_timestamp": page_or_ts,
+                "preview": preview,
+                "file_path": file_path,
+            }
+
+            points.append(
+                models.PointStruct(
+                    id=chunk_id,
+                    vector=vector,
+                    payload=payload,
+                )
+            )
+
+        if points:
+            try:
+                self.client.upsert(
+                    collection_name=self.collection_name,
+                    points=points,
+                )
+                logfire.info(
+                    "Indexed {count} chunks into Qdrant collection '{collection}'",
+                    count=len(points),
+                    collection=self.collection_name,
+                )
+            except Exception as exc:
+                logfire.error(
+                    "Failed to index chunks into Qdrant: {error}",
+                    error=str(exc),
+                )
+
+        return chunk_ids
+
+    def list_sources(self) -> list[dict]:
+        """Return metadata for all registered sources."""
+        return list(self._sources.values())
+
+    def list_chunk_previews(self, source_id: str) -> list[dict]:
+        """Return chunk previews for a source by scrolling the collection."""
+        try:
+            filter_cond = models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="source_id",
+                        match=models.MatchValue(value=source_id),
+                    )
+                ]
+            )
+            scroll_result = self.client.scroll(
+                collection_name=self.collection_name,
+                scroll_filter=filter_cond,
+                limit=100,
+                with_payload=True,
+                with_vectors=False,
+            )
+            results: list[dict] = []
+            for point in scroll_result[0]:
+                payload = point.payload or {}
+                results.append({
+                    "id": str(point.id),
+                    "preview": payload.get("preview", ""),
+                    "chunk_index": payload.get("chunk_index", 0),
+                })
+            results.sort(key=lambda r: r["chunk_index"])
+            return results
+        except Exception as exc:
+            logfire.warning(
+                "Failed to scroll chunks for source {source_id}: {error}",
+                source_id=source_id, error=str(exc),
+            )
+            return []
 
     def source_search(
         self,

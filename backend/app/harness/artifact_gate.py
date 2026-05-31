@@ -1,0 +1,192 @@
+"""Artifact Gate — harness eval gate for generated practice artifacts.
+
+Runs after exercise or lesson generation, before storage (PRD-harness-layer.md §167).
+Four checks:
+  1. Schema validity — Pydantic validation. Hard failure, blocks storage.
+  2. Source grounding — do the artifact's cited chunk_ids exist in Qdrant?
+     Failure → review queue.
+  3. Exercise runability — does the starter code compile? Do generated tests
+     pass against the generated solution in the sandbox? Failure → blocks storage.
+  4. Duplicate detection — same concept_ids + source_ids combination already
+     exists? Match → review queue.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Protocol
+
+import logfire
+from pydantic import BaseModel, ValidationError
+
+
+class ArtifactGateResult(BaseModel):
+    """Result of an Artifact Gate evaluation."""
+
+    passed: bool
+    failures: list[str] = []
+    warnings: list[str] = []
+    review_queue: bool = False  # True if artifact should be queued for review
+
+
+class SandboxRunner(Protocol):
+    """Protocol for sandboxed code execution."""
+
+    async def run(
+        self,
+        code: str,
+        language: str,
+        timeout_seconds: int = 30,
+    ) -> dict[str, Any]: ...
+
+
+class ChunkExistenceChecker(Protocol):
+    """Protocol for checking if chunk IDs exist in the active source set."""
+
+    def chunk_exists(self, chunk_id: str) -> bool: ...
+
+
+def _check_schema(artifact: Any) -> list[str]:
+    """Check that the artifact passes Pydantic validation."""
+    failures: list[str] = []
+    if hasattr(artifact, "model_dump"):
+        try:
+            _ = artifact.model_dump()
+        except ValidationError as exc:
+            failures.append(f"schema_invalid: {exc}")
+    return failures
+
+
+def _check_source_grounding(
+    artifact: Any,
+    checker: ChunkExistenceChecker | None,
+) -> list[str]:
+    """Check that cited chunk_ids exist in the active source set."""
+    failures: list[str] = []
+    if checker is None:
+        return failures
+
+    cited_chunks = getattr(artifact, "cited_chunk_ids", None) or []
+    for chunk_id in cited_chunks:
+        if not checker.chunk_exists(chunk_id):
+            failures.append(
+                f"source_grounding: chunk {chunk_id} not found in active sources"
+            )
+    return failures
+
+
+def _check_duplicate(
+    artifact: Any,
+    existing_artifacts: list[dict] | None,
+) -> list[str]:
+    """Check if an artifact with the same concept_ids + source_ids exists."""
+    failures: list[str] = []
+    if existing_artifacts is None:
+        return failures
+
+    concept_ids = set(getattr(artifact, "concept_ids", None) or [])
+    source_ids = set(getattr(artifact, "source_ids", None) or [])
+
+    for existing in existing_artifacts:
+        existing_concepts = set(existing.get("concept_ids", []))
+        existing_sources = set(existing.get("source_ids", []))
+        if concept_ids and source_ids:
+            if concept_ids == existing_concepts and source_ids == existing_sources:
+                failures.append(
+                    "duplicate_detected: artifact with same concept_ids and "
+                    "source_ids already exists"
+                )
+    return failures
+
+
+async def _check_runability(
+    artifact: Any,
+    sandbox: SandboxRunner | None,
+) -> list[str]:
+    """Check that starter code compiles and tests pass against solution."""
+    failures: list[str] = []
+    if sandbox is None:
+        return failures
+
+    starter_code = getattr(artifact, "starter_code", None) or ""
+    solution_code = getattr(artifact, "solution_code", None) or ""
+    tests = getattr(artifact, "tests", None) or ""
+    language = getattr(artifact, "language", "python")
+
+    # Check starter compiles
+    if starter_code:
+        result = await sandbox.run(starter_code, language, timeout_seconds=15)
+        if result.get("exit_code", 0) != 0:
+            failures.append(
+                f"runability: starter code failed to compile — {result.get('stderr', '')[:200]}"
+            )
+
+    # Check solution passes generated tests
+    if solution_code and tests:
+        combined = f"{solution_code}\n\n{tests}"
+        result = await sandbox.run(combined, language, timeout_seconds=30)
+        if result.get("exit_code", 0) != 0:
+            failures.append(
+                f"runability: solution failed tests — {result.get('stderr', '')[:200]}"
+            )
+
+    return failures
+
+
+async def validate_artifact(
+    artifact: Any,
+    *,
+    checker: ChunkExistenceChecker | None = None,
+    sandbox: SandboxRunner | None = None,
+    existing_artifacts: list[dict] | None = None,
+) -> ArtifactGateResult:
+    """Run all four Artifact Gate checks on a generated artifact.
+
+    Args:
+        artifact: The generated artifact object (should have Pydantic-like attrs).
+        checker: Optional chunk existence checker for source grounding.
+        sandbox: Optional sandbox runner for exercise runability.
+        existing_artifacts: Optional list of existing artifact metadata for dedup.
+
+    Returns:
+        ArtifactGateResult with pass/fail, failures list, and review_queue flag.
+    """
+    failures: list[str] = []
+    warnings: list[str] = []
+    review_queue = False
+
+    # 1. Schema validity
+    schema_failures = _check_schema(artifact)
+    failures.extend(schema_failures)
+    if schema_failures:
+        logfire.warning("Artifact Gate: schema validation failed")
+
+    # 2. Source grounding
+    grounding_failures = _check_source_grounding(artifact, checker)
+    if grounding_failures:
+        review_queue = True
+        warnings.extend(grounding_failures)
+        logfire.warning(
+            "Artifact Gate: source grounding issues — sending to review queue"
+        )
+
+    # 3. Exercise runability
+    runability_failures = await _check_runability(artifact, sandbox)
+    failures.extend(runability_failures)
+    if runability_failures:
+        logfire.warning("Artifact Gate: runability check failed")
+
+    # 4. Duplicate detection
+    dup_failures = _check_duplicate(artifact, existing_artifacts)
+    if dup_failures:
+        review_queue = True
+        warnings.extend(dup_failures)
+        logfire.warning(
+            "Artifact Gate: duplicate detected — sending to review queue"
+        )
+
+    return ArtifactGateResult(
+        passed=len(failures) == 0,
+        failures=failures,
+        warnings=warnings,
+        review_queue=review_queue,
+    )

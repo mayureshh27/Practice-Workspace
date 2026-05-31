@@ -26,7 +26,6 @@ from app.harness.eval_gate import SocraticGate
 from app.harness.event_emitter import emit_event
 from app.harness.memory_seed import materialise_learner_state
 
-# Maximum regeneration attempts when Socratic Gate blocks a response
 _MAX_REGENERATION_ATTEMPTS = 2
 
 _MEMORIES_DIR = Path("memories")
@@ -41,11 +40,9 @@ async def handle_chat_turn(
     source_ids: list[str] | None = None,
     context_gate: DefaultContextGate | None = None,
     socratic_gate: SocraticGate | None = None,
+    retrieval_router: object | None = None,
+    graph_layer: object | None = None,
 ) -> str:
-    """Run one tutor chat turn and return the validated response.
-
-    This is the primary entry point for the chat API.
-    """
     concept_ids = concept_ids or []
     source_ids = source_ids or []
 
@@ -84,6 +81,8 @@ async def handle_chat_turn(
         source_ids=source_ids,
         db_session=db_session,
         memory_context=memory_context,
+        retrieval_router=retrieval_router,
+        graph_layer=graph_layer,
     )
 
     response_text = await _run_with_socratic_gate(
@@ -115,8 +114,6 @@ async def _run_with_socratic_gate(
     deps: TutorDeps,
     socratic_gate: SocraticGate,
 ) -> str:
-    """Run the tutor agent and apply the Socratic Gate, regenerating if needed."""
-
     for attempt in range(_MAX_REGENERATION_ATTEMPTS + 1):
         prompt = user_message
         if attempt > 0:
@@ -142,16 +139,13 @@ async def _run_with_socratic_gate(
             )
             return response_text
 
-        # Apply Socratic Gate
         eval_result = socratic_gate.validate_hint(response_text)
 
         if eval_result.passed:
-            # Use amended text if the gate appended a question
             if eval_result.amended_text:
                 return eval_result.amended_text
             return response_text
 
-        # Blocked — log and retry
         logfire.warning(
             "Socratic Gate blocked response (attempt {attempt}/{max}): {failures}",
             attempt=attempt + 1,
@@ -159,7 +153,6 @@ async def _run_with_socratic_gate(
             failures=eval_result.failures,
         )
 
-    # All attempts exhausted — return a safe fallback
     return (
         "I want to help you understand this concept deeply. "
         "Let's approach it step by step — what part of the problem "

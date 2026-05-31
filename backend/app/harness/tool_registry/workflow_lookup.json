@@ -1,0 +1,14 @@
+{
+  "name": "workflow_lookup",
+  "description": "Retrieve the full content of a workflow template from .platform/workflows/{name}.md. Loaded on demand rather than injected into the seed context.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Workflow template name (without .md extension)"
+      }
+    },
+    "required": ["name"]
+  }
+}

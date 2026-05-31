@@ -1,0 +1,23 @@
+{
+  "name": "sandbox_run",
+  "description": "Run code in a sandboxed Docker/Podman environment. Returns stdout, stderr, and exit code. Used for validating generated exercises and running learner practice code.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "code": {
+        "type": "string",
+        "description": "Source code to execute"
+      },
+      "language": {
+        "type": "string",
+        "enum": ["go", "python", "javascript", "bash"],
+        "description": "Programming language of the code"
+      },
+      "timeout_seconds": {
+        "type": "integer",
+        "description": "Maximum execution time in seconds (default 30)"
+      }
+    },
+    "required": ["code", "language"]
+  }
+}

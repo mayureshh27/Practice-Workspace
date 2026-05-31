@@ -1,41 +1,32 @@
 import {FileText, Search, ChevronDown, ChevronRight, ToggleLeft, ToggleRight} from 'lucide-react';
 import {useState} from 'react';
-
-type ChunkPreview = { id: string; text: string; };
-type Source = { id: string; title: string; type: string; chunkCount: number; inContext: boolean; chunks: ChunkPreview[]; };
-
-const INITIAL_SOURCES: Source[] = [
-  {id: '1', title: 'Modern Robotics V2', type: 'PDF', chunkCount: 14, inContext: true, chunks: [
-    {id: 'c1', text: 'The configuration of a robot is a complete specification of the position of every point of the robot...'},
-    {id: 'c2', text: 'The minimum number n of real-valued coordinates needed to represent the configuration is the number of degrees of freedom (dof)...'},
-    {id: 'c3', text: 'The n-dimensional space containing all possible configurations of the robot is called the configuration space (C-space)...'},
-  ]},
-  {id: '2', title: 'Kinematics Lecture', type: 'Transcript', chunkCount: 8, inContext: true, chunks: [
-    {id: 'c4', text: 'Forward kinematics maps joint angles to end-effector position using the product of exponentials formula...'},
-    {id: 'c5', text: 'The Jacobian matrix relates joint velocities to end-effector twist velocities...'},
-  ]},
-  {id: '3', title: 'Chapter 2 Notes', type: 'Note', chunkCount: 3, inContext: false, chunks: [
-    {id: 'c6', text: 'Topology of C-space: S¹ for revolute joints, ℝ for prismatic joints...'},
-  ]},
-];
+import {useQuery} from '@tanstack/react-query';
+import {sourcesQueries} from '../../api/queries';
 
 function SourcesPanel() {
-  const [sources, setSources] = useState<Source[]>(INITIAL_SOURCES);
+  const {data: sources = [], isLoading} = useQuery(sourcesQueries.list());
   const [filter, setFilter] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [localContext, setLocalContext] = useState<Record<string, boolean>>({});
 
-  const filtered = sources.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()) || s.type.toLowerCase().includes(filter.toLowerCase()));
+  const filtered = sources.filter(
+    s => s.title.toLowerCase().includes(filter.toLowerCase()) || s.type.toLowerCase().includes(filter.toLowerCase())
+  );
 
   const toggleContext = (id: string) => {
-    setSources(prev => prev.map(s => s.id === id ? {...s, inContext: !s.inContext} : s));
+    setLocalContext(prev => ({...prev, [id]: !(prev[id] ?? true)}));
   };
 
   const toggleExpand = (id: string) => {
     setExpandedId(prev => prev === id ? null : id);
   };
 
-  const contextCount = sources.filter(s => s.inContext).length;
-  const totalChunks = sources.filter(s => s.inContext).reduce((sum, s) => sum + s.chunkCount, 0);
+  const contextCount = sources.filter(s => localContext[s.id] ?? s.inContext).length;
+  const totalChunks = sources.filter(s => localContext[s.id] ?? s.inContext).reduce((sum, s) => sum + s.chunkCount, 0);
+
+  if (isLoading) {
+    return <div className="flex flex-col h-full p-4 gap-4"><p className="text-ws-muted text-sm">Loading sources...</p></div>;
+  }
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
@@ -56,53 +47,56 @@ function SourcesPanel() {
       </div>
       
       <div className="flex flex-col gap-3 overflow-y-auto flex-1">
-        {filtered.map(source => (
-          <div key={source.id} className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => toggleExpand(source.id)}
-                style={{background: 'none', border: 'none', padding: 0, color: "var(--ws-muted)", cursor: 'pointer', display: 'flex'}}
-              >
-                {expandedId === source.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-              </button>
-              <FileText size={14} className="text-ws-muted" />
-              <span className="text-ws-ink font-medium">{source.title}</span>
-              <button
-                type="button"
-                onClick={() => toggleContext(source.id)}
-                style={{background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginLeft: 'auto', display: 'flex', color: source.inContext ? "var(--ws-accent)" : "var(--ws-muted)"}}
-                title={source.inContext ? 'Remove from context' : 'Add to context'}
-              >
-                {source.inContext ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
-              </button>
-            </div>
-            <div className="flex items-center justify-between text-ws-muted text-sm">
-              <span>{source.type}</span>
-              <span>{source.chunkCount} chunks</span>
-            </div>
-            {expandedId === source.id && (
-              <div style={{marginTop: 4, display: 'flex', flexDirection: 'column', gap: 6}}>
-                {source.chunks.map(chunk => (
-                  <div key={chunk.id} style={{
-                    padding: '6px 8px',
-                    background: "var(--ws-bg)",
-                    borderRadius: "4px",
-                    border: '1px solid var(--ws-edge-soft)',
-                    fontSize: 'var(--ws-type-xs)',
-                    color: "var(--ws-soft)",
-                    lineHeight: 1.4,
-                  }}>
-                    {chunk.text}
-                  </div>
-                ))}
+        {filtered.map(source => {
+          const inContext = localContext[source.id] ?? source.inContext;
+          return (
+            <div key={source.id} className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => toggleExpand(source.id)}
+                  style={{background: 'none', border: 'none', padding: 0, color: "var(--ws-muted)", cursor: 'pointer', display: 'flex'}}
+                >
+                  {expandedId === source.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                </button>
+                <FileText size={14} className="text-ws-muted" />
+                <span className="text-ws-ink font-medium">{source.title}</span>
+                <button
+                  type="button"
+                  onClick={() => toggleContext(source.id)}
+                  style={{background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginLeft: 'auto', display: 'flex', color: inContext ? "var(--ws-accent)" : "var(--ws-muted)"}}
+                  title={inContext ? 'Remove from context' : 'Add to context'}
+                >
+                  {inContext ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                </button>
               </div>
-            )}
-          </div>
-        ))}
+              <div className="flex items-center justify-between text-ws-muted text-sm">
+                <span>{source.type}</span>
+                <span>{source.chunkCount} chunks</span>
+              </div>
+              {expandedId === source.id && (
+                <div style={{marginTop: 4, display: 'flex', flexDirection: 'column', gap: 6}}>
+                  {source.chunks.map(chunk => (
+                    <div key={chunk.id} style={{
+                      padding: '6px 8px',
+                      background: "var(--ws-bg)",
+                      borderRadius: "4px",
+                      border: '1px solid var(--ws-edge-soft)',
+                      fontSize: 'var(--ws-type-xs)',
+                      color: "var(--ws-soft)",
+                      lineHeight: 1.4,
+                    }}>
+                      {chunk.text}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
         {filtered.length === 0 && (
           <div style={{color: "var(--ws-muted)", fontSize: '11px', textAlign: 'center', padding: 'var(--ws-sp-6) 0'}}>
-            No sources match "{filter}"
+            {isLoading ? 'Loading...' : `No sources match "${filter}"`}
           </div>
         )}
       </div>

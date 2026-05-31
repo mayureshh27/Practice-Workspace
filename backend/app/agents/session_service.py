@@ -10,6 +10,8 @@ The agent never has access to the MemoryStore directly.
 from __future__ import annotations
 
 import json
+import sqlite3
+from pathlib import Path
 from uuid import uuid4
 
 import logfire
@@ -28,8 +30,58 @@ from app.storage import event_store
 def create_session() -> str:
     """Generate a new session ID."""
     session_id = str(uuid4())
+    # Initialise raw session history database (per ADR-0016)
+    _ensure_raw_history_db(session_id)
     logfire.info("Created new session: {session_id}", session_id=session_id)
     return session_id
+
+
+def _ensure_raw_history_db(session_id: str) -> None:
+    """Create an empty raw session history SQLite database.
+
+    Per ADR-0016: raw history is written before compaction can discard
+    anything. The compact summary references this path so the agent
+    can recover any detail via session_history(session_id) tool call.
+    """
+    db_path = Path(f"sessions/{session_id}.sqlite")
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(db_path))
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS events ("
+        "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "  event_type TEXT,"
+        "  payload TEXT,"
+        "  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ")"
+    )
+    conn.commit()
+    conn.close()
+    logfire.debug("Raw session history database created: {path}", path=str(db_path))
+
+
+def push_raw_event(session_id: str, event_type: str, payload: dict) -> None:
+    """Push a raw event to the session's history database.
+
+    Called by the harness before any compaction operation.
+    The raw history survives compaction so the agent can recover
+    any detail via session_history(session_id) tool call.
+    """
+    db_path = Path(f"sessions/{session_id}.sqlite")
+    if not db_path.exists():
+        _ensure_raw_history_db(session_id)
+    try:
+        conn = sqlite3.connect(str(db_path))
+        conn.execute(
+            "INSERT INTO events (event_type, payload) VALUES (?, ?)",
+            (event_type, json.dumps(payload)),
+        )
+        conn.commit()
+        conn.close()
+    except Exception as exc:
+        logfire.warning(
+            "Failed to push raw event to session history: {error}",
+            error=str(exc),
+        )
 
 
 async def end_session(db_session: Session, session_id: str) -> SessionSummaryCreated | None:

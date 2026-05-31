@@ -17,6 +17,32 @@ from rapidfuzz import process, fuzz
 
 from app.domain.graph import ConceptCandidate, ConceptContext, ConceptNode
 from app.harness.graph_layer import GraphLayer
+from app.harness.temporal_mastery_store import TemporalMasteryStore
+
+
+def _default_mastery_store(mastery_db_path: str) -> TemporalMasteryStore:
+    """Return the default mastery store.
+
+    If graphiti-core is available, creates a GraphitiMasteryStore.
+    Otherwise falls back to TemporalMasteryStore (SQLite).
+    """
+    try:
+        from app.harness.graphiti_mastery_store import GraphitiMasteryStore
+
+        store = GraphitiMasteryStore(db_path=mastery_db_path)
+        # Quick smoke test: append and read
+        from datetime import datetime, timezone
+
+        store.append_mastery_edge("_init_check", 0.0, "_init", datetime.now(timezone.utc))
+        store.get_current_score("_init_check")
+        logfire.info("GraphitiMasteryStore initialised (graphiti-core Kuzu backend)")
+        return store
+    except Exception as exc:
+        logfire.info(
+            "GraphitiMasteryStore not available, falling back to TemporalMasteryStore: {error}",
+            error=str(exc),
+        )
+        return TemporalMasteryStore(db_path=mastery_db_path)
 
 
 def _execute(c: kuzu.Connection, query: str, params: dict[str, Any] | None = None) -> kuzu.QueryResult:
@@ -26,7 +52,13 @@ def _execute(c: kuzu.Connection, query: str, params: dict[str, Any] | None = Non
 class KuzuGraphLayer(GraphLayer):
     """Concrete GraphLayer using local Kuzu DB and local Memgraph/Graphiti stubs."""
 
-    def __init__(self, db_path: str = "storage/kuzu.db", gap_threshold: float = 0.5) -> None:
+    def __init__(
+        self,
+        db_path: str = "storage/kuzu.db",
+        gap_threshold: float = 0.5,
+        mastery_db_path: str = "storage/mastery.db",
+        use_graphiti: bool = False,
+    ) -> None:
         self.db_path = db_path
         self.gap_threshold = gap_threshold
 
@@ -38,7 +70,10 @@ class KuzuGraphLayer(GraphLayer):
 
         self._ensure_schema()
 
-        self._temporal_mastery: dict[str, list[dict[str, Any]]] = {}
+        if use_graphiti:
+            self._mastery_store = _default_mastery_store(mastery_db_path)
+        else:
+            self._mastery_store = TemporalMasteryStore(mastery_db_path)
 
     def _ensure_schema(self) -> None:
         try:
@@ -145,18 +180,10 @@ class KuzuGraphLayer(GraphLayer):
         return nodes
 
     def _get_current_mastery(self, concept_id: str) -> float | None:
-        edges = self._temporal_mastery.get(concept_id, [])
-        if not edges:
-            return None
-        sorted_edges = sorted(edges, key=lambda e: e["recorded_at"])
-        return sorted_edges[-1]["mastery_score"]
+        return self._mastery_store.get_current_score(concept_id)
 
     def _get_last_updated(self, concept_id: str) -> datetime | None:
-        edges = self._temporal_mastery.get(concept_id, [])
-        if not edges:
-            return None
-        sorted_edges = sorted(edges, key=lambda e: e["recorded_at"])
-        return sorted_edges[-1]["recorded_at"]
+        return self._mastery_store.get_last_updated(concept_id)
 
     def update_mastery(
         self,
@@ -165,24 +192,12 @@ class KuzuGraphLayer(GraphLayer):
         trigger_event_id: str,
         timestamp: datetime,
     ) -> None:
-        if not (0.0 <= new_score <= 1.0):
-            raise ValueError("Score must be in [0.0, 1.0]")
-
-        edge: dict[str, Any] = {
-            "mastery_score": new_score,
-            "trigger_event_id": trigger_event_id,
-            "recorded_at": timestamp,
-            "valid_from": timestamp,
-            "valid_to": None,
-        }
-
-        if concept_id not in self._temporal_mastery:
-            self._temporal_mastery[concept_id] = []
-
-        if self._temporal_mastery[concept_id]:
-            self._temporal_mastery[concept_id][-1]["valid_to"] = timestamp
-
-        self._temporal_mastery[concept_id].append(edge)
+        self._mastery_store.append_mastery_edge(
+            concept_id=concept_id,
+            mastery_score=new_score,
+            trigger_event_id=trigger_event_id,
+            timestamp=timestamp,
+        )
         logfire.info("Temporal mastery edge appended for concept {concept_id}: {score}", concept_id=concept_id, score=new_score)
 
     def get_concept_context(
@@ -273,6 +288,53 @@ class KuzuGraphLayer(GraphLayer):
                 "MATCH (e:Exercise WHERE e.exercise_id = $eid), (c:Concept WHERE c.concept_id = $cid) MERGE (e)-[:TARGETS_CONCEPT]->(c)",
                 {"eid": exercise_id, "cid": cid},
             )
+
+    def get_mastery_at_time(
+        self,
+        concept_id: str,
+        target_timestamp: datetime,
+    ) -> float | None:
+        """Return the mastery score for a concept at a specific point in time.
+
+        Per graph-layer-spike.md §154-157: filters edges where
+        recorded_at <= target_timestamp and returns the most recent.
+        This enables reconstructing mastery state at any prior session boundary.
+        """
+        return self._mastery_store.get_score_at_time(concept_id, target_timestamp)
+
+    def get_all_concepts(self) -> list[dict[str, Any]]:
+        """Return all concept nodes with mastery and prerequisite IDs.
+
+        Used by the concepts/graph API endpoint for the frontend graph panel.
+        Not part of the five-method GraphLayer surface (ADR-0025); it is
+        an internal helper on the concrete implementation.
+        """
+        results: list[dict[str, Any]] = []
+        c_res = _execute(
+            self.conn,
+            "MATCH (c:Concept) RETURN c.concept_id, c.canonical_name",
+        )
+        while c_res.has_next():
+            row = c_res.get_next()
+            cid: str = row[0]
+            cname: str = row[1]
+
+            p_res = _execute(
+                self.conn,
+                "MATCH (c:Concept WHERE c.concept_id = $id)-[:PREREQUISITE_OF]->(p:Concept) RETURN p.concept_id",
+                {"id": cid},
+            )
+            prereq_ids: list[str] = []
+            while p_res.has_next():
+                prereq_ids.append(str(p_res.get_next()[0]))
+
+            results.append({
+                "concept_id": cid,
+                "canonical_name": cname,
+                "mastery_score": self._get_current_mastery(cid),
+                "prerequisite_ids": prereq_ids,
+            })
+        return results
 
     def detect_prerequisite_gaps(
         self,

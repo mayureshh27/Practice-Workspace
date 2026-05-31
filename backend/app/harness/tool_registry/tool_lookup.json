@@ -1,0 +1,14 @@
+{
+  "name": "tool_lookup",
+  "description": "Retrieve the full JSON schema for a registered tool by name. Schemas are stored as files in tool_registry/ and served on demand to keep the seed context small.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Tool name to look up (e.g. source_search, memory_read)"
+      }
+    },
+    "required": ["name"]
+  }
+}

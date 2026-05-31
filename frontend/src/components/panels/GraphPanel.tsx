@@ -1,28 +1,6 @@
 import {useState} from 'react';
-
-type ConceptNode = { id: string; label: string; mastery: 'mastered' | 'practiced' | 'unseen'; x: number; y: number; };
-type ConceptEdge = { from: string; to: string; };
-
-const NODES: ConceptNode[] = [
-  {id: 'cspace', label: 'C-Space', mastery: 'mastered', x: 80, y: 20},
-  {id: 'dof', label: 'DOF', mastery: 'practiced', x: 20, y: 80},
-  {id: 'topology', label: 'Topology', mastery: 'practiced', x: 140, y: 80},
-  {id: 'rigid', label: 'Rigid Bodies', mastery: 'mastered', x: 80, y: 140},
-  {id: 'fk', label: 'Forward Kin.', mastery: 'unseen', x: 20, y: 200},
-  {id: 'ik', label: 'Inverse Kin.', mastery: 'unseen', x: 140, y: 200},
-  {id: 'jacobian', label: 'Jacobian', mastery: 'unseen', x: 80, y: 260},
-];
-
-const EDGES: ConceptEdge[] = [
-  {from: 'cspace', to: 'dof'},
-  {from: 'cspace', to: 'topology'},
-  {from: 'dof', to: 'rigid'},
-  {from: 'topology', to: 'rigid'},
-  {from: 'rigid', to: 'fk'},
-  {from: 'rigid', to: 'ik'},
-  {from: 'fk', to: 'jacobian'},
-  {from: 'ik', to: 'jacobian'},
-];
+import {useQuery} from '@tanstack/react-query';
+import {conceptQueries} from '../../api/queries';
 
 const MASTERY_COLORS: Record<string, string> = {
   mastered: "var(--ws-accent)",
@@ -31,65 +9,94 @@ const MASTERY_COLORS: Record<string, string> = {
 };
 
 function GraphPanel() {
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const selected = NODES.find(n => n.id === selectedNode);
+  const {data: graph, isLoading} = useQuery(conceptQueries.graph());
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const getNodePos = (id: string) => {
-    const node = NODES.find(n => n.id === id);
-    return node ? {x: node.x + 40, y: node.y + 12} : {x: 0, y: 0};
+  const nodes = graph?.nodes ?? [];
+  const edges = graph?.edges ?? [];
+
+  const selected = nodes.find(n => n.id === selectedId);
+
+  const getNodePos = (index: number) => {
+    const cols = 3;
+    const col = index % cols;
+    const row = Math.floor(index / cols);
+    return {x: 10 + col * 100, y: 10 + row * 70};
   };
+
+  if (isLoading) {
+    return <div className="flex flex-col h-full p-4 gap-4"><p className="text-ws-muted text-sm">Loading concept graph...</p></div>;
+  }
+
+  if (nodes.length === 0) {
+    return (
+      <div className="flex flex-col h-full p-4 gap-4">
+        <p className="text-ws-muted text-sm">Concept prerequisite map. Click a node for details.</p>
+        <div style={{color: "var(--ws-muted)", fontSize: '11px', textAlign: 'center', padding: '40px 0'}}>
+          No concepts yet. Start practicing to build your graph.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
-      <p className="text-ws-muted text-sm m-0">Concept prerequisite map. Click a node for details.</p>
+      <p className="text-ws-muted text-sm">Concept prerequisite map. Click a node for details.</p>
 
       <div style={{
         position: 'relative',
-        height: 300,
+        height: Math.max(200, Math.ceil(nodes.length / 3) * 70 + 20),
         background: "var(--ws-bg)",
         border: '1px solid var(--ws-edge-soft)',
         borderRadius: "6px",
         overflow: 'hidden',
       }}>
         <svg width="100%" height="100%" style={{position: 'absolute', top: 0, left: 0}}>
-          {EDGES.map(edge => {
-            const from = getNodePos(edge.from);
-            const to = getNodePos(edge.to);
+          {edges.map((edge, i) => {
+            const fromIdx = nodes.findIndex(n => n.id === edge.fromId);
+            const toIdx = nodes.findIndex(n => n.id === edge.toId);
+            if (fromIdx === -1 || toIdx === -1) return null;
+            const from = getNodePos(fromIdx);
+            const to = getNodePos(toIdx);
             return (
               <line
-                key={`${edge.from}-${edge.to}`}
-                x1={from.x} y1={from.y} x2={to.x} y2={to.y}
+                key={`${edge.fromId}-${edge.toId}-${i}`}
+                x1={from.x + 40} y1={from.y + 12}
+                x2={to.x + 40} y2={to.y + 12}
                 stroke="var(--ws-line)" strokeWidth={1.5}
               />
             );
           })}
         </svg>
-        {NODES.map(node => (
-          <button
-            key={node.id}
-            type="button"
-            onClick={() => setSelectedNode(selectedNode === node.id ? null : node.id)}
-            style={{
-              position: 'absolute',
-              left: node.x, top: node.y,
-              width: 80, height: 24,
-              background: selectedNode === node.id ? "rgba(16,185,129,0.1)" : "var(--ws-bg)",
-              border: `1.5px solid ${selectedNode === node.id ? "var(--ws-accent)" : MASTERY_COLORS[node.mastery]}`,
-              borderRadius: "4px",
-              color: "var(--ws-ink)",
-              fontSize: 10,
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1,
-              transition: 'all 150ms ease',
-            }}
-          >
-            {node.label}
-          </button>
-        ))}
+        {nodes.map((node, i) => {
+          const pos = getNodePos(i);
+          return (
+            <button
+              key={node.id}
+              type="button"
+              onClick={() => setSelectedId(selectedId === node.id ? null : node.id)}
+              style={{
+                position: 'absolute',
+                left: pos.x, top: pos.y,
+                width: 80, height: 24,
+                background: selectedId === node.id ? "rgba(16,185,129,0.1)" : "var(--ws-bg)",
+                border: `1.5px solid ${selectedId === node.id ? "var(--ws-accent)" : MASTERY_COLORS[node.mastery]}`,
+                borderRadius: "4px",
+                color: "var(--ws-ink)",
+                fontSize: 10,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1,
+                transition: 'all 150ms ease',
+              }}
+            >
+              {node.label}
+            </button>
+          );
+        })}
       </div>
 
       {selected && (
@@ -104,7 +111,7 @@ function GraphPanel() {
             {selected.mastery === 'unseen' && 'You have not yet encountered exercises on this concept.'}
           </div>
           <div style={{fontSize: 'var(--ws-type-xs)', color: "var(--ws-muted)", marginTop: 4}}>
-            Prerequisites: {EDGES.filter(e => e.to === selected.id).map(e => NODES.find(n => n.id === e.from)?.label).filter(Boolean).join(', ') || 'None'}
+            Prerequisites: {edges.filter(e => e.toId === selected.id).map(e => nodes.find(n => n.id === e.fromId)?.label).filter(Boolean).join(', ') || 'None'}
           </div>
         </div>
       )}

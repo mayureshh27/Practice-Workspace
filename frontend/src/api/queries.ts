@@ -39,3 +39,27 @@ export const masteryQueries = {
     staleTime: 1000 * 60,
   }),
 }
+
+export const sourcesQueries = {
+  list: () => queryOptions({
+    queryKey: ['sources'],
+    queryFn: api.getSources,
+    staleTime: 1000 * 60 * 30,
+  }),
+}
+
+export const artifactsQueries = {
+  list: () => queryOptions({
+    queryKey: ['artifacts'],
+    queryFn: api.getArtifacts,
+    staleTime: 1000 * 60 * 5,
+  }),
+}
+
+export const conceptQueries = {
+  graph: () => queryOptions({
+    queryKey: ['concepts', 'graph'],
+    queryFn: api.getConceptGraph,
+    staleTime: 1000 * 60 * 2,
+  }),
+}

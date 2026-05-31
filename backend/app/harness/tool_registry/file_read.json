@@ -1,0 +1,22 @@
+{
+  "name": "file_read",
+  "description": "Read a specific section of a source chunk file. Used to load full chunk content beyond the 200-token preview returned by source_search. Specify start_line and end_line for targeted reading.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "type": "string",
+        "description": "Path to the chunk file (returned as file_path in source_search results)"
+      },
+      "start_line": {
+        "type": "integer",
+        "description": "Start reading from this line (1-indexed)"
+      },
+      "end_line": {
+        "type": "integer",
+        "description": "Stop reading at this line (inclusive)"
+      }
+    },
+    "required": ["path", "start_line", "end_line"]
+  }
+}

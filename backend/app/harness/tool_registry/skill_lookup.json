@@ -1,0 +1,14 @@
+{
+  "name": "skill_lookup",
+  "description": "Retrieve the full content of a skill by its tag or name. Skills contain domain-specific instruction sets loaded on demand.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "tag": {
+        "type": "string",
+        "description": "The skill tag or name to look up"
+      }
+    },
+    "required": ["tag"]
+  }
+}

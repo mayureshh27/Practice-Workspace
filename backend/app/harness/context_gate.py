@@ -116,11 +116,13 @@ class DefaultContextGate:
         memories_dir: Path | None = None,
         system_prompt: str = "",
         deep_source: bool = False,
+        graph_layer: object | None = None,
     ) -> None:
         self._tool_registry = tool_registry
         self._memories_dir = memories_dir or Path("memories")
         self._system_prompt = system_prompt
         self._deep_source = deep_source
+        self._graph_layer = graph_layer
 
         # Compute effective budgets
         self._budgets = dict(_DEFAULT_BUDGETS)
@@ -160,8 +162,26 @@ class DefaultContextGate:
         # ── 4. Memory seed (from files, not injected) ───────────────
         memory_seed = self._read_memory_seed()
 
-        # ── 5. Graph seed (empty until GraphLayer is wired) ─────────
+        # ── 5. Graph seed (from GraphLayer if wired) ────────────────
         graph_seed: str | None = None
+        if self._graph_layer is not None and source_ids:
+            try:
+                context = self._graph_layer.get_concept_context(source_ids)
+                parts = []
+                for c in context.concepts:
+                    score = f"{c.mastery_score:.2f}" if c.mastery_score is not None else "not practiced"
+                    parts.append(f"- {c.canonical_name}: mastery {score}")
+                if context.prereq_chain:
+                    parts.append("\nPrerequisite chain:")
+                    for p in context.prereq_chain:
+                        parts.append(f"  - {p.canonical_name}")
+                if context.gap_concepts:
+                    parts.append("\nPrerequisite gaps (below threshold):")
+                    for g in context.gap_concepts:
+                        parts.append(f"  - {g.canonical_name}")
+                graph_seed = "\n".join(parts) if parts else None
+            except Exception:
+                pass
 
         # ── 6. Retrieved chunks (empty until RetrievalRouter is wired)
         retrieved_chunks: list[str] = []

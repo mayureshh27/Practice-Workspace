@@ -1,5 +1,11 @@
 version: '3.8'
 
+# Infrastructure dependencies for PracDaGo.
+# - Qdrant: vector store for source-chunk retrieval (hybrid BM25 + dense)
+# - Memgraph: removed — Graphiti now uses embedded Kuzu backend (graphiti-core[kuzu])
+#   No Docker service needed for temporal mastery edges.
+# - Kuzu: embedded directly in the Python process — no Docker needed.
+
 services:
   qdrant:
     image: qdrant/qdrant:latest
@@ -11,15 +17,5 @@ services:
       - qdrant_data:/qdrant/storage
     restart: unless-stopped
 
-  memgraph:
-    image: memgraph/memgraph:latest
-    container_name: learning_memgraph
-    ports:
-      - "7687:7687"
-    volumes:
-      - memgraph_data:/var/lib/memgraph
-    restart: unless-stopped
-
 volumes:
   qdrant_data:
-  memgraph_data:

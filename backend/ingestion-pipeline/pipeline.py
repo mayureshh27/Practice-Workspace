@@ -104,13 +104,17 @@ class IngestionPipeline:
                  catalog_path: Path        = CATALOG_PATH,
                  auto_commit:  bool        = False,
                  max_chunks:   int         = 50,
-                 base_url:     str | None  = None):
+                 base_url:     str | None  = None,
+                 qdrant_router: object | None = None,
+                 graph_layer: object | None = None):
 
         self.chapter      = chapter
         self.title        = title or chapter
         self.max_chunks   = max_chunks
         self.auto_commit  = auto_commit
         self._summary     = RunSummary()
+        self._qdrant_router = qdrant_router
+        self._graph_layer = graph_layer
 
         # Load catalog once for dedup seeding
         catalog = json.loads(catalog_path.read_text()) \
@@ -244,6 +248,22 @@ class IngestionPipeline:
             except Exception as e:
                 print(f"   Structure detection failed: {e} — continuing without")
 
+        # Index chunks into Qdrant if router is available
+        if self._qdrant_router is not None and hasattr(self._qdrant_router, 'index_chunks'):
+            try:
+                chunk_dicts = []
+                for c in chunks:
+                    chunk_dicts.append({
+                        "text": c.text,
+                        "source_id": raw.metadata.get("source_id", self.chapter),
+                        "chunk_index": getattr(c, 'index', 0),
+                        "page_or_timestamp": raw.metadata.get("page"),
+                    })
+                indexed = self._qdrant_router.index_chunks(chunk_dicts)
+                print(f"   Indexed {len(indexed)} chunks into Qdrant")
+            except Exception as e:
+                print(f"   Qdrant indexing failed: {e}")
+
         # Filter and cap
         usable = [c for c in chunks if not c.is_thin()]
         self._summary.chunks_total   += len(chunks)
@@ -273,6 +293,23 @@ class IngestionPipeline:
                 continue
 
             self._summary.generated += 1
+
+            # Extract concepts and link into Kuzu if graph layer is available
+            if self._graph_layer is not None and hasattr(self._graph_layer, 'extract_and_link_concepts'):
+                try:
+                    tags = getattr(problem, 'tags', []) or []
+                    if tags:
+                        from app.domain.graph import ConceptCandidate
+                        candidates = []
+                        for tag in tags:
+                            if isinstance(tag, str):
+                                candidates.append(ConceptCandidate(name=tag))
+                        if candidates:
+                            source_id = raw.metadata.get("source_id", self.chapter)
+                            self._graph_layer.extract_and_link_concepts(source_id, candidates)
+                            print(f"      Linked {len(candidates)} concepts into Knowledge Graph")
+                except Exception as e:
+                    print(f"      Kuzu concept linking failed: {e}")
 
             # Stage 8: dedup
             is_dup, dup_reason = self._dedup.is_duplicate(problem)

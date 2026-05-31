@@ -1,0 +1,15 @@
+{
+  "name": "graph_lookup",
+  "description": "Look up concept definitions, prerequisite chains, and mastery scores from the Knowledge Graph. Returns structured context about concepts and their relationships.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "concept_ids": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "List of concept IDs to look up"
+      }
+    },
+    "required": ["concept_ids"]
+  }
+}

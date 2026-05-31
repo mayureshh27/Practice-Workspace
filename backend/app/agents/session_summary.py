@@ -1,43 +1,32 @@
-"""Session Summary Agent stub — produces compressed pedagogical summaries.
-
-Per ADR-0022: the SessionSummaryAgent receives a serialised event list and
-nothing else. Its output is verified against the session's actual
-ConceptMasteryUpdated events before the Event Emitter writes it. The agent
-never has access to the MemoryStore directly.
-"""
-
-import os
 from dataclasses import dataclass
 
 from pydantic import BaseModel
 from pydantic_ai import Agent
 
+from app.harness.model_router import DefaultModelRouter, ModelRouter
+
 
 @dataclass
 class SessionSummaryDeps:
-    """Dependencies — the serialised event list is the only input."""
-
     session_id: str
 
 
 class SessionSummaryOutput(BaseModel):
-    """Structured output verified by the harness before writing."""
-
     summary_text: str
     concepts_covered: list[str] = []
-    mastery_deltas: dict[str, float] = {}  # concept_id → delta
+    mastery_deltas: dict[str, float] = {}
 
 
-def _select_model() -> str:
-    """Pick the model based on available API keys."""
-    if os.environ.get("GOOGLE_API_KEY"):
-        return "google:gemini-2.5-flash"
-    # Fallback: Pydantic AI TestModel is used when no key is present
-    return "test"
+_router: ModelRouter = DefaultModelRouter()
+
+
+def _resolve_model() -> str:
+    cfg = _router.route("session_summary")
+    return cfg.pydantic_ai_model()
 
 
 session_summary_agent = Agent(
-    _select_model(),
+    _resolve_model(),
     deps_type=SessionSummaryDeps,
     output_type=SessionSummaryOutput,
     instructions=(

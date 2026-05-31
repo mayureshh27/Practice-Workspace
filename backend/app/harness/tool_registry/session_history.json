@@ -1,0 +1,14 @@
+{
+  "name": "session_history",
+  "description": "Retrieve the full raw history for a given session ID. Used to recover details after compaction has summarised the context.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "session_id": {
+        "type": "string",
+        "description": "Session ID to retrieve history for"
+      }
+    },
+    "required": ["session_id"]
+  }
+}

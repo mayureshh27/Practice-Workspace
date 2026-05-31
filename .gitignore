@@ -22,6 +22,7 @@ __pycache__/
 
 # Database files
 *.db
+*.db-*
 *.db_test
 qdrant_db/
 
@@ -30,3 +31,9 @@ frontend/.git_disabled/
 
 # VS Code
 .vscode/
+
+# Session logs
+session-*.md
+
+# Agent settings/cache
+.agents/

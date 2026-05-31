@@ -21,6 +21,7 @@ dependencies = [
     "kuzu>=0.11.3",
     "rapidfuzz>=3.14.5",
     "sentence-transformers>=5.5.1",
+    "graphiti-core[kuzu]>=0.29.1",
 ]
 
 [tool.fastapi]

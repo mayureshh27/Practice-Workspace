@@ -14,6 +14,8 @@ from fastapi import APIRouter, HTTPException, Path
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from fastapi import Request
+
 from app.agents import session_service, tutor_service
 from app.storage.database import DatabaseDep
 
@@ -60,8 +62,9 @@ def create_chat_session() -> SessionCreateResponse:
 
 @router.post("/message")
 async def send_message(
-    request: ChatMessageRequest,
+    body: ChatMessageRequest,
     db_session: DatabaseDep,
+    request: Request,
 ) -> ChatMessageResponse:
     """Send a message to the Socratic tutor and receive a response.
 
@@ -71,13 +74,15 @@ async def send_message(
     try:
         response_text = await tutor_service.handle_chat_turn(
             db_session=db_session,
-            session_id=request.session_id,
-            user_message=request.message,
-            concept_ids=request.concept_ids,
-            source_ids=request.source_ids,
+            session_id=body.session_id,
+            user_message=body.message,
+            concept_ids=body.concept_ids,
+            source_ids=body.source_ids,
+            retrieval_router=getattr(request.app.state, "retrieval_router", None),
+            graph_layer=getattr(request.app.state, "graph_layer", None),
         )
         return ChatMessageResponse(
-            session_id=request.session_id,
+            session_id=body.session_id,
             response=response_text,
         )
     except Exception as e:
@@ -86,8 +91,9 @@ async def send_message(
 
 @router.post("/message/stream")
 async def send_message_stream(
-    request: ChatMessageRequest,
+    body: ChatMessageRequest,
     db_session: DatabaseDep,
+    request: Request,
 ) -> StreamingResponse:
     """Send a message and receive the response as an SSE stream.
 
@@ -99,10 +105,12 @@ async def send_message_stream(
         try:
             response_text = await tutor_service.handle_chat_turn(
                 db_session=db_session,
-                session_id=request.session_id,
-                user_message=request.message,
-                concept_ids=request.concept_ids,
-                source_ids=request.source_ids,
+                session_id=body.session_id,
+                user_message=body.message,
+                concept_ids=body.concept_ids,
+                source_ids=body.source_ids,
+                retrieval_router=getattr(request.app.state, "retrieval_router", None),
+                graph_layer=getattr(request.app.state, "graph_layer", None),
             )
 
             # Simulate streaming by sending word-by-word

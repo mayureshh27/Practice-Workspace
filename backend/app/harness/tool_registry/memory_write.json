@@ -1,0 +1,19 @@
+{
+  "name": "memory_write",
+  "description": "Write content to a Memory Seed Protocol file in the /memories/ directory. Changes persist immediately across process restarts.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "filename": {
+        "type": "string",
+        "enum": ["mastery.md", "blind_spots.md", "active_sources.md", "position.md"],
+        "description": "Which memory seed file to write"
+      },
+      "content": {
+        "type": "string",
+        "description": "Markdown content to write to the file"
+      }
+    },
+    "required": ["filename", "content"]
+  }
+}
