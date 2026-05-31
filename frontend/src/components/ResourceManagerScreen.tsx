@@ -84,14 +84,14 @@ function ResourceManagerScreen() {
       return (
         <div key={node.id} className="flex flex-col">
           <div 
-            className={`flex items-center gap-2 py-1 px-2 hover:bg-ws-floor rounded cursor-pointer ${activeTopic === node.id ? 'bg-ws-floor border-l-2 border-ws-glow' : ''}`}
+            className={`flex items-center gap-2 py-1 px-2 hover:bg-ws-bg rounded cursor-pointer ${activeTopic === node.id ? 'bg-ws-bg border-l-2 border-ws-success' : ''}`}
             style={{paddingLeft: `${depth * 16 + 8}px`}}
             onClick={() => {
               if (hasChildren) toggleExpand(node.id);
               else setActiveTopic(node.id);
             }}
           >
-            <div className="w-4 h-4 flex items-center justify-center text-ws-ink-tertiary">
+            <div className="w-4 h-4 flex items-center justify-center text-ws-muted">
               {hasChildren && (isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />)}
             </div>
             <div onClick={e => e.stopPropagation()}>
@@ -102,7 +102,7 @@ function ResourceManagerScreen() {
                 onChange={(e) => toggleSelect(node, e.target.checked)}
               />
             </div>
-            <span className={`text-sm ${hasChildren ? 'text-ws-ink-secondary font-medium' : 'text-ws-ink'}`}>
+            <span className={`text-sm ${hasChildren ? 'text-ws-soft font-medium' : 'text-ws-ink'}`}>
               {node.label}
             </span>
           </div>
@@ -119,18 +119,18 @@ function ResourceManagerScreen() {
   const currentSources = ALL_SOURCES[activeTopic] || [];
 
   return (
-    <div className="ws-home h-full max-w-none p-6">
+    <div className="h-full max-w-none p-6">
       <div className="flex w-full items-center justify-between mb-6">
-        <h1 className="ws-home-section-title mb-0">Resource Manager</h1>
-        <button type="button" className="ws-home-action">
+        <h1 className="text-xl font-bold text-ws-ink mb-0">Resource Manager</h1>
+        <button type="button" className="bg-ws-success text-[#0a0a0b] font-semibold rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-110 transition-all cursor-pointer shadow-md">
           <FileUp size={16} /> Add Source
         </button>
       </div>
       
       <div className="flex w-full h-[calc(100%-60px)] gap-6">
         {/* Hierarchy Tree */}
-        <div className="w-1/3 bg-ws-bench border border-ws-edge-soft rounded-lg flex flex-col overflow-hidden">
-          <div className="p-4 border-b border-ws-edge-soft bg-ws-shelf">
+        <div className="w-1/3 bg-ws-surface border border-ws-line rounded-lg flex flex-col overflow-hidden">
+          <div className="p-4 border-b border-ws-line bg-ws-surface-2">
             <span className="font-medium text-ws-ink flex items-center gap-2"><FolderTree size={16} /> Curriculum Tree</span>
           </div>
           <div className="p-2 flex-1 overflow-auto">
@@ -139,39 +139,39 @@ function ResourceManagerScreen() {
         </div>
         
         {/* Detail Panel */}
-        <div className="w-2/3 bg-ws-bench border border-ws-edge-soft rounded-lg flex flex-col overflow-hidden">
-          <div className="p-4 border-b border-ws-edge-soft bg-ws-shelf">
+        <div className="w-2/3 bg-ws-surface border border-ws-line rounded-lg flex flex-col overflow-hidden">
+          <div className="p-4 border-b border-ws-line bg-ws-surface-2">
             <span className="font-medium text-ws-ink flex items-center gap-2">
               Topic Sources
             </span>
           </div>
           <div className="p-4 flex-1 overflow-auto flex flex-col gap-4">
             {currentSources.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-ws-ink-muted">
+              <div className="flex-1 flex flex-col items-center justify-center text-ws-muted">
                 <FileText size={32} className="mb-4 opacity-50" />
                 <p>No sources assigned to this topic.</p>
               </div>
             ) : currentSources.map(s => (
-              <div key={s.id} className="p-4 border border-ws-edge-soft rounded-lg bg-ws-floor flex gap-4">
+              <div key={s.id} className="p-4 border border-ws-line rounded-lg bg-ws-bg flex gap-4">
                 <div className="mt-1">
-                  {s.status === 'indexed' && <CheckCircle size={20} className="text-ws-glow" />}
-                  {s.status === 'extracting' && <Clock size={20} className="text-ws-ink-tertiary" />}
-                  {s.status === 'chunking' && <AlertTriangle size={20} className="text-ws-signal-warn" />}
+                  {s.status === 'indexed' && <CheckCircle size={20} className="text-ws-success" />}
+                  {s.status === 'extracting' && <Clock size={20} className="text-ws-muted" />}
+                  {s.status === 'chunking' && <AlertTriangle size={20} className="text-ws-warning" />}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-ws-ink text-base">{s.name}</span>
-                    <span className="text-ws-type-sm text-ws-ink-tertiary uppercase tracking-wider">{s.status}</span>
+                    <span className="text-[11px] text-ws-muted uppercase tracking-wider">{s.status}</span>
                   </div>
-                  <div className="flex gap-6 text-ws-type-sm text-ws-ink-muted">
+                  <div className="flex gap-6 text-[11px] text-ws-muted">
                     <span>{s.chunks} chunks</span>
                     <span>{s.citations} citations</span>
                     <span>{s.artifacts} artifacts generated</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <button type="button" className="ws-home-recent-item py-1 px-3 text-center !w-auto">Inspect</button>
-                  <button type="button" className="ws-home-recent-item py-1 px-3 text-center !w-auto">Reassign</button>
+                  <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-muted text-sm font-semibold cursor-pointer hover:border-ws-success hover:text-ws-success transition-all py-1 px-3 text-center !w-auto">Inspect</button>
+                  <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-muted text-sm font-semibold cursor-pointer hover:border-ws-success hover:text-ws-success transition-all py-1 px-3 text-center !w-auto">Reassign</button>
                 </div>
               </div>
             ))}
