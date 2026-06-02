@@ -7,9 +7,14 @@ The Studio's Run button hits this endpoint. The endpoint:
   2. Resolves the subject / chapter / topic names.
   3. Substitutes {{…}} placeholders in the workflow's prompt.
   4. Calls the Practice Agent (Pydantic AI + ModelRouter).
-  5. Normalises the response into a list of problems.
-  6. Persists a new artifact via the existing /api/artifacts pipeline
-     and returns it.
+  5. Persists a new artifact via :func:`make_artifact` /
+     :func:`append_artifact` and returns it.
+
+The practice agent now returns a typed :class:`PracticePayload`
+discriminated union (chat review §3.1, §5.1, §5.2). The agent's parse
+errors propagate as 502 so misbehaving LLM shapes are visible in
+Logfire (chat review §5.1: "Bad shapes surface as errors, not silent
+fallbacks").
 
 Errors are surfaced verbatim so the Studio's alert+Retry banner
 can show the user what to fix (missing API key, network outage,
@@ -18,13 +23,11 @@ malformed workflow, etc.).
 
 from __future__ import annotations
 
-import time
-
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from app.agents import practice_agent
-from app.api._ids import new_id
+from app.api._artifact_factory import append_artifact, make_artifact
 from app.api.artifacts import ArtifactDTO
 from app.domain.workspace import PracticeConfig
 from app.storage import workflows_repo, workspace_repo
@@ -100,32 +103,38 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
             ),
         )
 
-    problems, _raw, _err = await practice_agent.generate_practice(prompt, requested_count=count)
+    try:
+        typed_payload = await practice_agent.generate_practice(
+            prompt,
+            requested_count=count,
+            difficulty=difficulty,
+            workflow_id=workflow.id,
+            workflow_name=workflow.name,
+        )
+    except ValidationError as exc:
+        # LLM emitted a shape we don't recognise. Surface as 502 so
+        # operators can fix the prompt template (chat review §5.1:
+        # "Bad shapes surface as errors, not silent fallbacks").
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                f"Practice agent returned an unrecognised shape: {exc!s}. "
+                "Check the workflow's promptTemplate — it should ask for "
+                "{problems|questions|summary} and return a JSON object."
+            ),
+        ) from exc
 
-    # Canonical id from app.api._ids — sortable, collision-safe.
-    artifact_id = new_id("art")
-    now = time.time()
-    record = {
-        "id": artifact_id,
-        "name": f"{workflow.name} — {names.get('subject', 'practice')}",
-        "type": workflow.target_type,
-        "status": "draft",
-        "time": time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime())
-        + f"{int((now % 1) * 1000):03d}Z",
-        "domain_id": body.domain_id,
-        "subject_id": body.subject_id,
-        "chapter_id": body.chapter_id,
-        "topic_id": body.topic_id,
-        "payload": {
-            "problems": problems,
-            "workflow_id": workflow.id,
-            "workflow_name": workflow.name,
-            "difficulty": difficulty,
-            "requested_count": count,
-        },
-    }
-
-    artifacts = getattr(request.app.state, "artifacts", [])
-    artifacts.append(record)
-    request.app.state.artifacts = artifacts
+    # Persist via the factory; the discriminated union's `kind` rides
+    # along on the payload dict for the frontend to narrow on.
+    record = make_artifact(
+        name=f"{workflow.name} — {names.get('subject', 'practice')}",
+        type=workflow.target_type,
+        status="draft",
+        domain_id=body.domain_id,
+        subject_id=body.subject_id,
+        chapter_id=body.chapter_id,
+        topic_id=body.topic_id,
+        payload=typed_payload.model_dump(),
+    )
+    append_artifact(request, record)
     return ArtifactDTO(**record)

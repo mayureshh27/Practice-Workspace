@@ -2,16 +2,19 @@
 
 GET  /api/artifacts       — list all artifacts (most recent first)
 POST /api/artifacts       — create an artifact (e.g. from a workflow run)
+
+Construction goes through :func:`app.api._artifact_factory.make_artifact`
+so the id-stamping, time-formatting, and state-mutation patterns are not
+duplicated between this router and the practice-exercises router
+(chat review §2.3).
 """
 
 from __future__ import annotations
 
-import time
-
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
-from app.api._ids import new_id
+from app.api._artifact_factory import append_artifact, make_artifact
 
 router = APIRouter(prefix="/api/artifacts", tags=["artifacts"])
 
@@ -26,10 +29,10 @@ class ArtifactDTO(BaseModel):
     subject_id: str | None = None
     chapter_id: str | None = None
     topic_id: str | None = None
-    # Optional payload — the practice endpoint (Phase 6) drops the
-    # generated problems here. We accept arbitrary structured content
-    # so different artifact kinds (summary text, quiz JSON, exercise
-    # list, etc.) all round-trip through the same channel.
+    # Discriminated union payload — ``payload["kind"]`` is one of
+    # ``"practice"``, ``"quiz"``, ``"summary"`` (see
+    # :mod:`app.domain.artifact`). The frontend narrows on the
+    # discriminator; the server preserves it end-to-end.
     payload: dict | None = None
 
 
@@ -69,22 +72,18 @@ def create_artifact(request: Request, body: CreateArtifactBody) -> ArtifactDTO:
 
     The Studio's practice run, the workflow editor's "Save as
     artifact" action, and any future agent code all funnel through
-    this endpoint. The server stamps ``id`` (timestamp-based) and
-    ``time`` (ISO-8601) so the client doesn't have to.
+    this endpoint. The factory stamps ``id`` and ``time`` so the
+    client doesn't have to (chat review §2.3 #1).
     """
-    artifacts = getattr(request.app.state, "artifacts", [])
-    now = time.time()
-    # Canonical id format: {prefix}-{ms_timestamp}-{8_hex}. The hex
-    # suffix is part of new_id() so concurrent POSTs in the same
-    # millisecond never collide (the timestamp-only form did, see
-    # diagnose notes in commit history).
-    artifact_id = new_id("art")
-    # Dump by name (snake_case) so the keys match ArtifactDTO's fields.
-    record = body.model_dump(by_alias=False, exclude_none=True)
-    record["id"] = artifact_id
-    record["time"] = (
-        time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime()) + f"{int((now % 1) * 1000):03d}Z"
+    record = make_artifact(
+        name=body.name,
+        type=body.type,
+        status=body.status,
+        domain_id=body.domain_id,
+        subject_id=body.subject_id,
+        chapter_id=body.chapter_id,
+        topic_id=body.topic_id,
+        payload=body.payload,
     )
-    artifacts.append(record)
-    request.app.state.artifacts = artifacts
+    append_artifact(request, record)
     return ArtifactDTO(**record)

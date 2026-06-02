@@ -1,4 +1,4 @@
-"""Canonical id generation for runtime-created entities.
+"""Canonical id and timestamp generation for runtime-created entities.
 
 Replaces ad-hoc ``int(time.time() * 1000)`` call sites that
 collided when two writes landed in the same millisecond (verified
@@ -19,6 +19,12 @@ Format: ``{prefix}-{ms_timestamp}-{8_hex_chars}``
   call site) goes away.
 * The prefix (``art-``, ``wf-``, ``wf-dup-``, ``wf-fork-``) makes
   log lines and DB rows self-describing.
+
+``now_iso_with_ms`` is the ISO-8601-with-milliseconds helper that
+replaces the duplicated ``time.strftime(...) + f"{int((now % 1) *
+1000):03d}Z"`` block in ``artifacts.py`` and
+``practice_exercises.py`` (chat review §2.3; the same pattern was
+duplicated in two call sites before Phase 3).
 
 Refs: M-B2 (canonical ``new_id``), R-2.1 (storage paths).
 """
@@ -51,3 +57,23 @@ def new_id(prefix: str = "id") -> str:
     True
     """
     return f"{prefix}-{int(time.time() * 1000)}-{uuid.uuid4().hex[:8]}"
+
+
+def now_iso_with_ms() -> str:
+    """Return the current UTC time as an ISO-8601 string with milliseconds.
+
+    Format: ``YYYY-MM-DDTHH:MM:SS.sssZ`` (UTC, millisecond precision,
+    ``Z`` suffix). Replaces the duplicated ``time.strftime(...)`` block
+    in ``artifacts.py:84-87`` and ``practice_exercises.py:113-114``
+    (chat review §2.3: the same math lived in two places).
+
+    Examples
+    --------
+    >>> ts = now_iso_with_ms()
+    >>> ts.endswith("Z")
+    True
+    >>> len(ts.split(".")[-1])
+    4  # three ms digits + 'Z'
+    """
+    now = time.time()
+    return time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime()) + f"{int((now % 1) * 1000):03d}Z"
