@@ -10,8 +10,6 @@ export const Route = createFileRoute('/notebook/$domainId/$subjectId')({
 function NotebookRoute() {
   const { domainId, subjectId } = Route.useParams()
   const domains = useWorkspaceStore(s => s.domains)
-  const addTopic = useWorkspaceStore(s => s.addTopic)
-  const addArtifact = useWorkspaceStore(s => s.addArtifact)
   const addResource = useWorkspaceStore(s => s.addResource)
   const navigate = useNavigate()
 
@@ -31,8 +29,6 @@ function NotebookRoute() {
           navigate({ to: `/subject/$domainId/$subjectId`, params: { domainId: loc.domainId, subjectId: loc.subjectId } })
         }
       }}
-      onAddTopic={(domId, subjId, chapId, name) => addTopic(domId, subjId, chapId, name)}
-      onAddArtifact={addArtifact}
       onAddResource={addResource}
     />
   )

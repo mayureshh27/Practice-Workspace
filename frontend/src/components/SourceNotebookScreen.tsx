@@ -1,7 +1,12 @@
-import {Sparkles, Send, FileOutput, ArrowLeft, Plus, Headphones, Presentation, Video, Network, TrendingUp, CreditCard, HelpCircle, BarChart4, Table, StickyNote, Globe, Check, Columns, X, Upload, Clipboard, Cloud} from 'lucide-react';
+import {Sparkles, Send, FileOutput, ArrowLeft, Plus, StickyNote, Globe, Check, Columns, X, Upload, Clipboard, Cloud, AlertCircle, Settings2, RefreshCw, ChevronRight, Play} from 'lucide-react';
 import {useState, useRef, useEffect, useMemo} from 'react';
-import type {Domain, Subject, Artifact, NavLocation} from '../workspaceTypes';
+import { useNavigate } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import type {Domain, Subject, Artifact, NavLocation, WorkflowTemplate} from '../workspaceTypes';
 import { CustomSelect } from './ui/CustomSelect';
+import { useUIStore } from '../stores/uiStore';
+import { useWorkspaceStore } from '../stores/workspaceStore';
+import { artifactsQueries } from '../api/queries';
 
 const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" {...props}>
@@ -16,12 +21,10 @@ type Props = {
   domain: Domain;
   subject: Subject;
   onNavigate: (loc: NavLocation) => void;
-  onAddTopic: (domainId: string, subjectId: string, chapterId: string, topicName: string) => void;
-  onAddArtifact: (art: Omit<Artifact, 'id' | 'time'>) => void;
   onAddResource?: (domainId: string, subjectId: string, name: string, fileType: string, linesCount: number) => void;
 };
 
-function SourceNotebookScreen({domain, subject, onNavigate, onAddTopic, onAddArtifact, onAddResource}: Props) {
+function SourceNotebookScreen({domain, subject, onNavigate, onAddResource}: Props) {
   // Collapsible column states
   const [sourcesCollapsed, setSourcesCollapsed] = useState(false);
   const [studioCollapsed, setStudioCollapsed] = useState(false);
@@ -69,14 +72,39 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddTopic, onAddArt
 
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [artifacts, setArtifacts] = useState<GeneratedArtifact[]>([
-    {id: 'art-init', name: `Initial ${subject.name} Workbook`, type: 'Workbook', time: '2 hours ago'}
-  ]);
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
-  const [alertMsg, setAlertMsg] = useState<string | null>(null);
+  const [runError, setRunError] = useState<string | null>(null);
   const [notes, setNotes] = useState<string[]>([]);
   const [showNotesForm, setShowNotesForm] = useState(false);
   const [newNoteText, setNewNoteText] = useState('');
+
+  const navigate = useNavigate();
+  const setCreationModal = useUIStore(s => s.setCreationModal);
+  const workflows = useWorkspaceStore(s => s.workflows);
+  const runWorkflow = useWorkspaceStore(s => s.runWorkflow);
+  const modelConfigured = useWorkspaceStore(s => s.modelConfigured);
+
+  // Studio: workflows scoped to this subject, plus all global ones.
+  // Backend's GET /api/workflows bubbles global + scoped by passing
+  // subjectId, but the store is hydrated with the unfiltered list at
+  // boot, so we filter client-side to keep the Studio in sync.
+  const studioWorkflows = useMemo(() => {
+    return workflows.filter(wf =>
+      wf.scope === 'global' ||
+      (wf.scope === 'subject' && wf.subjectId === subject.id)
+    );
+  }, [workflows, subject.id]);
+
+  // Generated History — backend-driven, filtered to the current subject.
+  const artifactsQuery = useQuery(artifactsQueries.list());
+  const subjectArtifacts = useMemo(() => {
+    const items = artifactsQuery.data ?? [];
+    return items.filter(a => a.subjectId === subject.id);
+  }, [artifactsQuery.data, subject.id]);
+
+  // Subjects that have a non-empty chapter list — required for + New
+  // Topic to know which chapter to drop the new topic into.
+  const firstChapterId = subject.chapters[0]?.id;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -112,56 +140,39 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddTopic, onAddArt
     }, 1200);
   };
 
-  const triggerStudioWorkflow = (wfName: string, targetType: string) => {
-    setIsGenerating(wfName);
-    setAlertMsg(null);
-    const selectedCount = sources.filter(s => s.selected).length;
-
-    if (selectedCount === 0) {
-      setTimeout(() => {
-        setAlertMsg(`Generation failed. Please select at least one reference source in the left column first.`);
-        setIsGenerating(null);
-      }, 1000);
-      return;
-    }
-
-    setTimeout(() => {
-      const uniqueId = Date.now().toString();
-      const topicName = `${wfName} Concept Extraction`;
-      const chapterId = subject.chapters[0]?.id || 'ch-gen';
-
-      // 1. Add topic
-      onAddTopic(domain.id, subject.id, chapterId, topicName);
-
-      // 2. Add workspace artifact
-      onAddArtifact({
-        name: `Generated ${targetType} for ${subject.name}`,
-        type: targetType,
-        status: 'draft',
+  const runStudioWorkflow = async (wf: WorkflowTemplate) => {
+    setIsGenerating(wf.id);
+    setRunError(null);
+    try {
+      const artifact = await runWorkflow(wf, {
         domainId: domain.id,
         subjectId: subject.id,
-        chapterId: chapterId,
-        topicId: uniqueId
+        subjectName: subject.name,
+        chapterId: firstChapterId,
+        chapterName: subject.chapters[0]?.name,
       });
-
-      // 3. Update local list
-      setArtifacts(prev => [
-        { id: uniqueId, name: `Generated ${targetType}`, type: targetType, time: 'Just now' },
-        ...prev
-      ]);
-
-      // 4. Append chat completion
+      // Refresh the artifacts query so the Generated History
+      // updates without a manual reload.
+      await artifactsQuery.refetch();
+      // Append a chat completion so the user sees the run was
+      // acknowledged, even if they don't scroll to the right panel.
       setMessages(prev => [
         ...prev,
         {
-          id: uniqueId + '-ai',
+          id: `${artifact?.id ?? Date.now()}-ai`,
           role: 'assistant',
-          content: `⚡ **Notebook Studio Workflow Triggered!**\n\nI have successfully executed the **${wfName}** workspace loop over **${selectedCount} files**.\n\n- **Generated Topic**: "${topicName}" added under your first chapter.\n- **New Artifact**: A premium draft **${targetType}** study reference is now persistently stored.`
-        }
+          content: `⚡ **${wf.name}** finished — generated **${wf.targetType}** for *${subject.name}*. ${
+            artifact?.payload && typeof artifact.payload === 'object' && 'problems' in artifact.payload
+              ? `(${Object.keys((artifact.payload as Record<string, unknown>).problems as object).length} problems)`
+              : ''
+          }`,
+        },
       ]);
-
+    } catch (err) {
+      setRunError(err instanceof Error ? err.message : 'Workflow run failed.');
+    } finally {
       setIsGenerating(null);
-    }, 1800);
+    }
   };
 
   const handleAddNote = () => {
@@ -384,10 +395,37 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddTopic, onAddArt
           >
             <ArrowLeft size={16} />
           </button>
-          <div>
+          <div className="flex-1 min-w-0">
             <h2 className="text-sm font-bold text-ws-ink m-0">{subject.name} Notebook</h2>
             <div className="text-[10px] text-ws-muted mt-px">{sources.filter(s => s.selected).length} sources selected</div>
           </div>
+          <button
+            type="button"
+            onClick={() => setCreationModal({ open: true, type: 'chapter', domainId: domain.id, subjectId: subject.id })}
+            className="press shrink-0 bg-transparent border border-ws-edge-soft text-ws-soft cursor-pointer px-2 py-1 rounded-ws-sm text-[10px] font-semibold flex items-center gap-1 hover:bg-ws-surface-2 transition-colors"
+            title="Add chapter to this subject"
+          >
+            <Plus size={11} />
+            Chapter
+          </button>
+          <button
+            type="button"
+            disabled={!firstChapterId}
+            onClick={() => firstChapterId && setCreationModal({
+              open: true,
+              type: 'topic',
+              domainId: domain.id,
+              subjectId: subject.id,
+              chapterId: firstChapterId,
+            })}
+            className={`press shrink-0 bg-transparent border border-ws-edge-soft text-ws-soft cursor-pointer px-2 py-1 rounded-ws-sm text-[10px] font-semibold flex items-center gap-1 hover:bg-ws-surface-2 transition-colors ${
+              !firstChapterId ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : ''
+            }`}
+            title={firstChapterId ? `Add topic to ${subject.chapters[0].name}` : 'Create a chapter first'}
+          >
+            <Plus size={11} />
+            Topic
+          </button>
         </div>
 
         {/* Dynamic Chat log: Scrollable internally */}
@@ -489,83 +527,165 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddTopic, onAddArt
         </div>
 
         {!studioCollapsed && (
-          <div className="flex-1 flex flex-col overflow-y-auto p-4 gap-4 scrollbar">
-            
-            {/* Create overview wrapper */}
-            <div className="bg-ws-bg border border-ws-edge-soft rounded-ws-lg p-4">
-              <div className="text-xs font-bold text-ws-ink mb-1">Compile Audio Overview</div>
-              <p className="text-[10px] text-ws-muted leading-[1.4] m-0">
-                Create an Audio Overview to synthesize and explain core equations, coordinate derivations, and lessons.
-              </p>
+          <div className="flex-1 flex flex-col overflow-hidden">
+
+            {/* Workflows header */}
+            <div className="px-4 pt-4 pb-2 flex items-center justify-between gap-2">
+              <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider">
+                Workflows
+                {!modelConfigured && (
+                  <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-ws-sm bg-ws-warning/10 text-ws-warning text-[9px] normal-case tracking-normal">
+                    <AlertCircle size={9} />
+                    Model not configured
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate({ to: '/workflow-editor' })}
+                className="press bg-transparent border-none text-ws-muted cursor-pointer p-1 rounded hover:bg-ws-surface-2 transition-colors flex items-center gap-1 text-[10px]"
+                title="New workflow"
+              >
+                <Plus size={12} />
+                New
+              </button>
             </div>
 
-            {/* Target actions grid */}
-            <div>
-              <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider mb-2.5">
-                Create Overviews & Guides
-              </div>
-              
-              <div className="grid grid-cols-2 gap-1.5">
-                {[
-                  { label: 'Audio Overview', type: 'Podcast', icon: Headphones },
-                  { label: 'Slide Deck', type: 'Presentation', icon: Presentation },
-                  { label: 'Video Overview', type: 'Video Summary', icon: Video },
-                  { label: 'Mind Map', type: 'Concept Graph', icon: Network },
-                  { label: 'Reports', type: 'Summary', icon: TrendingUp },
-                  { label: 'Flashcards', type: 'Flashcard deck', icon: CreditCard },
-                  { label: 'Quiz', type: 'Quiz', icon: HelpCircle },
-                  { label: 'Infographic', type: 'Poster guide', icon: BarChart4 },
-                  { label: 'Data Table', type: 'Spreadsheet', icon: Table }
-                ].map(action => {
-                  const Icon = action.icon;
+            {/* Workflows list — scrollable, click body to run, gear to edit */}
+            <div className="px-4 pb-3 max-h-[40%] overflow-y-auto scrollbar flex flex-col gap-1.5">
+              {studioWorkflows.length === 0 ? (
+                <div className="px-3 py-4 text-center text-[10px] text-ws-muted italic border border-dashed border-ws-edge-soft rounded-ws-md">
+                  No workflows yet.
+                  <br />
+                  <button
+                    type="button"
+                    onClick={() => navigate({ to: '/workflow-editor' })}
+                    className="press mt-2 text-ws-accent bg-transparent border-none text-[10px] font-bold cursor-pointer"
+                  >
+                    Create one
+                  </button>
+                </div>
+              ) : (
+                studioWorkflows.map((wf) => {
+                  const running = isGenerating === wf.id;
                   return (
-                    <button
-                      key={action.label}
-                      type="button"
-                      onClick={() => triggerStudioWorkflow(action.label, action.type)}
-                      disabled={!!isGenerating}
-                      className="press px-2 py-2.5 bg-ws-bg border border-ws-edge-soft rounded-ws-md flex flex-col gap-1.5 items-start cursor-pointer text-left transition-colors duration-150 h-bd-accent h-surface-2"
+                    <div
+                      key={wf.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => !running && runStudioWorkflow(wf)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          runStudioWorkflow(wf);
+                        }
+                      }}
+                      title="Run workflow"
+                      className={`fade-in group flex items-start gap-2 px-2.5 py-2 border border-ws-edge-soft rounded-ws-md bg-ws-bg cursor-pointer transition-colors duration-150 hover:border-ws-accent/50 ${
+                        running ? 'opacity-60 pointer-events-none' : ''
+                      }`}
                     >
-                      <div className="w-6 h-6 rounded-ws-sm bg-ws-bg flex items-center justify-center text-ws-accent">
-                        <Icon size={12} />
+                      <div className="w-6 h-6 shrink-0 rounded-ws-sm bg-ws-surface-2 border border-ws-edge-soft flex items-center justify-center text-ws-accent">
+                        {running ? <RefreshCw size={12} className="animate-spin" /> : <Play size={11} />}
                       </div>
-                      <div>
-                        <div className="text-[11px] font-bold text-ws-ink">{action.label}</div>
-                        <div className="text-[9px] text-ws-muted mt-px">{action.type}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[11px] font-bold text-ws-ink truncate">
+                          {wf.name}
+                        </div>
+                        <div className="text-[9px] text-ws-muted mt-0.5 truncate">
+                          {wf.targetType} · {wf.evalGates} gate{wf.evalGates === 1 ? '' : 's'}
+                          {wf.scope !== 'global' && ` · ${wf.scope}`}
+                        </div>
                       </div>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate({ to: '/workflow-editor', search: { id: wf.id } });
+                        }}
+                        title="Edit workflow"
+                        className="press shrink-0 bg-transparent border-none text-ws-muted cursor-pointer p-1 rounded hover:bg-ws-surface-2 hover:text-ws-ink transition-colors"
+                      >
+                        <Settings2 size={12} />
+                      </button>
+                    </div>
                   );
-                })}
-              </div>
+                })
+              )}
             </div>
 
-            {/* Alert boxes */}
-            {alertMsg && (
-              <div className="bg-red-500/10 border border-ws-danger rounded-ws-md p-2.5 flex items-center justify-between gap-2">
-                <span className="text-[10px] text-red-500 leading-[1.4]">{alertMsg}</span>
-                <button type="button" onClick={() => setAlertMsg(null)} className="press bg-transparent border-none text-red-500 text-[10px] font-bold cursor-pointer">
-                  Dismiss
-                </button>
+            {/* Run error banner — alert + Retry */}
+            {runError && (
+              <div className="mx-4 mb-3 bg-red-500/10 border border-ws-danger rounded-ws-md p-2.5 flex flex-col gap-2">
+                <div className="flex items-start gap-2">
+                  <AlertCircle size={12} className="text-red-500 shrink-0 mt-px" />
+                  <span className="text-[10px] text-red-500 leading-[1.4] flex-1">{runError}</span>
+                </div>
+                <div className="flex gap-1.5 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setRunError(null)}
+                    className="press bg-transparent border-none text-ws-muted text-[10px] font-bold cursor-pointer px-2 py-1 rounded"
+                  >
+                    Dismiss
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRunError(null);
+                      // Retry the last attempted workflow if we can
+                      // recover it from the still-loading state.
+                      const last = studioWorkflows.find(w => w.id === isGenerating);
+                      if (last) runStudioWorkflow(last);
+                    }}
+                    className="press bg-red-500/20 border border-red-500/40 text-red-500 text-[10px] font-bold cursor-pointer px-2 py-1 rounded flex items-center gap-1"
+                  >
+                    <RefreshCw size={9} />
+                    Retry
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* Recents generated */}
-            <div>
-              <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider mb-2.5">
-                Generated History
+            {/* Generated History — backend-driven, filtered to this subject */}
+            <div className="flex-1 flex flex-col min-h-0 border-t border-ws-edge-soft">
+              <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+                <div className="text-[10px] font-bold text-ws-muted uppercase tracking-wider">
+                  Generated History
+                </div>
+                {artifactsQuery.isFetching && (
+                  <RefreshCw size={10} className="text-ws-muted animate-spin" />
+                )}
               </div>
-              <div className="flex flex-col gap-1.5">
-                {artifacts.map((art, i) => (
-                  <div key={art.id} className={`fade-in px-2.5 py-2 border border-ws-edge-soft rounded-ws-md bg-ws-bg flex items-center gap-2 stagger-${Math.min(i + 1, 8)}`}>
-                    <FileOutput size={13} className="text-ws-accent shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-[11px] font-semibold text-ws-ink truncate">
-                        {art.name}
-                      </div>
-                      <div className="text-[9px] text-ws-muted mt-0.5">{art.time} · {art.type}</div>
-                    </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 scrollbar flex flex-col gap-1.5">
+                {artifactsQuery.isError ? (
+                  <div className="px-3 py-3 text-[10px] text-red-500 border border-dashed border-ws-danger rounded-ws-md">
+                    Failed to load history.
                   </div>
-                ))}
+                ) : artifactsQuery.isLoading ? (
+                  <div className="px-3 py-3 text-[10px] text-ws-muted italic">
+                    Loading…
+                  </div>
+                ) : subjectArtifacts.length === 0 ? (
+                  <div className="px-3 py-3 text-[10px] text-ws-muted italic text-center border border-dashed border-ws-edge-soft rounded-ws-md">
+                    No artifacts yet for this subject.
+                  </div>
+                ) : (
+                  subjectArtifacts.map((art, i) => (
+                    <div
+                      key={art.id}
+                      className={`fade-in px-2.5 py-2 border border-ws-edge-soft rounded-ws-md bg-ws-bg flex items-center gap-2 stagger-${Math.min(i + 1, 8)}`}
+                    >
+                      <FileOutput size={13} className="text-ws-accent shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[11px] font-semibold text-ws-ink truncate">
+                          {art.name}
+                        </div>
+                        <div className="text-[9px] text-ws-muted mt-0.5">{art.time} · {art.type}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
