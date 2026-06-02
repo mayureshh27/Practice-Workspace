@@ -22,6 +22,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from app.storage import data_path
+
 logger = logging.getLogger(__name__)
 
 _HAS_GRAPHITI = False
@@ -54,10 +56,12 @@ class GraphitiMasteryStore:
 
     def __init__(
         self,
-        db_path: str = "storage/kuzu_graphiti.db",
+        db_path: str | Path | None = None,
         group_id: str = "practice-tool-mastery",
     ) -> None:
-        self._db_path = Path(db_path)
+        # Default to backend/data/kuzu_graphiti.db (R-2.1) — see
+        # TemporalMasteryStore for the rationale on CWD-invariance.
+        self._db_path = Path(db_path) if db_path is not None else data_path("kuzu_graphiti.db")
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
         self._group_id = group_id
         self._driver: Any = None

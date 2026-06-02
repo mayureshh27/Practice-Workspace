@@ -2,11 +2,23 @@
 
 Environment variables prefixed with ``PRACDA_`` override defaults.
 A ``.env`` file in the backend directory is also loaded if present.
+
+All on-disk paths are pinned under ``backend/data/`` so the same
+config works from any working directory (see ``app.storage`` for
+the matching ``data_path()`` helper).
 """
 
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Resolve to backend/data/ — mirrors backend/app/storage/__init__.py.
+# Duplicated rather than imported to keep app.config free of
+# app.storage dependencies; both modules are imported very early in
+# the import graph (main.py pulls in app.config before app.storage).
+_BACKEND_ROOT: Path = Path(__file__).resolve().parent.parent
+_DATA_DIR: Path = _BACKEND_ROOT / "data"
+_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class Settings(BaseSettings):
@@ -17,7 +29,11 @@ class Settings(BaseSettings):
     )
 
     # ── Database ────────────────────────────────────────────────────
-    db_path: Path = Path("data/pracda_go.db")
+    # Default lives under backend/data/ — a `cd backend && uv run …`
+    # from the repo root and a `uv run …` from elsewhere both find
+    # the same file. Override with PRACDA_DB_PATH=/some/where/else.db
+    # for non-default layouts (e.g. a CI scratch directory).
+    db_path: Path = _DATA_DIR / "pracda_go.db"
 
     # ── Telemetry (Logfire) ─────────────────────────────────────────
     # If unset, Logfire runs in noop/console mode — app never crashes.

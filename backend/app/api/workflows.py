@@ -22,6 +22,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
+from app.api._ids import new_id
 from app.domain.workspace import (
     PracticeConfig,
     WorkflowScope,
@@ -103,12 +104,6 @@ def _is_model_configured(request: Request) -> bool:
     return bool(provider) and provider != "test"
 
 
-def _new_id(prefix: str = "wf") -> str:
-    import time
-
-    return f"{prefix}-{int(time.time() * 1000)}"
-
-
 # ── Read endpoints ──────────────────────────────────────────────────
 
 
@@ -152,7 +147,7 @@ def get_workflow(workflow_id: str) -> WorkflowTemplate:
 @router.post("/", response_model=WorkflowTemplate, status_code=201)
 def create_workflow(body: CreateWorkflowBody) -> WorkflowTemplate:
     payload = body.model_dump(by_alias=False, exclude_none=False)
-    payload["id"] = _new_id("wf")
+    payload["id"] = new_id("wf")
     wf = WorkflowTemplate(**payload)
     return workflows_repo.add_workflow(wf)
 

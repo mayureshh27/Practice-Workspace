@@ -10,6 +10,7 @@ import os
 import uuid
 from collections.abc import Sequence
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import kuzu
@@ -19,6 +20,7 @@ from rapidfuzz import fuzz, process
 from app.domain.graph import ConceptCandidate, ConceptContext, ConceptNode
 from app.harness.graph_layer import GraphLayer
 from app.harness.temporal_mastery_store import TemporalMasteryStore
+from app.storage import data_path
 
 
 def _default_mastery_store(mastery_db_path: str) -> TemporalMasteryStore:
@@ -57,26 +59,31 @@ class KuzuGraphLayer(GraphLayer):
 
     def __init__(
         self,
-        db_path: str = "storage/kuzu.db",
+        db_path: str | Path | None = None,
         gap_threshold: float = 0.5,
-        mastery_db_path: str = "storage/mastery.db",
+        mastery_db_path: str | Path | None = None,
         use_graphiti: bool = False,
     ) -> None:
-        self.db_path = db_path
+        # Both paths default to backend/data/ (R-2.1) — see
+        # TemporalMasteryStore for the rationale on CWD-invariance.
+        self.db_path = str(db_path) if db_path is not None else str(data_path("kuzu.db"))
+        self.mastery_db_path = (
+            str(mastery_db_path) if mastery_db_path is not None else str(data_path("mastery.db"))
+        )
         self.gap_threshold = gap_threshold
 
-        parent_dir = os.path.dirname(db_path)
+        parent_dir = os.path.dirname(self.db_path)
         if parent_dir:
             os.makedirs(parent_dir, exist_ok=True)
-        self.db = kuzu.Database(db_path)
+        self.db = kuzu.Database(self.db_path)
         self.conn = kuzu.Connection(self.db)
 
         self._ensure_schema()
 
         if use_graphiti:
-            self._mastery_store = _default_mastery_store(mastery_db_path)
+            self._mastery_store = _default_mastery_store(self.mastery_db_path)
         else:
-            self._mastery_store = TemporalMasteryStore(mastery_db_path)
+            self._mastery_store = TemporalMasteryStore(self.mastery_db_path)
 
     def _ensure_schema(self) -> None:
         try:

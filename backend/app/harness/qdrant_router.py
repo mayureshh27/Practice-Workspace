@@ -14,13 +14,16 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
 from app.harness.retrieval_router import ChunkResult
+from app.storage import data_path
 
 
 class QdrantRetrievalRouter:
     """Concrete implementation of RetrievalRouter using Qdrant client."""
 
-    def __init__(self, location: str = "storage/qdrant_db"):
-        self.location = location
+    def __init__(self, location: str | Path | None = None):
+        # Default to backend/data/qdrant_db (R-2.1) — see
+        # TemporalMasteryStore for the rationale on CWD-invariance.
+        self.location = str(location) if location is not None else str(data_path("qdrant_db"))
         # Gracefully connect to local Docker on port 6333, or fall back to local disk storage
         try:
             if os.environ.get("QDRANT_HOST") or self._is_docker_running():
@@ -109,7 +112,11 @@ class QdrantRetrievalRouter:
         chunk_ids: list[str] = []
         points: list[models.PointStruct] = []
 
-        tmp_dir = Path("tmp/chunks")
+        # ADR-0023 large-chunk sidecar: also pinned under backend/data/
+        # so a `cd backend && uv run fastapi dev` from the repo root
+        # and a bare invocation from elsewhere both write to the same
+        # place.
+        tmp_dir = data_path("chunks_tmp")
         tmp_dir.mkdir(parents=True, exist_ok=True)
 
         if source_metadata:

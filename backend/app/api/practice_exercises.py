@@ -19,12 +19,12 @@ malformed workflow, etc.).
 from __future__ import annotations
 
 import time
-import uuid
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from app.agents import practice_agent
+from app.api._ids import new_id
 from app.api.artifacts import ArtifactDTO
 from app.domain.workspace import PracticeConfig
 from app.storage import workflows_repo, workspace_repo
@@ -80,9 +80,7 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
     count = body.count or (config.count if config else 5)
     difficulty = body.difficulty or (config.difficulty if config else "medium")
 
-    names = _resolve_names(
-        body.domain_id, body.subject_id, body.chapter_id, body.topic_id
-    )
+    names = _resolve_names(body.domain_id, body.subject_id, body.chapter_id, body.topic_id)
     prompt = practice_agent.render_prompt(
         workflow.prompt_template,
         subject=names.get("subject", "the subject"),
@@ -102,21 +100,18 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
             ),
         )
 
-    problems, _raw, _err = await practice_agent.generate_practice(
-        prompt, requested_count=count
-    )
+    problems, _raw, _err = await practice_agent.generate_practice(prompt, requested_count=count)
 
-    # The timestamp-only id collided when two practice runs landed in
-    # the same millisecond (verified during diagnose). Append a short
-    # uuid suffix so concurrent runs always get distinct ids.
-    artifact_id = f"art-{int(time.time() * 1000)}-{uuid.uuid4().hex[:8]}"
+    # Canonical id from app.api._ids — sortable, collision-safe.
+    artifact_id = new_id("art")
     now = time.time()
     record = {
         "id": artifact_id,
         "name": f"{workflow.name} — {names.get('subject', 'practice')}",
         "type": workflow.target_type,
         "status": "draft",
-        "time": time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime()) + f"{int((now % 1) * 1000):03d}Z",
+        "time": time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime())
+        + f"{int((now % 1) * 1000):03d}Z",
         "domain_id": body.domain_id,
         "subject_id": body.subject_id,
         "chapter_id": body.chapter_id,

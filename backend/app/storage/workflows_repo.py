@@ -2,8 +2,8 @@
 
 Workflows are stored separately from the workspace hierarchy so they
 can be queried, filtered and persisted without re-reading the entire
-domain tree. Mutations persist to a JSON snapshot next to the SQLite DB
-so the workflow editor and Studio survive restarts.
+domain tree. Mutations persist to a JSON snapshot under
+``backend/data/`` so the workflow editor and Studio survive restarts.
 
 Scope model: each template is either *global* (reusable across the
 workspace) or *scoped* to a subject/chapter/topic. The Studio's
@@ -16,13 +16,14 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import time
 
+from app.api._ids import new_id
 from app.config import get_settings
 from app.domain.workspace import (
     WorkflowScope,
     WorkflowTemplate,
 )
+from app.storage import data_path
 
 # ── In-memory store (seeded at startup) ─────────────────────────────
 
@@ -30,8 +31,11 @@ _workflows: list[WorkflowTemplate] = []
 
 
 def _dump_path() -> Path:
-    settings = get_settings()
-    return settings.db_path.parent / "workflows_snapshot.json"
+    """Snapshot path — pinned to ``backend/data/`` (R-2.1)."""
+    # We could colocate with the SQLite DB via settings.db_path.parent,
+    # but the snapshot is a JSON sidecar, not a DB file. Pinning it to
+    # backend/data/ keeps the persistence layer's CWD contract simple.
+    return data_path("workflows_snapshot.json")
 
 
 def _persist() -> None:
@@ -114,9 +118,7 @@ def add_workflow(workflow: WorkflowTemplate) -> WorkflowTemplate:
     return workflow
 
 
-def update_workflow(
-    workflow_id: str, fields: dict
-) -> WorkflowTemplate | None:
+def update_workflow(workflow_id: str, fields: dict) -> WorkflowTemplate | None:
     for i, w in enumerate(_workflows):
         if w.id == workflow_id:
             _workflows[i] = w.model_copy(update=fields)
@@ -144,10 +146,9 @@ def duplicate_workflow(workflow_id: str) -> WorkflowTemplate | None:
     src = get_workflow(workflow_id)
     if src is None:
         return None
-    stamp = int(time.time() * 1000)
     copy = src.model_copy(
         update={
-            "id": f"wf-dup-{stamp}",
+            "id": new_id("wf-dup"),
             "name": f"{src.name} (copy)",
             "scope": "global",
             "subject_id": None,
@@ -199,10 +200,9 @@ def customize_workflow(
     else:
         return None
 
-    stamp = int(time.time() * 1000)
     fork = src.model_copy(
         update={
-            "id": f"wf-fork-{stamp}",
+            "id": new_id("wf-fork"),
             "name": f"{src.name} ({_scope_label(scope)})",
             "scope": scope,
             "subject_id": sid,
