@@ -88,20 +88,17 @@ class CustomizeBody(BaseModel):
 def _is_model_configured(request: Request) -> bool:
     """True when the live Model Router can reach a real provider.
 
-    We resolve the ``workflow`` task (the only one Studio's Run button
-    uses today) and check that the resolved provider isn't the
-    ``test`` fallback that the router uses when no API keys are set.
-    Returns False if the router is missing entirely.
+    The "is the test provider masquerading as a real one?" check is
+    owned by the router (R-2.5, chat review §2.5). The endpoint just
+    asks; it never inspects ``cfg.provider`` itself.
     """
     router_obj = getattr(request.app.state, "model_router", None)
     if router_obj is None:
         return False
     try:
-        cfg = router_obj.route("workflow")
+        return bool(router_obj.is_configured("workflow"))
     except Exception:
         return False
-    provider = getattr(cfg, "provider", None)
-    return bool(provider) and provider != "test"
 
 
 # ── Read endpoints ──────────────────────────────────────────────────

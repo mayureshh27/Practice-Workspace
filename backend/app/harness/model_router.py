@@ -53,6 +53,17 @@ class ModelRouter(Protocol):
         privacy_mode: bool = False,
     ) -> ModelConfig: ...
 
+    def is_configured(self, task_type: str) -> bool:
+        """True when ``route`` for ``task_type`` resolves to a real provider.
+
+        The ``test`` fallback (Pydantic AI's :class:`TestModel` for local dev
+        when no API key is set) is treated as unconfigured: the caller should
+        not be allowed to run a live workflow against it. This keeps the
+        "configured?" check inside the router (chat review §2.5,
+        R-2.5) — consumers no longer inspect ``cfg.provider`` themselves.
+        """
+        ...
+
 
 @dataclass
 class ProviderConfig:
@@ -170,3 +181,17 @@ class DefaultModelRouter:
             temperature=cfg.temperature,
             adapter=cfg.adapter,
         )
+
+    def is_configured(self, task_type: str) -> bool:
+        """Return True iff ``route(task_type)`` resolves to a real provider.
+
+        The test provider is treated as unconfigured (chat review §2.5):
+        the caller should disable the Run button and surface a "Set an
+        API key" hint rather than letting the LLM call fall through to
+        a stub model.
+        """
+        try:
+            cfg = self.route(task_type)
+        except Exception:
+            return False
+        return bool(cfg.provider) and cfg.provider != "test"
