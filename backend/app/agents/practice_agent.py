@@ -193,13 +193,16 @@ def parse_practice_payload(
                 difficulty="medium",  # overridden by caller via metadata
             )
 
+
     if _QUESTIONS_KEY in raw:
         questions_raw = raw[_QUESTIONS_KEY]
-        questions = [QuizQuestion(**q) for q in questions_raw]
-        return PracticePayloadQuiz(
-            questions=questions,
-            requested_count=requested_count,
-        )
+        if isinstance(questions_raw, list):
+            questions = [QuizQuestion(**q) for q in questions_raw]
+            return PracticePayloadQuiz(
+                questions=questions,
+                requested_count=requested_count,
+            )
+
 
     if _SUMMARY_KEY in raw and isinstance(raw[_SUMMARY_KEY], str):
         return PracticePayloadSummary(text=raw[_SUMMARY_KEY])

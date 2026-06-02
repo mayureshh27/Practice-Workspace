@@ -75,5 +75,7 @@ def now_iso_with_ms() -> str:
     >>> len(ts.split(".")[-1])
     4  # three ms digits + 'Z'
     """
+
     now = time.time()
-    return time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime()) + f"{int((now % 1) * 1000):03d}Z"
+    return time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime(now)) + f"{int((now % 1) * 1000):03d}Z"
+
