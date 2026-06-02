@@ -1,18 +1,18 @@
-"""Tests for the practice-exercises API and the Practice Agent helpers."""
+"""Tests for the practice-exercises API.
+
+The Practice Agent's parse + pad + coerce helpers (``_coerce_problems``,
+``_pad_problems``) are removed in Phase 3; the discriminated union
+parser :func:`app.agents.practice_agent.parse_practice_payload` is
+covered in :mod:`tests.test_practice_agent_payload`.
+"""
 
 from __future__ import annotations
 
 import pytest
 from fastapi.testclient import TestClient
 
-from app.agents.practice_agent import (
-    _coerce_problems,
-    _extract_json,
-    _pad_problems,
-    render_prompt,
-)
+from app.agents.practice_agent import _extract_json, render_prompt
 from app.main import create_app
-from app.storage import workspace_repo
 
 
 @pytest.fixture
@@ -45,40 +45,18 @@ def test_render_prompt_blindspots_default():
 
 
 def test_render_prompt_leaves_unknown_placeholders():
-    out = render_prompt("Hello {{name}}", subject="x", chapter="", topic="", count=1, difficulty="e")
+    out = render_prompt(
+        "Hello {{name}}", subject="x", chapter="", topic="", count=1, difficulty="e"
+    )
     assert "{{name}}" in out
 
 
 def test_extract_json_handles_fences_and_prose():
-    assert _extract_json('{"problems": [{"title": "a"}]}') == {
-        "problems": [{"title": "a"}]
-    }
-    assert _extract_json("Here is the JSON: {\"summary\": \"hi\"}") == {"summary": "hi"}
-    assert _extract_json("```json\n{\"a\": 1}\n```") == {"a": 1}
+    assert _extract_json('{"problems": [{"title": "a"}]}') == {"problems": [{"title": "a"}]}
+    assert _extract_json('Here is the JSON: {"summary": "hi"}') == {"summary": "hi"}
+    assert _extract_json('```json\n{"a": 1}\n```') == {"a": 1}
     assert _extract_json("totally not json") is None
     assert _extract_json("") is None
-
-
-def test_coerce_problems_falls_back_through_shapes():
-    assert _coerce_problems({"problems": [{"title": "a"}]}, 5)[0]["title"] == "a"
-    assert _coerce_problems({"questions": [{"q": "q1"}]}, 5)[0]["q"] == "q1"
-    summary = _coerce_problems({"summary": "hi there"}, 5)
-    assert summary[0]["title"] == "Summary"
-    assert "hi there" in summary[0]["prompt"]
-    fallback = _coerce_problems({"foo": "bar"}, 5)
-    assert fallback[0]["title"] == "Generated content"
-
-
-def test_pad_problems_adds_placeholders_when_short():
-    padded = _pad_problems([{"title": "a"}], 3)
-    assert len(padded) == 3
-    assert "Placeholder" in padded[1]["title"]
-
-
-def test_pad_problems_truncates_when_long():
-    out = _pad_problems([{"title": str(i)} for i in range(10)], 3)
-    assert len(out) == 3
-    assert out[0]["title"] == "0"
 
 
 def test_run_practice_404_on_unknown_workflow(client):
@@ -131,6 +109,8 @@ def test_run_practice_returns_artifact(client):
     assert body["domain_id"] == dom["id"]
     assert body["subject_id"] == subj["id"]
     assert body["chapter_id"] == chap["id"]
+    # Phase 3: the payload is the discriminated union serialised.
+    assert body["payload"]["kind"] == "practice"
     assert body["payload"]["workflow_id"] == "wf-practice"
     assert body["payload"]["requested_count"] == 3
     # In test mode (no GOOGLE_API_KEY) the LLM returns a stub but
