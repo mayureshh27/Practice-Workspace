@@ -1,8 +1,12 @@
-"""Practice-exercises API — runs a workflow against the live LLM.
+"""Practice-exercises API  runs a workflow against the live LLM.
 
 POST /api/practice-exercises/
+POST /api/workflows/{id}/run           (Phase 5 — real dispatch)
 
-The Studio's Run button hits this endpoint. The endpoint:
+The Studio's Run button hits one of these two endpoints. The
+endpoints share a core helper — :func:`_run_workflow_for_artifact`
+— that:
+
   1. Loads the workflow template.
   2. Resolves the subject / chapter / topic names.
   3. Substitutes {{…}} placeholders in the workflow's prompt.
@@ -15,7 +19,10 @@ The Studio's Run button hits this endpoint. The endpoint:
      store has a row linking the artifact id to the workflow and
      scope. Downstream ``PracticeAttempted`` events join on
      ``artifact_id`` to keep the mastery / blind-spot trace intact.
-  8. Returns the new artifact.
+  8. Writes an :class:`EvalRun` audit row to ``eval_runs`` (H-B4,
+     Phase 5). The row is created with ``status='running'`` before
+     the LLM call and finished with one of ``succeeded``,
+     ``gate_rejected``, or ``error`` once the run resolves.
 
 The practice agent returns a typed :class:`PracticePayload`
 discriminated union (chat review §3.1, §5.1, §5.2). The agent's parse
@@ -26,6 +33,22 @@ fallbacks").
 Errors are surfaced verbatim so the Studio's alert+Retry banner
 can show the user what to fix (missing API key, network outage,
 malformed workflow, etc.).
+
+Why one helper, two routes? The two routes differ only in *where the
+scope comes from*:
+
+  * ``/api/practice-exercises/`` — caller supplies
+    ``domainId/subjectId/chapterId/topicId`` in the body. The
+    Workflow Manager uses this when running a global template from
+    a chapter panel.
+  * ``/api/workflows/{id}/run`` — scope is read from the workflow
+    template itself (post-``/customize``). The Studio uses this when
+    the user clicks Run on a customised subject-scoped template.
+
+Splitting the helper out keeps the gate + persist + audit behaviour
+identical between the two routes — the eval log semantics are
+pinned by the shared call site, not duplicated in two places that
+can drift (H-B4, H-X1).
 """
 
 from __future__ import annotations
@@ -34,18 +57,22 @@ import hashlib
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field, ValidationError
+from sqlmodel import Session
 
 from app.agents import practice_agent
 from app.api._artifact_factory import append_artifact, make_artifact
 from app.api.artifacts import ArtifactDTO
 from app.domain.events import ArtifactGenerated
-from app.domain.workspace import PracticeConfig
+from app.domain.workspace import PracticeConfig, WorkflowTemplate
 from app.harness import artifact_gate
 from app.harness.event_emitter import emit_event
-from app.storage import workflows_repo, workspace_repo
+from app.storage import eval_runs_repo, workflows_repo, workspace_repo
 from app.storage.database import get_engine
 
 router = APIRouter(prefix="/api/practice-exercises", tags=["practice"])
+
+
+# ── Request / Response bodies ───────────────────────────────────────
 
 
 class RunPracticeBody(BaseModel):
@@ -86,24 +113,46 @@ def _resolve_names(
     return out
 
 
-@router.post("/", response_model=ArtifactDTO, status_code=201)
-async def run_practice_exercises(request: Request, body: RunPracticeBody) -> ArtifactDTO:
-    workflow = workflows_repo.get_workflow(body.workflow_id)
-    if workflow is None:
-        raise HTTPException(status_code=404, detail=f"Workflow not found: {body.workflow_id}")
+# ── Shared run helper (H-B4 audit + H-B3 real dispatch) ────────────
 
+
+async def _run_workflow_for_artifact(
+    request: Request,
+    workflow: WorkflowTemplate,
+    *,
+    domain_id: str,
+    subject_id: str,
+    chapter_id: str | None,
+    topic_id: str | None,
+    count: int | None,
+    difficulty: str | None,
+) -> dict:
+    """Run a workflow end-to-end and return the persisted artifact dict.
+
+    Writes an :class:`EvalRun` row before the LLM call; the row is
+    finished with ``succeeded`` / ``gate_rejected`` / ``error`` once
+    the run resolves. Raises :class:`HTTPException` on every
+    user-visible failure so the caller can propagate the right
+    status code.
+
+    Note: the caller is responsible for the *pre-flight* checks
+    (workflow exists, prompt template non-empty) — those failures
+    short-circuit before this helper and do **not** write an
+    ``eval_runs`` row, by design (ADR-0008 §3: "Rows for runs that
+    never start ... are not written").
+    """
     config: PracticeConfig | None = workflow.practice_config
-    count = body.count or (config.count if config else 5)
-    difficulty = body.difficulty or (config.difficulty if config else "medium")
+    resolved_count = count or (config.count if config else 5)
+    resolved_difficulty = difficulty or (config.difficulty if config else "medium")
 
-    names = _resolve_names(body.domain_id, body.subject_id, body.chapter_id, body.topic_id)
+    names = _resolve_names(domain_id, subject_id, chapter_id, topic_id)
     prompt = practice_agent.render_prompt(
         workflow.prompt_template,
         subject=names.get("subject", "the subject"),
         chapter=names.get("chapter", ""),
         topic=names.get("topic", ""),
-        count=count,
-        difficulty=difficulty,
+        count=resolved_count,
+        difficulty=resolved_difficulty,
         blindspots="",  # Phase 6+ will pipe mastery scores in here
     )
 
@@ -116,26 +165,65 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
             ),
         )
 
+    # ── H-B4: open the eval_runs row *before* the LLM call so
+    # even a process kill mid-run leaves a traceable 'running' row
+    # (the operator can find abandoned runs by status='running').
+    run_id: str | None = None
+    try:
+        with Session(get_engine()) as session:
+            run = eval_runs_repo.start_run(
+                session,
+                workflow_id=workflow.id,
+                workflow_name=workflow.name,
+                domain_id=domain_id,
+                subject_id=subject_id,
+                chapter_id=chapter_id,
+                topic_id=topic_id,
+                count=resolved_count,
+                difficulty=resolved_difficulty,
+            )
+            run_id = run.id
+    except Exception as exc:  # pragma: no cover — DB unavailable
+        # DB is down: the audit log is best-effort, but the run
+        # itself should still proceed. The user sees the artifact
+        # gate result regardless.
+        import logfire
+
+        logfire.warning(
+            "Could not open eval_runs row for workflow {wf}: {err}",
+            wf=workflow.id,
+            err=str(exc),
+        )
+
     try:
         typed_payload = await practice_agent.generate_practice(
             prompt,
-            requested_count=count,
-            difficulty=difficulty,
+            requested_count=resolved_count,
+            difficulty=resolved_difficulty,
             workflow_id=workflow.id,
             workflow_name=workflow.name,
         )
     except ValidationError as exc:
-        # LLM emitted a shape we don't recognise. Surface as 502 so
-        # operators can fix the prompt template (chat review §5.1:
-        # "Bad shapes surface as errors, not silent fallbacks").
+        _finish_run(
+            run_id,
+            status="error",
+            error_message=f"agent returned unrecognised shape: {exc!s}",
+        )
         raise HTTPException(
             status_code=502,
             detail=(
-                f"Practice agent returned an unrecognised shape: {exc!s}. "
-                "Check the workflow's promptTemplate — it should ask for "
-                "{problems|questions|summary} and return a JSON object."
+                "Practice agent returned an unrecognised shape. "
+                "Check the workflow's promptTemplate — it should ask "
+                "for {problems|questions|summary} and return a JSON object."
             ),
         ) from exc
+    except Exception as exc:  # pragma: no cover — infra failure
+        _finish_run(
+            run_id,
+            status="error",
+            error_message=f"{type(exc).__name__}: {exc!s}",
+        )
+        raise
 
     # ── H-B5: run the result through the Artifact Gate ─────────────
     # We pass a minimal duck-typed artifact (the gate uses getattr)
@@ -153,11 +241,16 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
         prompt_template_sha=prompt_template_sha,
     )
     if not gate_result.passed:
+        _finish_run(
+            run_id,
+            status="gate_rejected",
+            error_message="; ".join(gate_result.failures),
+            gate_failures=list(gate_result.failures),
+        )
         raise HTTPException(
             status_code=502,
             detail=(
-                f"Artifact gate rejected the generated artifact: "
-                f"{'; '.join(gate_result.failures)}"
+                f"Artifact gate rejected the generated artifact: {'; '.join(gate_result.failures)}"
             ),
         )
 
@@ -167,10 +260,10 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
         name=f"{workflow.name} — {names.get('subject', 'practice')}",
         type=workflow.target_type,
         status="draft",
-        domain_id=body.domain_id,
-        subject_id=body.subject_id,
-        chapter_id=body.chapter_id,
-        topic_id=body.topic_id,
+        domain_id=domain_id,
+        subject_id=subject_id,
+        chapter_id=chapter_id,
+        topic_id=topic_id,
         payload=typed_payload.model_dump(),
         prompt_template_sha=prompt_template_sha,
     )
@@ -182,8 +275,6 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
     # rule (ConceptMasteryUpdated.trigger_event_id) therefore
     # remains traceable back to a specific artifact and workflow.
     try:
-        from sqlmodel import Session
-
         with Session(get_engine()) as session:
             emit_event(
                 session,
@@ -207,4 +298,65 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
             error=str(exc),
         )
 
+    # ── H-B4: mark the run succeeded *last* so a partial failure
+    # between persist and finish still leaves an inspectable row.
+    _finish_run(run_id, status="succeeded", artifact_id=record["id"])
+    return record
+
+
+def _finish_run(
+    run_id: str | None,
+    *,
+    status: str,
+    artifact_id: str | None = None,
+    error_message: str | None = None,
+    gate_failures: list[str] | None = None,
+) -> None:
+    """Best-effort eval_runs finaliser. Failures are logged, not raised.
+
+    ``run_id`` is None only when the open-row call already failed
+    (DB unavailable at run start). In that case there is nothing to
+    finish; we silently skip.
+    """
+    if run_id is None:
+        return
+    try:
+        with Session(get_engine()) as session:
+            eval_runs_repo.finish_run(
+                session,
+                run_id,
+                status=status,
+                artifact_id=artifact_id,
+                error_message=error_message,
+                gate_failures=gate_failures,
+            )
+    except Exception as exc:  # pragma: no cover — DB unavailable
+        import logfire
+
+        logfire.warning(
+            "Could not finish eval_runs row {run_id} ({status}): {err}",
+            run_id=run_id,
+            status=status,
+            err=str(exc),
+        )
+
+
+# ── HTTP route — POST /api/practice-exercises/ ─────────────────────
+
+
+@router.post("/", response_model=ArtifactDTO, status_code=201)
+async def run_practice_exercises(request: Request, body: RunPracticeBody) -> ArtifactDTO:
+    workflow = workflows_repo.get_workflow(body.workflow_id)
+    if workflow is None:
+        raise HTTPException(status_code=404, detail=f"Workflow not found: {body.workflow_id}")
+    record = await _run_workflow_for_artifact(
+        request,
+        workflow,
+        domain_id=body.domain_id,
+        subject_id=body.subject_id,
+        chapter_id=body.chapter_id,
+        topic_id=body.topic_id,
+        count=body.count,
+        difficulty=body.difficulty,
+    )
     return ArtifactDTO(**record)

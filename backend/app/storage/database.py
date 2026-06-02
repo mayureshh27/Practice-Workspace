@@ -29,8 +29,9 @@ def init_db(settings: Settings) -> None:
         echo=False,
         connect_args={"check_same_thread": False},
     )
-    # Import event models so SQLModel.metadata knows about their tables.
-    import app.domain.events  # noqa: F401
+    # Import event + audit models so SQLModel.metadata knows about their tables.
+    import app.domain.events
+    import app.storage.eval_runs_repo  # noqa: F401  (Phase 5: eval_runs)
 
     SQLModel.metadata.create_all(_engine)
 

@@ -23,6 +23,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from app.api._ids import new_id
+from app.api.artifacts import ArtifactDTO
 from app.domain.workspace import (
     PracticeConfig,
     WorkflowScope,
@@ -190,3 +191,87 @@ def customize_workflow(workflow_id: str, body: CustomizeBody) -> WorkflowTemplat
             ),
         )
     return fork
+
+
+# ── Real dispatch (Phase 5 — H-B3, X-1, X-2) ───────────────────────
+
+
+class RunWorkflowBody(BaseModel):
+    """Body for POST /api/workflows/{id}/run.
+
+    The workflow already carries its scope (post-``/customize`` for
+    subject-scoped variants; the body still needs the matching
+    ``domainId`` because the workflow template does not persist it
+    — only the scope chain. Optional fields override the
+    workflow's saved scope at call time (useful for "Run in a
+    different chapter" affordances the Studio can add later).
+    """
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+    domain_id: str = Field(alias="domainId")
+    chapter_id: str | None = Field(alias="chapterId", default=None)
+    topic_id: str | None = Field(alias="topicId", default=None)
+    count: int | None = None
+    difficulty: str | None = None
+
+
+@router.post("/{workflow_id}/run", response_model=ArtifactDTO, status_code=201)
+async def run_workflow(workflow_id: str, request: Request, body: RunWorkflowBody) -> ArtifactDTO:
+    """Real dispatch for the Studio's Run button.
+
+    Closes **H-B3** ("Run button must reach the live agent"),
+    **X-1** ("workflow run is a thin pass-through that does not
+    persist artifact state") and **X-2** ("Run button ignores
+    workflow scope"):
+
+    * **H-B3 / X-1**: the call goes through the shared
+      :func:`app.api.practice_exercises._run_workflow_for_artifact`
+      helper — same LLM call, same artifact gate, same persist path
+      as ``/api/practice-exercises/``, plus the ``eval_runs`` audit
+      log (H-B4).
+    * **X-2**: the workflow's saved ``subjectId`` (and optional
+      ``chapterId`` / ``topicId``) is preferred over the body's
+      overrides when set — the customised scope wins, and the
+      operator sees the artifact pinned to that subject.
+    """
+    # Imported here to avoid a circular import at module load
+    # (practice_exercises imports WorkflowTemplate from workspace).
+    from app.api.practice_exercises import _run_workflow_for_artifact
+
+    workflow = workflows_repo.get_workflow(workflow_id)
+    if workflow is None:
+        raise HTTPException(status_code=404, detail=f"Workflow not found: {workflow_id}")
+
+    # X-2: the workflow's saved scope takes precedence; the body
+    # may override chapter/topic for the same subject. Domain is
+    # always caller-supplied (the workflow template doesn't carry
+    # it — scope chain is subject → chapter → topic, not domain).
+    subject_id = workflow.subject_id
+    chapter_id = body.chapter_id if body.chapter_id is not None else workflow.chapter_id
+    topic_id = body.topic_id if body.topic_id is not None else workflow.topic_id
+
+    if subject_id is None:
+        # Global workflow run via /run still needs a target subject
+        # for the artifact to attach to. The caller is expected to
+        # have customised the workflow first (X-2's whole point).
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Workflow '{workflow.name}' is global; /run requires "
+                "a subject-scoped template. POST /api/workflows/"
+                f"{workflow_id}/customize first."
+            ),
+        )
+
+    record = await _run_workflow_for_artifact(
+        request,
+        workflow,
+        domain_id=body.domain_id,
+        subject_id=subject_id,
+        chapter_id=chapter_id,
+        topic_id=topic_id,
+        count=body.count,
+        difficulty=body.difficulty,
+    )
+    return ArtifactDTO(**record)
