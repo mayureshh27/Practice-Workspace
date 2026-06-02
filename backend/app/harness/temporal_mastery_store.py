@@ -26,6 +26,8 @@ from typing import Any
 
 import logfire
 
+from app.storage import data_path
+
 
 class TemporalMasteryStore:
     """SQLite-backed append-only temporal mastery edge storage.
@@ -36,8 +38,11 @@ class TemporalMasteryStore:
     and return the most recent edge.
     """
 
-    def __init__(self, db_path: str | Path = "storage/mastery.db") -> None:
-        self._db_path = Path(db_path)
+    def __init__(self, db_path: str | Path | None = None) -> None:
+        # Default to backend/data/mastery.db (R-2.1) — invariant of
+        # CWD, so `cd backend && uv run pytest` from the repo root
+        # and a bare `uv run pytest` from elsewhere both land here.
+        self._db_path = Path(db_path) if db_path is not None else data_path("mastery.db")
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
         self._local = threading.local()
         self._init_db()
@@ -67,10 +72,7 @@ class TemporalMasteryStore:
             "  valid_to TEXT"
             ")"
         )
-        conn.execute(
-            "CREATE INDEX IF NOT EXISTS idx_mastery_concept "
-            "ON mastery_edges(concept_id)"
-        )
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_mastery_concept ON mastery_edges(concept_id)")
         conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_mastery_recorded_at "
             "ON mastery_edges(concept_id, recorded_at)"
@@ -96,8 +98,7 @@ class TemporalMasteryStore:
 
         # Close the prior edge
         conn.execute(
-            "UPDATE mastery_edges SET valid_to = ? "
-            "WHERE concept_id = ? AND valid_to IS NULL",
+            "UPDATE mastery_edges SET valid_to = ? WHERE concept_id = ? AND valid_to IS NULL",
             (ts_iso, concept_id),
         )
 
@@ -174,7 +175,5 @@ class TemporalMasteryStore:
     def get_all_concept_ids(self) -> list[str]:
         """Return all concept IDs that have at least one mastery edge."""
         conn = self._get_conn()
-        cursor = conn.execute(
-            "SELECT DISTINCT concept_id FROM mastery_edges ORDER BY concept_id"
-        )
+        cursor = conn.execute("SELECT DISTINCT concept_id FROM mastery_edges ORDER BY concept_id")
         return [row[0] for row in cursor.fetchall()]

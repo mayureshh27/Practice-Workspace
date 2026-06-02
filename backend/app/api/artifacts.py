@@ -7,10 +7,11 @@ POST /api/artifacts       — create an artifact (e.g. from a workflow run)
 from __future__ import annotations
 
 import time
-import uuid
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
+
+from app.api._ids import new_id
 
 router = APIRouter(prefix="/api/artifacts", tags=["artifacts"])
 
@@ -73,13 +74,17 @@ def create_artifact(request: Request, body: CreateArtifactBody) -> ArtifactDTO:
     """
     artifacts = getattr(request.app.state, "artifacts", [])
     now = time.time()
-    # Timestamp + short uuid suffix prevents collisions on concurrent
-    # POSTs landing in the same millisecond.
-    artifact_id = f"art-{int(now * 1000)}-{uuid.uuid4().hex[:8]}"
+    # Canonical id format: {prefix}-{ms_timestamp}-{8_hex}. The hex
+    # suffix is part of new_id() so concurrent POSTs in the same
+    # millisecond never collide (the timestamp-only form did, see
+    # diagnose notes in commit history).
+    artifact_id = new_id("art")
     # Dump by name (snake_case) so the keys match ArtifactDTO's fields.
     record = body.model_dump(by_alias=False, exclude_none=True)
     record["id"] = artifact_id
-    record["time"] = time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime()) + f"{int((now % 1) * 1000):03d}Z"
+    record["time"] = (
+        time.strftime("%Y-%m-%dT%H:%M:%S.", time.gmtime()) + f"{int((now % 1) * 1000):03d}Z"
+    )
     artifacts.append(record)
     request.app.state.artifacts = artifacts
     return ArtifactDTO(**record)
