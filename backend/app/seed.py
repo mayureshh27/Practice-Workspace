@@ -35,9 +35,7 @@ def _load_problems_json(rel_path: str) -> dict:
         if path.exists():
             with open(path) as f:
                 return json.load(f)
-    raise FileNotFoundError(
-        f"Cannot find {rel_path} — tried: {[str(p) for p in candidates]}"
-    )
+    raise FileNotFoundError(f"Cannot find {rel_path} — tried: {[str(p) for p in candidates]}")
 
 
 def build_seed_domains() -> list[Domain]:
@@ -75,9 +73,20 @@ def build_seed_domains() -> list[Domain]:
             instructions="Check planar vs spatial degrees of freedom factors and C-space dimensional topology.",
             memory="Focus on screw coordinate systems and spatial tree joints.",
             topics=[
-                Topic(id="deg-freedom", name="Degrees of Freedom", last_message="Completed 1 hour ago", pinned=True),
-                Topic(id="grubler-formula", name="Grubler's Formula", last_message="Needs practice"),
-                Topic(id="cspace-topology", name="Configuration Space Topology", last_message="Solved 2 days ago"),
+                Topic(
+                    id="deg-freedom",
+                    name="Degrees of Freedom",
+                    last_message="Completed 1 hour ago",
+                    pinned=True,
+                ),
+                Topic(
+                    id="grubler-formula", name="Grubler's Formula", last_message="Needs practice"
+                ),
+                Topic(
+                    id="cspace-topology",
+                    name="Configuration Space Topology",
+                    last_message="Solved 2 days ago",
+                ),
             ],
         ),
     )
@@ -97,8 +106,18 @@ def build_seed_domains() -> list[Domain]:
                     pinned=True,
                     chapters=robot_chapters,
                     resources=[
-                        Resource(id="res-pdf", name="Modern_Robotics_Kinematics.pdf", lines=14500, file_type="PDF"),
-                        Resource(id="res-deriv", name="Screw_Theory_Derivations.md", lines=320, file_type="MD"),
+                        Resource(
+                            id="res-pdf",
+                            name="Modern_Robotics_Kinematics.pdf",
+                            lines=14500,
+                            file_type="PDF",
+                        ),
+                        Resource(
+                            id="res-deriv",
+                            name="Screw_Theory_Derivations.md",
+                            lines=320,
+                            file_type="MD",
+                        ),
                         Resource(id="res-lib", name="robotics_math.js", lines=750, file_type="JS"),
                     ],
                 ),
@@ -116,12 +135,21 @@ def build_seed_domains() -> list[Domain]:
                             instructions="Emphasize standard PID integral windup pitfalls.",
                             memory="PID feedforward and feedback loop gains.",
                             topics=[
-                                Topic(id="pid-tuning", name="PID Feedback Control Loop", last_message="Draft ready"),
+                                Topic(
+                                    id="pid-tuning",
+                                    name="PID Feedback Control Loop",
+                                    last_message="Draft ready",
+                                ),
                             ],
                         ),
                     ],
                     resources=[
-                        Resource(id="res-ctrl", name="PID_Controller_Design.pdf", lines=4500, file_type="PDF"),
+                        Resource(
+                            id="res-ctrl",
+                            name="PID_Controller_Design.pdf",
+                            lines=4500,
+                            file_type="PDF",
+                        ),
                     ],
                 ),
             ],
@@ -144,13 +172,26 @@ def build_seed_domains() -> list[Domain]:
                             instructions="Derive edge gradient magnitude equations manually.",
                             memory="Pixel convolutions and Gaussian kernel convolutions.",
                             topics=[
-                                Topic(id="gaussian-blur", name="Gaussian Filter Derivation", last_message="Not started"),
-                                Topic(id="sobel-edge", name="Sobel Edge Kernel Convolution", last_message="Not started"),
+                                Topic(
+                                    id="gaussian-blur",
+                                    name="Gaussian Filter Derivation",
+                                    last_message="Not started",
+                                ),
+                                Topic(
+                                    id="sobel-edge",
+                                    name="Sobel Edge Kernel Convolution",
+                                    last_message="Not started",
+                                ),
                             ],
                         ),
                     ],
                     resources=[
-                        Resource(id="res-cv", name="Computer_Vision_Algorithms.md", lines=1100, file_type="MD"),
+                        Resource(
+                            id="res-cv",
+                            name="Computer_Vision_Algorithms.md",
+                            lines=1100,
+                            file_type="MD",
+                        ),
                     ],
                 ),
             ],
@@ -169,8 +210,18 @@ def build_seed_domains() -> list[Domain]:
                     pinned=True,
                     chapters=go_chapters,
                     resources=[
-                        Resource(id="go-quickstart", name="Go_Basics_Quickstart.md", lines=180, file_type="MD"),
-                        Resource(id="go-spec", name="Go_Language_Specification.pdf", lines=8400, file_type="PDF"),
+                        Resource(
+                            id="go-quickstart",
+                            name="Go_Basics_Quickstart.md",
+                            lines=180,
+                            file_type="MD",
+                        ),
+                        Resource(
+                            id="go-spec",
+                            name="Go_Language_Specification.pdf",
+                            lines=8400,
+                            file_type="PDF",
+                        ),
                     ],
                 ),
             ],
@@ -185,8 +236,10 @@ def seed() -> None:
     domains = build_seed_domains()
     workspace_repo.set_domains(domains)
     print(f"Seeded {len(domains)} domains into workspace repository.")
-    print(f"  Go Programming: 13 chapters (ch1-ch13)")
-    print(f"  Robotics: {len([d for d in domains if d.id=='robotics'][0].subjects[0].chapters)} chapters")
+    print("  Go Programming: 13 chapters (ch1-ch13)")
+    print(
+        f"  Robotics: {len([d for d in domains if d.id == 'robotics'][0].subjects[0].chapters)} chapters"
+    )
     print(f"SQLite event tables created at: {settings.db_path}")
 
 
@@ -225,9 +278,7 @@ def build_seed_workflows() -> list[WorkflowTemplate]:
                 '`{"problems":[{"title":"…","prompt":"…","hints":["…"]}]}`.\n\n'
                 "Weak-spot context (from the learner's history):\n{{blindspots}}"
             ),
-            practice_config=PracticeConfig(
-                count=5, difficulty="medium", scope="topic"
-            ),
+            practice_config=PracticeConfig(count=5, difficulty="medium", scope="topic"),
         ),
         WorkflowTemplate(
             id="wf-summary",
@@ -265,9 +316,7 @@ def build_seed_workflows() -> list[WorkflowTemplate]:
                 '`{"questions":[{"q":"…","options":["…","…","…","…"],'
                 '"answer":0,"why":"…"}]}`'
             ),
-            practice_config=PracticeConfig(
-                count=5, difficulty="medium", scope="chapter"
-            ),
+            practice_config=PracticeConfig(count=5, difficulty="medium", scope="chapter"),
         ),
         WorkflowTemplate(
             id="wf-code-practice",

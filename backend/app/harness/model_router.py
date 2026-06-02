@@ -11,7 +11,7 @@ not depend on any single provider or require a gateway service in local BYOK mod
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Protocol
 
 

@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -40,7 +40,7 @@ def _naive(dt: datetime | None) -> datetime | None:
     if dt is None:
         return None
     if dt.tzinfo is not None:
-        return dt.astimezone(timezone.utc).replace(tzinfo=None)
+        return dt.astimezone(UTC).replace(tzinfo=None)
     return dt
 
 
@@ -76,8 +76,7 @@ class GraphitiMasteryStore:
             return
         if not _HAS_GRAPHITI:
             raise RuntimeError(
-                "graphiti-core is not installed. "
-                "Install with: uv add graphiti-core[kuzu]"
+                "graphiti-core is not installed. Install with: uv add graphiti-core[kuzu]"
             )
         self._run_async(self._async_init())
 
@@ -117,7 +116,7 @@ class GraphitiMasteryStore:
             name=concept_id,
             group_id=self._group_id,
             labels=["concept"],
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         await entity.save(self._driver)
         self._concept_nodes[concept_id] = entity.uuid
@@ -132,13 +131,14 @@ class GraphitiMasteryStore:
     ) -> None:
         """Append a temporal mastery edge via Graphiti EntityEdge."""
         if not (0.0 <= mastery_score <= 1.0):
-            raise ValueError(
-                f"Mastery score must be in [0.0, 1.0], got {mastery_score}"
-            )
+            raise ValueError(f"Mastery score must be in [0.0, 1.0], got {mastery_score}")
         self._ensure_init()
         self._run_async(
             self._async_append_mastery_edge(
-                concept_id, mastery_score, trigger_event_id, timestamp,
+                concept_id,
+                mastery_score,
+                trigger_event_id,
+                timestamp,
             )
         )
 
@@ -206,9 +206,7 @@ class GraphitiMasteryStore:
         """Return the mastery score at a specific point in time."""
         if not self._initialised:
             return None
-        return self._run_async(
-            self._async_get_score_at_time(concept_id, target_timestamp)
-        )
+        return self._run_async(self._async_get_score_at_time(concept_id, target_timestamp))
 
     async def _async_get_score_at_time(
         self,
@@ -221,7 +219,8 @@ class GraphitiMasteryStore:
         edges = await EntityEdge.get_by_node_uuid(self._driver, uuid)
         target = _naive(target_timestamp)
         valid = [
-            e for e in edges
+            e
+            for e in edges
             if e.valid_at
             and e.valid_at <= target
             and (e.invalid_at is None or e.invalid_at > target)

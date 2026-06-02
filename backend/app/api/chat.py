@@ -10,11 +10,9 @@ from __future__ import annotations
 import asyncio
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, HTTPException, Path, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-
-from fastapi import Request
 
 from app.agents import session_service, tutor_service
 from app.storage.database import DatabaseDep
@@ -24,8 +22,10 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 # ── Request / Response models ───────────────────────────────────────
 
+
 class ChatMessageRequest(BaseModel):
     """Request body for sending a chat message."""
+
     session_id: str
     message: str
     concept_ids: list[str] = []
@@ -34,6 +34,7 @@ class ChatMessageRequest(BaseModel):
 
 class ChatMessageResponse(BaseModel):
     """Response body for a chat message."""
+
     session_id: str
     response: str
     hint_event_id: str | None = None
@@ -41,17 +42,20 @@ class ChatMessageResponse(BaseModel):
 
 class SessionCreateResponse(BaseModel):
     """Response body for creating a chat session."""
+
     session_id: str
 
 
 class SessionEndResponse(BaseModel):
     """Response body for ending a chat session."""
+
     session_id: str
     summary_text: str | None = None
     event_count: int = 0
 
 
 # ── Endpoints ───────────────────────────────────────────────────────
+
 
 @router.post("/sessions")
 def create_chat_session() -> SessionCreateResponse:

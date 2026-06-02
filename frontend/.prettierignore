@@ -1,0 +1,7 @@
+dist
+node_modules
+.tanstack
+.vite
+*.lockb
+pnpm-lock.yaml
+.routeTree.gen.ts

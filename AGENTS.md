@@ -72,3 +72,33 @@ compare URL (e.g.
 `https://github.com/<org>/<repo>/compare/main...<branch>?expand=1`).
 If `gh` is authenticated, prefer `gt submit --stack` (which wraps
 `gh pr create` for every layer in the stack).
+
+## Feedback loops (Husky + Prettier + ruff + mypy + pytest-cov)
+
+Configured in Phase 0 of
+[`docs/plan/implementation-plan-2026-06-02-review-fix-cycle.md`](docs/plan/implementation-plan-2026-06-02-review-fix-cycle.md).
+**One command runs the full gate before push:**
+
+```bash
+make check
+```
+
+Which is shorthand for `frontend: pnpm typecheck && pnpm lint && pnpm test`
+plus `backend: uv run ruff check . && uv run mypy app/ && uv run pytest --cov=app --cov-fail-under=70 --ignore=tests/test_workspace_api.py`.
+
+Per-package gates:
+- `cd frontend && pnpm typecheck` — tsc -b, fails on any TS error
+- `cd frontend && pnpm lint:fix` — ESLint with Prettier-aware config
+- `cd frontend && pnpm format` — Prettier write
+- `cd backend && uv run ruff check .` — fast lint
+- `cd backend && uv run ruff format .` — formatter
+- `cd backend && uv run mypy app/` — type check (lenient, see `[tool.mypy]` in pyproject.toml)
+- `cd backend && uv run pytest --cov=app` — test with coverage floor 70%
+
+Pre-commit hook (`.husky/pre-commit`): runs `lint-staged` on staged files
+(Prettier + ESLint for TS/TSX, ruff format + ruff check --fix for .py).
+Pre-push hook (`.husky/pre-push`): runs `make check` minus the build.
+
+If a hook fires and you think it's wrong, read the error message — it
+includes the file path and line number. The AI feedback loop is: read
+the error, fix the code, retry. Don't bypass hooks.

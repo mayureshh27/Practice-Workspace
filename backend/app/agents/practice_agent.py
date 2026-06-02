@@ -22,7 +22,6 @@ import re
 from typing import Any
 
 from pydantic_ai import Agent
-from pydantic_ai.messages import ModelMessage
 
 from app.harness.model_router import DefaultModelRouter, ModelRouter
 
@@ -89,11 +88,13 @@ def _coerce_problems(payload: dict, requested_count: int) -> list[dict]:
 
     # Last resort: stringify the entire payload so the artifact
     # has *something* to show.
-    return [{
-        "title": "Generated content",
-        "prompt": json.dumps(payload, indent=2),
-        "hints": [],
-    }]
+    return [
+        {
+            "title": "Generated content",
+            "prompt": json.dumps(payload, indent=2),
+            "hints": [],
+        }
+    ]
 
 
 def _pad_problems(problems: list[dict], requested_count: int) -> list[dict]:
@@ -108,14 +109,16 @@ def _pad_problems(problems: list[dict], requested_count: int) -> list[dict]:
         return problems[:requested_count]
     missing = requested_count - len(problems)
     for i in range(missing):
-        problems.append({
-            "title": f"Placeholder problem {len(problems) + 1}",
-            "prompt": (
-                "The model returned fewer problems than requested. "
-                "Click *Rerun* on this artifact to regenerate."
-            ),
-            "hints": [],
-        })
+        problems.append(
+            {
+                "title": f"Placeholder problem {len(problems) + 1}",
+                "prompt": (
+                    "The model returned fewer problems than requested. "
+                    "Click *Rerun* on this artifact to regenerate."
+                ),
+                "hints": [],
+            }
+        )
     return problems
 
 
@@ -163,8 +166,7 @@ def render_prompt(
     typos in the template; the LLM is robust enough to ignore them.
     """
     return (
-        template
-        .replace("{{subject}}", subject)
+        template.replace("{{subject}}", subject)
         .replace("{{chapter}}", chapter)
         .replace("{{topic}}", topic)
         .replace("{{count}}", str(count))
@@ -186,13 +188,16 @@ async def generate_practice(
     """
     try:
         result = await practice_agent.run(prompt)
-    except Exception as exc:  # noqa: BLE001 — surface to the API caller
+    except Exception as exc:
         return (
-            [{
-                "title": f"Stub problem {i + 1}",
-                "prompt": f"(LLM call failed: {exc!s})",
-                "hints": [],
-            } for i in range(requested_count)],
+            [
+                {
+                    "title": f"Stub problem {i + 1}",
+                    "prompt": f"(LLM call failed: {exc!s})",
+                    "hints": [],
+                }
+                for i in range(requested_count)
+            ],
             None,
             str(exc),
         )
