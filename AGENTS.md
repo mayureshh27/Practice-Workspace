@@ -4,25 +4,67 @@ Rules that apply to any agent working anywhere in this repo
 (`backend/`, `frontend/`, `docs/`). Package-specific rules live in
 `frontend/AGENTS.md`.
 
-## Handoff docs go in `docs/`, not OS temp
+## Handoff docs go in `docs/handoffs/{date}/{topic}.md`
 
-When a session ends mid-work, write the handoff document to
-`docs/handoff-{topic}.md` in this repo (not to the OS temp dir, even
-though the `handoff` skill default is OS temp). Reasoning:
+When a session ends mid-work, write the handoff under
+`docs/handoffs/{YYYY-MM-DD}/{phase-or-topic}.md` in this repo.
+The `handoff` skill defaults to OS temp — override it for this
+project.
 
-- Handoffs are project memory. A new agent (human or AI) can grep
-  `docs/handoff-*.md` and the git log shows when each was written.
-- The team accesses them through git, PRs, and code review — not by
-  digging into a developer's local temp dir.
-- Cross-package context (e.g. backend API + frontend wiring) is the
-  rule, not the exception, so a repo-root location beats per-package.
+- **Always** save to the repo, not to OS temp. A new agent
+  (human or AI) can grep `docs/handoffs/`, and `git log` shows
+  when each handoff was written and on which branch.
+- Group by date folder. Multiple handoffs from the same day sit
+  side-by-side in `docs/handoffs/{YYYY-MM-DD}/`.
+- Topic names mirror the phase or the conversational topic:
+  `phase-0-feedback-loops.md`, `phase-1-ids-and-storage.md`,
+  `phase-2-qdrant-resilience.md`, `implementation-start.md`,
+  `studio-workflows.md`, etc. Match the branch name when
+  applicable.
+- **Migration of older flat handoffs:** historical handoffs
+  (e.g. `docs/handoff-studio-workflows.md`,
+  `docs/handoff-adaptive-practice-workspace.md`,
+  `docs/handoff-harness-engineering-session.md`,
+  `docs/handoff-context-engineering-dev.md`,
+  `docs/handoff-current-session.md`,
+  `docs/handoff_migration.md`,
+  `docs/handoff-2026-06-02-phase-0-complete.md`) live in
+  `docs/handoff-*.md` and stay there as historical record.
+  New work uses the nested convention.
+- Skip the handoff only when the session is a single trivial
+  edit (no follow-up work, no decisions worth carrying forward).
 
-Naming: `docs/handoff-{short-topic}.md`. See existing examples:
-`docs/handoff-adaptive-practice-workspace.md`,
-`docs/handoff-current-session.md`.
+### Cross-reference reviews, PRDs, and ADRs from each handoff
 
-Skip the handoff only when the session is a single trivial edit
-(no follow-up work, no decisions worth carrying forward).
+When writing or resuming a handoff, **explicitly cite** the
+relevant supporting docs. A handoff without these references
+is incomplete and forces the next agent to re-discover context.
+
+- **Reviews** — `docs/reviews/review.md` (chat-style
+  "thermo-nuclear") and `docs/reviews/code-review-by-layer.md`
+  (layered). These name every finding (`M-B1`, `M-H2`, etc.)
+  and the lines to touch. Quote finding IDs in the handoff's
+  "Findings" section.
+- **Plans / PRDs** — `docs/plan/implementation-plan-*.md`.
+  Each phase entry defines: scope, files, commit subject,
+  acceptance criteria, and dependencies. Quote the
+  acceptance criteria verbatim in the handoff's "Next
+  session" section so reviewers can verify.
+- **ADRs** — `docs/adr/0001..0030`. ADRs elevate decisions
+  (Pydantic AI vs LiteLLM, Qdrant as retrieval layer, the
+  Graphite-stacked-PR rule, etc.) to "load-bearing" status.
+  If a phase touches a file covered by an ADR, the handoff
+  must say whether the ADR is being **amended**, **deferred**,
+  or **unaffected**.
+- **Earlier handoffs in the same chain** — link to the
+  previous handoff (e.g. Phase 2's handoff links to Phase 1's)
+  so the reader can follow the stack without `git log`
+  archaeology.
+- **Before assuming a plan's "create ADR-X" call is correct:**
+  `ls docs/adr/` and grep. If the ADR already exists, ask
+  the user whether to amend, leave, or follow the new
+  interpretation. Same for any "delete file Y" or "rename
+  Z" instruction.
 
 ## Sync `frontend/` from `frontend-prototype/`
 

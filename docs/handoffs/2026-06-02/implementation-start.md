@@ -7,13 +7,12 @@ FastAPI + TanStack Router/Query workspace. Branch: `dev`. Remote:
 `https://github.com/mayureshh27/Practice-Workspace.git` (renamed this session
 from the original `Practice-tool` repo).
 
-This handoff lives in the OS temp dir (`D:\DevData\Temp\UserTemp\opencode\`)
-at the user's explicit instruction this session, **overriding** the repo-level
-`AGENTS.md` rule that handoffs go in `docs/handoff-*.md`. The user's
-override is in effect because they want the next session to *start
-implementing immediately*; the working dir is also where the
-`mirror.bat` lives for the prototype sync, so keeping all open-session
-notes adjacent is operationally cleaner.
+This handoff is in the repo at `docs/handoffs/2026-06-02/implementation-start.md`
+per the repo-level `AGENTS.md` rule (hendoffs live under
+`docs/handoffs/{date}/{topic}.md`). It was originally saved in the user's
+OS temp dir at the user's instruction that session; it was migrated to
+the repo on 2026-06-02 by `git mv` so the project memory is on disk in
+the canonical location.
 
 ## Current state (resume point)
 
@@ -88,7 +87,7 @@ folder in `docs/plan/`" — that write is still pending plan-mode approval.
 | `docs/pr-2026-06-02-studio-workflows.md` | PR description for that integration (still useful as a PR template). |
 | `docs/repo-migration-plan.md` | Migration plan to the new remote (already executed). |
 | `docs/adr/0030-agents-must-use-graphite-stacked-prs.md` | The branching rule the next session follows. |
-| `AGENTS.md` (repo root) | Handoff-location override, frontend-sync rule, test-scope rule, branching rule. |
+| `AGENTS.md` (repo root) | Handoff convention (`docs/handoffs/{date}/{topic}.md`), frontend-sync rule, test-scope rule, branching rule. |
 | `frontend/AGENTS.md` | TanStack skill-loading rules. |
 | `docs/adr/0001..0029` | All 30 ADRs; many are referenced by the plan. |
 | Conversation transcript | The 15-phase plan is in the recent turns above. **Read the turn that begins "Implementation Plan — Combined Review Fix Cycle"** and the follow-up turn with the dependency-graph re-order. |
