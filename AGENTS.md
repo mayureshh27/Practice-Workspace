@@ -45,3 +45,30 @@ tests are updated to match the new seed.
 
 Work happens on topic branches off `main` and is pushed phase by
 phase. Don't force-push, don't skip hooks, don't commit secrets.
+
+**AI agents must use Graphite stacked PRs** per
+[`docs/adr/0030-agents-must-use-graphite-stacked-prs.md`](docs/adr/0030-agents-must-use-graphite-stacked-prs.md).
+`gt` is installed (1.8.6). The short loop:
+
+```bash
+git checkout main
+gt create feat/<topic>-0-<layer>     # one branch per reviewable layer
+# ... commit ...
+gt create feat/<topic>-1-<layer>     # stacked on top
+# ... commit ...
+gt submit --stack                     # opens one PR per branch
+gt restack                            # after main moves
+gt absorb                             # auto-attribute fixups to the right branch
+```
+
+The handoff doc for the Studio workflows integration
+(`docs/handoff-studio-workflows.md`) explains how that branch would
+have stacked and what the trade-off was for shipping it flat.
+
+## Pull requests
+
+PRs go from a topic branch into `main`. Open them via the GitHub
+compare URL (e.g.
+`https://github.com/<org>/<repo>/compare/main...<branch>?expand=1`).
+If `gh` is authenticated, prefer `gt submit --stack` (which wraps
+`gh pr create` for every layer in the stack).
