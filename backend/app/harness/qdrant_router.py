@@ -8,11 +8,14 @@ from __future__ import annotations
 import os
 import uuid
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 import logfire
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
+from app.config import get_settings
 from app.harness.retrieval_router import ChunkResult
 from app.storage import data_path
 
@@ -24,6 +27,11 @@ class QdrantRetrievalRouter:
         # Default to backend/data/qdrant_db (R-2.1) — see
         # TemporalMasteryStore for the rationale on CWD-invariance.
         self.location = str(location) if location is not None else str(data_path("qdrant_db"))
+        # Phase 2 (M-H1) — embedding model is pinned via Settings so the
+        # 384-dim collection stays semantically aligned across runs.
+        settings = get_settings()
+        self.embedding_model: str = settings.qdrant_embedding_model
+        self.embedding_revision: str | None = settings.qdrant_embedding_revision
         # Gracefully connect to local Docker on port 6333, or fall back to local disk storage
         try:
             if os.environ.get("QDRANT_HOST") or self._is_docker_running():
@@ -46,20 +54,38 @@ class QdrantRetrievalRouter:
         self._ensure_collection()
         self._sources: dict[str, dict] = {}  # source_id -> metadata
 
-    def _is_docker_running(self) -> bool:
-        # Simple health check to check if port 6333 is open
-        import socket
+    def _qdrant_healthz_probe(self, host: str, port: int, timeout: float = 0.5) -> bool:
+        """Phase 2 (M-B3) — probe Qdrant's ``/healthz`` HTTP endpoint.
 
+        Replaces the old single-port TCP probe, which would silently
+        accept *any* service listening on 6333 (a different container
+        reusing the port, a stale process, etc.) and then fail later
+        on the first ``.create_collection`` call.
+
+        Returns ``True`` only when Qdrant itself answers 200 on
+        ``http://{host}:{port}/healthz``. Any other status, network
+        error, or non-Qdrant response returns ``False``.
+        """
+        url = f"http://{host}:{port}/healthz"
         try:
-            with socket.create_connection(("localhost", 6333), timeout=0.5):
-                return True
-        except OSError:
+            req = Request(url, headers={"Accept": "application/json"})
+            with urlopen(req, timeout=timeout) as resp:
+                return int(resp.status) == 200
+        except (HTTPError, URLError, OSError, ValueError):
             return False
+
+    def _is_docker_running(self) -> bool:
+        # Phase 2 (M-B3) — HTTP healthz probe, not raw socket.
+        host = os.environ.get("QDRANT_HOST", "localhost")
+        port = int(os.environ.get("QDRANT_PORT", "6333"))
+        return self._qdrant_healthz_probe(host, port)
 
     def _ensure_collection(self):
         try:
             if not self.client.collection_exists(self.collection_name):
-                # Hybrid search: 384 dimensions for all-MiniLM-L6-v2
+                # Hybrid search: 384 dimensions for the default
+                # ``all-MiniLM-L6-v2`` model (M-H1). Switching models
+                # is a schema migration — see ``Settings.qdrant_embedding_model``.
                 self.client.create_collection(
                     collection_name=self.collection_name,
                     vectors_config=models.VectorParams(size=384, distance=models.Distance.COSINE),
@@ -69,20 +95,25 @@ class QdrantRetrievalRouter:
             logfire.warning("Error checking/creating Qdrant collection: {error}", error=str(exc))
 
     def _get_embedding(self, text: str) -> list[float]:
+        # Phase 2 (M-H1 + M-H2) — embedding model is pinned via
+        # Settings, and the historical deterministic md5 fallback
+        # is *removed*. If the model can't be loaded (network down,
+        # HF cache miss, library uninstalled, etc.) we surface a
+        # ``RuntimeError`` to the caller rather than indexing 384
+        # pseudo-random floats that would later outrank real
+        # embeddings on a cosine-similarity collection.
+        from sentence_transformers import SentenceTransformer
+
         try:
-            from sentence_transformers import SentenceTransformer
-
-            model = SentenceTransformer("all-MiniLM-L6-v2")
+            model = SentenceTransformer(self.embedding_model, revision=self.embedding_revision)
             return model.encode(text).tolist()
-        except Exception:
-            # Deterministic pseudo-embedding fallback when sentence-transformers is loading/absent
-            import hashlib
-
-            res = []
-            for i in range(384):
-                val = int(hashlib.md5(f"{text}-{i}".encode()).hexdigest(), 16)
-                res.append((val % 2000 - 1000) / 1000.0)
-            return res
+        except Exception as exc:
+            raise RuntimeError(
+                f"Embedding model {self.embedding_model!r} (revision="
+                f"{self.embedding_revision!r}) is unavailable; refusing to "
+                f"fall back to pseudo-embedding (ADR-0002 operational "
+                f"commitment, M-H2). Underlying error: {exc!r}"
+            ) from exc
 
     def index_chunks(
         self,

@@ -68,6 +68,19 @@ class Settings(BaseSettings):
     # is a schema migration, not a configuration change.
     concept_fuzzy_threshold: int = 85
 
+    # ── Qdrant retrieval (Phase 2 — M-H1: pin embedding model) ─────
+    # Pinned to a known HF model id. Override with
+    # ``PRACDA_QDRANT_EMBEDDING_MODEL=…``. The collection is sized
+    # for 384 dims (see ``qdrant_router.QdrantRetrievalRouter``);
+    # switching to a model with a different dim is a schema migration.
+    qdrant_embedding_model: str = "all-MiniLM-L6-v2"
+    # Optional HuggingFace commit-hash pin for reproducibility. When
+    # ``None`` the latest revision of the model id is used (the
+    # historical behaviour, kept for backwards-compat with the Phase 1
+    # seed data). Setting this is a *one-line safety upgrade* — set it
+    # before deploying to staging.
+    qdrant_embedding_revision: str | None = None
+
 
 def get_settings() -> Settings:
     """Singleton-ish settings accessor — cached by FastAPI's dependency system."""
