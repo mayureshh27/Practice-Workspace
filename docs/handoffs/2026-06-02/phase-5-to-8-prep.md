@@ -14,29 +14,36 @@ session per the user's "do phases 5–8 in 1 shot" directive.
 
 ## TL;DR for the next agent
 
-Phases 0–4 are merged to `main`. The user's directive is to do
-**Phases 5, 6, 7, 8 in a single session**, executed as 4
-stacked PRs in the standard Graphite workflow (`gt create`
-per phase, one commit per phase, `gt submit --stack` at the
-end of each phase). The "stop before next phase" rule does
-**not** apply between 5→6→7→8 — only stop at the end of
-Phase 8 with all 4 PRs ready for review.
+Phases 0–3 are in `main` (commit `0dff4c4`). Phase 4 is
+**merged into `graphite-base/5` (commit `32b7464`), NOT into
+`main`** — this is a Graphite stacked-PR quirk (see "Graphite
+stacked-PR merge flow" below). Before you start Phase 5, the
+user must fast-forward `main` to `32b7464` (one command:
+`git push origin 32b7464:main` after a local
+`git checkout main && git merge --ff-only origin/graphite-base/5`).
+The doc is also still in **PR #6** (`docs/handoff-phase-5-to-8-prep`,
+draft) which the user should merge too — but it is not
+blocking Phase 5 code work.
 
-**Open cleanup item (user must do before Phase 5 work — does
-not block code work, only PR hygiene):** PR #5 was accidentally
-closed when its Graphite-managed base branch was deleted during
-a restack. The branch is intact on remote, the base is restored
-at main, the user just needs to click "Reopen pull request" at
-https://github.com/mayureshh27/Practice-Workspace/pull/5. See
-"Open cleanup items" below.
+The user's directive is to do **Phases 5, 6, 7, 8 in a single
+session**, executed as 4 stacked PRs in the standard Graphite
+workflow (`gt create` per phase, one commit per phase,
+`gt submit --stack` at the end of each phase). The "stop
+before next phase" rule does **not** apply between 5→6→7→8 —
+only stop at the end of Phase 8 with all 4 PRs ready for
+review.
 
 ## Resume point
 
 | Item | State |
 |---|---|
 | Current branch | `docs/handoff-phase-5-to-8-prep` (this handoff's branch, off main) |
-| Local `main` | `0dff4c4` — fast-forwarded; contains all of Phases 0–4 |
-| Remote `main` | `0dff4c4` |
+| Local `main` | `0dff4c4` (Phases 0–3) |
+| Remote `main` | `0dff4c4` (Phases 0–3 — NOT updated for Phase 4) |
+| `origin/graphite-base/5` | `32b7464` (Phase 4 squash) — this is where Phase 4 lives |
+| `feat/backend-4-gate-wiring` | merged into `graphite-base/5`, branch likely deleted from remote |
+| PR #5 | Merged (squash `32b7464` into `graphite-base/5`) — not into main |
+| PR #6 (this handoff) | Open, Ready for review — body correct, title stale ("feat(backend): gate wiring…") |
 | Working tree | Clean (one untracked `docs/reviews/review_clean.md` from an unrelated review — do **not** commit it) |
 | Test count | 110 pass, coverage 63.16% (above 55% floor) |
 | Lint/type baselines | ruff 39 pre-existing (none in changed files), mypy 38 pre-existing |
@@ -79,19 +86,69 @@ base branch, do:
 git push origin <main-sha>:refs/heads/graphite-base/<N> --force
 ```
 
-## Open cleanup items (user must do)
+## Graphite stacked-PR merge flow (CRITICAL — read this)
 
-1. **Reopen PR #5** at
-   https://github.com/mayureshh27/Practice-Workspace/pull/5
-   (click "Reopen pull request"). The base branch
-   `graphite-base/5` is restored at main; once reopened, the
-   PR shows only the 2 Phase 4 commits on top of main, 2/2
-   checks passing.
-2. The untracked `docs/reviews/review_clean.md` is a
+In the Graphite stacked-PR workflow, when you merge a stacked
+PR it does **not** go into `main` directly. It is squashed
+into a per-PR synthetic base branch (`graphite-base/<N>`).
+`main` is the trunk; `graphite-base/<N>` is the "what this
+PR actually contains once all its upstack ancestors are
+merged in" branch.
+
+For the 15-phase cycle, the user pattern seems to be:
+- PRs are stacked and merged one at a time into the running
+  `graphite-base/N` branch
+- Between phases, the user manually fast-forwards `main` to
+  `graphite-base/N` so the next phase can stack on `main`
+
+The current state: PR #5 (Phase 4) was merged into
+`graphite-base/5` (commit `32b7464`), but `main` is still at
+`0dff4c4` (Phase 3). **Before starting Phase 5, the user
+needs to fast-forward `main` to `32b7464`.** Without this,
+Phase 5 would not include Phase 4's code in its base.
+
+Reference: https://graphite.com/docs/stacking — "Once a PR is
+merged, Graphite updates the parent PR's branch, which you can
+then merge into your main branch."
+
+## Open cleanup items (user must do before Phase 5)
+
+1. **Fast-forward `main` to include Phase 4.** PR #5 was
+   merged into `graphite-base/5` (commit `32b7464`), not into
+   `main`. The user needs to:
+
+   ```bash
+   git checkout main
+   git merge --ff-only origin/graphite-base/5
+   git push origin main
+   # or if conflicts in local-only branches: re-clone, or
+   # git push origin 32b7464:main
+   ```
+
+   After this, `main` is at `32b7464` and Phase 5 can branch
+   from main with Phase 4's code already in the base.
+
+2. **(Optional) Merge PR #6** — this handoff doc. PR #6 is at
+   https://github.com/mayureshh27/Practice-Workspace/pull/6.
+   Once main has Phase 4 merged in, fast-forward `main` to
+   include the handoff too, or merge PR #6 in the GitHub UI.
+   Body is correct; title is stale ("feat(backend): gate
+   wiring…") — user may want to rename.
+
+3. The untracked `docs/reviews/review_clean.md` is a
    historical Studio-workflows review from another branch —
    leave it alone. Do not `git add` it.
 
-## What is already in `main` (Phases 0–4 summary)
+## What is already in `main` (Phases 0–3) vs. `graphite-base/5` (Phase 4)
+
+After the user fast-forwards `main` to `32b7464` per the
+cleanup item above, `main` will contain all of Phases 0–4.
+Until then, **only Phases 0–3 are in `main`**; Phase 4 is on
+`graphite-base/5`. The next agent should assume main will
+catch up before Phase 5 starts, but verify before branching.
+
+Full commit + handoff detail is in the per-phase handoff files
+(do not re-read; just know they exist):
 
 Full commit + handoff detail is in the per-phase handoff files
 (do not re-read; just know they exist):
@@ -293,20 +350,27 @@ Optional, only if you hit a wall:
 ## Pre-flight checklist before starting Phase 5
 
 ```bash
-# 1. On main, fast-forwarded
-git checkout main
-git merge --ff-only origin/main
-git status   # clean except for the untracked review_clean.md (leave it)
+# 1. Verify main is at Phase 4 (NOT Phase 3)
+git fetch origin main graphite-base/5
+git rev-parse origin/main origin/graphite-base/5
+# If main != 32b7464, the user hasn't done the cleanup yet.
+# STOP and ask. Phase 5 must stack on Phase 4.
 
-# 2. Tests green
+# 2. If main is stale, fast-forward locally (the user may have
+# already done this on remote; if not, they need to):
+git checkout main
+git merge --ff-only origin/graphite-base/5
+git push origin main
+
+# 3. Tests green on the new main
 cd backend
 uv run pytest --cov=app --cov-fail-under=55 --ignore=tests/test_workspace_api.py
 # Expect: 110 passed, ~63% coverage
 
-# 3. Branch from the last stacked phase
+# 4. Branch from main
 gt create feat/backend-5-workflow-routes
 
-# 4. ADR-0008 check
+# 5. ADR-0008 check
 ls docs/adr/0008*
 # If exists: stop and ask the user (amend / leave / new interpretation)
 ```
@@ -320,7 +384,19 @@ docs/handoffs/2026-06-02/phase-5-to-8-prep.md
 in this repo (D:\Robotics\Learning-Platform\Practice-tool)
 in full before doing anything.
 
-Phases 0–4 are merged. Your scope is Phases 5, 6, 7, 8 in this
+Phases 0–3 are in main (commit 0dff4c4). Phase 4 is merged
+into graphite-base/5 (commit 32b7464) but NOT into main. THIS
+IS A GRAPHITE STACKED-PR QUIRK — read the "Graphite stacked-PR
+merge flow" section of the handoff before doing anything.
+
+Your first action must be to ask me whether main has been
+fast-forwarded to include Phase 4. If not, prompt me to run:
+  git checkout main
+  git merge --ff-only origin/graphite-base/5
+  git push origin main
+Do NOT branch Phase 5 from a stale main that lacks Phase 4.
+
+After main is current, your scope is Phases 5, 6, 7, 8 in this
 single session, executed as 4 stacked PRs (gt create per phase,
 one commit per phase, gt submit --stack at the end of each
 phase). Do NOT stop between phases; only stop at the end of
@@ -359,17 +435,15 @@ For each phase:
     onto the new main using
     `git rebase --onto main <old-base> HEAD`,
     then push --force-with-lease. DO NOT delete
-    graphite-base/N branches — that closes the PR.
+    graphite-base/N branches — that closes the PR. Also do
+    NOT fast-forward main yourself if graphite-base/N is
+    ahead — ask the user to do the fast-forward (they may
+    have a specific approval flow).
 
 When all 4 phases are done, give me a one-screen summary:
 PR numbers, commit SHAs, test counts, and the cleanup items
-I need to do (e.g. merge PRs in order, rebase PRs after
-merges).
-
-Note: PR #5 from Phase 4 is currently CLOSED on GitHub (I
-accidentally closed it during a restack by deleting its base
-branch). I will reopen it via the GitHub UI before you start
-— it does not block Phase 5 since Phase 5 branches from main.
+I need to do (e.g. merge PRs in order, fast-forward main
+between merges, rebase PRs after merges).
 ```
 
 ## Cross-references (per AGENTS.md)
