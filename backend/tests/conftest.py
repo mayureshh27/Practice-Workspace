@@ -13,8 +13,6 @@ os.environ["GOOGLE_API_KEY"] = "mock-key-for-testing"
 os.environ["LOGFIRE_IGNORE_NO_CONFIG"] = "1"
 
 
-
-
 @pytest.fixture(scope="session")
 def test_db_path(tmp_path_factory):
     """Create a temporary SQLite database for the test session."""
@@ -29,8 +27,9 @@ def test_engine(test_db_path):
         echo=False,
         connect_args={"check_same_thread": False},
     )
-    # Import event models so metadata knows about their tables.
-    import app.domain.events  # noqa: F401
+    # Import event + audit models so metadata knows about their tables.
+    import app.domain.events
+    import app.storage.eval_runs_repo  # noqa: F401  (Phase 5: eval_runs)
 
     SQLModel.metadata.create_all(engine)
     return engine
