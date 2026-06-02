@@ -76,6 +76,17 @@ export type BottomDockTab = 'output' | 'tests' | 'terminal' | 'sandbox' | 'evals
 
 /* ── Workflow templates ──────────────────────────────────────────── */
 
+export type WorkflowScope = 'global' | 'subject' | 'chapter' | 'topic';
+
+/** Granularity the practice generator should pull context from. */
+export type PracticeScope = 'subject' | 'chapter' | 'topic';
+
+export type PracticeConfig = {
+  count: number;
+  difficulty: 'easy' | 'medium' | 'hard' | string;
+  scope: PracticeScope;
+};
+
 export type WorkflowTemplate = {
   id: string;
   name: string;
@@ -83,6 +94,12 @@ export type WorkflowTemplate = {
   description: string;
   lastRun?: string;
   evalGates: number;
+  scope: WorkflowScope;
+  subjectId?: string;
+  chapterId?: string;
+  topicId?: string;
+  promptTemplate: string;
+  practiceConfig?: PracticeConfig;
 };
 
 /* ── Artifact ────────────────────────────────────────────────────── */

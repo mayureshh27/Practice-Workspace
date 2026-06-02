@@ -58,6 +58,10 @@ interface WorkspaceState {
   }) => Promise<void>;
 
   setDomains: (domains: Domain[]) => void;
+  setWorkflows: (workflows: WorkflowTemplate[]) => void;
+  /** True when the backend Model Router has a real provider wired up. */
+  modelConfigured: boolean;
+  setModelConfigured: (configured: boolean) => void;
 
   // Domains — persisted to API + localStorage
   renameDomain: (id: string, name: string) => Promise<void>;
@@ -86,15 +90,29 @@ interface WorkspaceState {
   // Recents
   addToRecents: (label: string, type: RecentItem['type'], loc: any) => void;
 
-  // Workflows
-  saveWorkflow: (wf: WorkflowTemplate) => void;
-  deleteWorkflow: (id: string) => void;
-  updateWorkflow: (wf: WorkflowTemplate) => void;
-  duplicateWorkflow: (id: string) => void;
+  // Workflows — persisted to API
+  saveWorkflow: (wf: WorkflowTemplate) => Promise<void>;
+  deleteWorkflow: (id: string) => Promise<void>;
+  updateWorkflow: (wf: WorkflowTemplate) => Promise<void>;
+  duplicateWorkflow: (id: string) => Promise<WorkflowTemplate | null>;
+  customizeWorkflow: (id: string, target: { subjectId?: string; chapterId?: string; topicId?: string }) => Promise<WorkflowTemplate | null>;
 
   // Artifacts
-  addArtifact: (art: Omit<Artifact, 'id' | 'time'>) => void;
+  addArtifact: (art: Omit<Artifact, 'id' | 'time'>) => Promise<Artifact | null>;
   deleteArtifact: (id: string) => void;
+
+  // Practice run — calls the backend practice endpoint and refreshes
+  // the artifacts query cache so the Studio's "Generated History"
+  // panel updates without a manual reload.
+  runWorkflow: (workflow: WorkflowTemplate, ctx: {
+    domainId: string;
+    subjectId: string;
+    subjectName: string;
+    chapterName?: string;
+    topicName?: string;
+    chapterId?: string;
+    topicId?: string;
+  }) => Promise<Artifact | null>;
 
   // Notebooks (simple string-keyed stubs for notebook route)
   notebooks: Record<string, string[]>;
@@ -102,10 +120,16 @@ interface WorkspaceState {
   deleteNotebook: (domainId: string, subjectId: string, id: string) => void;
 }
 
-export const useWorkspaceStore = create<WorkspaceState>((set) => ({
+export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   domains: getLocalStorageItem('domains', INITIAL_DOMAINS),
   workflows: getLocalStorageItem('workflows', INITIAL_WORKFLOWS),
   artifacts: getLocalStorageItem('artifacts', INITIAL_ARTIFACTS),
+  modelConfigured: true,
+  setWorkflows: (workflows) => {
+    set({ workflows });
+    setLocalStorageItem('workflows', workflows);
+  },
+  setModelConfigured: (configured) => set({ modelConfigured: configured }),
   recentItems: getLocalStorageItem('recentItems', [
     {
       id: 'recent-1',
@@ -418,62 +442,133 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
     return { recentItems: next };
   }),
 
-  saveWorkflow: (wf) => set((state) => {
-    const idx = state.workflows.findIndex(w => w.id === wf.id);
-    let next;
-    if (idx >= 0) {
-      next = [...state.workflows];
-      next[idx] = wf;
-    } else {
-      next = [...state.workflows, wf];
+  saveWorkflow: async (wf) => {
+    const existing = get().workflows.find(w => w.id === wf.id);
+    try {
+      const saved = existing
+        ? await api.updateWorkflow(wf.id, wf as any)
+        : await api.addWorkflow(wf as any);
+      set((state) => {
+        const idx = state.workflows.findIndex(w => w.id === saved.id);
+        const next = idx >= 0
+          ? state.workflows.map(w => w.id === saved.id ? saved : w)
+          : [...state.workflows, saved];
+        setLocalStorageItem('workflows', next);
+        return { workflows: next };
+      });
+    } catch (err) {
+      console.error('Failed to save workflow:', err);
     }
-    setLocalStorageItem('workflows', next);
-    return { workflows: next };
-  }),
+  },
 
-  deleteWorkflow: (id) => set((state) => {
-    const next = state.workflows.filter(w => w.id !== id);
-    setLocalStorageItem('workflows', next);
-    return { workflows: next };
-  }),
-
-  updateWorkflow: (wf) => set((state) => {
-    const idx = state.workflows.findIndex(w => w.id === wf.id);
-    let next;
-    if (idx >= 0) {
-      next = [...state.workflows];
-      next[idx] = wf;
-    } else {
-      next = [...state.workflows, wf];
+  deleteWorkflow: async (id) => {
+    try {
+      await api.deleteWorkflow(id);
+    } catch (err) {
+      console.error('Failed to delete workflow:', err);
+      return;
     }
-    setLocalStorageItem('workflows', next);
-    return { workflows: next };
-  }),
+    set((state) => {
+      const next = state.workflows.filter(w => w.id !== id);
+      setLocalStorageItem('workflows', next);
+      return { workflows: next };
+    });
+  },
 
-  duplicateWorkflow: (id) => set((state) => {
-    const wf = state.workflows.find(w => w.id === id);
-    if (!wf) return state;
-    const next = [...state.workflows, { ...wf, id: `wf-dup-${Date.now()}`, name: `${wf.name} (copy)` }];
-    setLocalStorageItem('workflows', next);
-    return { workflows: next };
-  }),
+  updateWorkflow: async (wf) => {
+    try {
+      const updated = await api.updateWorkflow(wf.id, wf as any);
+      set((state) => {
+        const next = state.workflows.map(w => w.id === updated.id ? updated : w);
+        setLocalStorageItem('workflows', next);
+        return { workflows: next };
+      });
+    } catch (err) {
+      console.error('Failed to update workflow:', err);
+    }
+  },
 
-  addArtifact: (art) => set((state) => {
-    const newArt: Artifact = {
-      ...art,
-      id: `art-${Date.now()}`,
-      time: 'Just now'
-    };
-    const next = [newArt, ...state.artifacts];
-    setLocalStorageItem('artifacts', next);
-    return { artifacts: next };
-  }),
+  duplicateWorkflow: async (id) => {
+    try {
+      const copy = await api.duplicateWorkflow(id);
+      set((state) => {
+        const next = [...state.workflows, copy];
+        setLocalStorageItem('workflows', next);
+        return { workflows: next };
+      });
+      return copy;
+    } catch (err) {
+      console.error('Failed to duplicate workflow:', err);
+      return null;
+    }
+  },
+
+  customizeWorkflow: async (id, target) => {
+    try {
+      const fork = await api.customizeWorkflow(id, target);
+      set((state) => {
+        const next = [...state.workflows, fork];
+        setLocalStorageItem('workflows', next);
+        return { workflows: next };
+      });
+      return fork;
+    } catch (err) {
+      console.error('Failed to customise workflow:', err);
+      return null;
+    }
+  },
+
+  addArtifact: async (art) => {
+    try {
+      const created = await api.createArtifact({
+        name: art.name,
+        type: art.type,
+        status: art.status,
+        domainId: art.domainId,
+        subjectId: art.subjectId,
+        chapterId: art.chapterId,
+        topicId: art.topicId,
+      });
+      set((state) => {
+        const next = [created, ...state.artifacts];
+        setLocalStorageItem('artifacts', next);
+        return { artifacts: next };
+      });
+      return created;
+    } catch (err) {
+      console.error('Failed to create artifact:', err);
+      return null;
+    }
+  },
 
   deleteArtifact: (id) => set((state) => {
     const next = state.artifacts.filter(a => a.id !== id);
     setLocalStorageItem('artifacts', next);
     return { artifacts: next };
   }),
+
+  runWorkflow: async (workflow, ctx) => {
+    try {
+      const artifact = await api.runPracticeWorkflow({
+        workflowId: workflow.id,
+        domainId: ctx.domainId,
+        subjectId: ctx.subjectId,
+        chapterId: ctx.chapterId,
+        topicId: ctx.topicId,
+        count: workflow.practiceConfig?.count,
+        difficulty: workflow.practiceConfig?.difficulty,
+      });
+      set((state) => {
+        const next = [artifact, ...state.artifacts];
+        setLocalStorageItem('artifacts', next);
+        return { artifacts: next };
+      });
+      return artifact;
+    } catch (err) {
+      console.error('Workflow run failed:', err);
+      throw err;
+    }
+  },
 
   notebooks: getLocalStorageItem('notebooks', {}),
   createNotebook: (domainId, subjectId, name) => set((state) => {

@@ -57,6 +57,24 @@ export const artifactsQueries = {
   }),
 }
 
+export const workflowQueries = {
+  list: (params?: {
+    scope?: 'global' | 'subject' | 'chapter' | 'topic'
+    subjectId?: string
+    chapterId?: string
+    topicId?: string
+  }) => queryOptions({
+    queryKey: ['workflows', params ?? {}],
+    queryFn: () => api.getWorkflows(params),
+    staleTime: 1000 * 60 * 2,
+  }),
+  detail: (id: string) => queryOptions({
+    queryKey: ['workflows', id],
+    queryFn: () => api.getWorkflow(id),
+    staleTime: 1000 * 60 * 5,
+  }),
+}
+
 export const conceptQueries = {
   graph: () => queryOptions({
     queryKey: ['concepts', 'graph'],

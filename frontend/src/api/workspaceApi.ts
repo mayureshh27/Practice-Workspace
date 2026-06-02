@@ -118,13 +118,50 @@ export type ChunkPreviewDTO = z.infer<typeof ChunkPreviewSchema>;
 
 export const ArtifactSchema = z.object({
   id: z.string(),
-  title: z.string(),
+  name: z.string(),
   type: z.string(),
   status: z.string(),
   time: z.string(),
+  domainId: z.string().optional().nullable(),
+  subjectId: z.string().optional().nullable(),
+  chapterId: z.string().optional().nullable(),
+  topicId: z.string().optional().nullable(),
+  payload: z.record(z.any()).optional().nullable(),
 });
 
 export type ArtifactDTO = z.infer<typeof ArtifactSchema>;
+
+// ── Workflow templates ──────────────────────────────────────────────
+
+export const PracticeConfigSchema = z.object({
+  count: z.number().int().nonnegative(),
+  difficulty: z.string(),
+  scope: z.enum(['subject', 'chapter', 'topic']),
+});
+
+export const WorkflowTemplateSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  targetType: z.string(),
+  description: z.string(),
+  lastRun: z.string().optional().nullable(),
+  evalGates: z.number().int().nonnegative(),
+  scope: z.enum(['global', 'subject', 'chapter', 'topic']),
+  subjectId: z.string().optional().nullable(),
+  chapterId: z.string().optional().nullable(),
+  topicId: z.string().optional().nullable(),
+  promptTemplate: z.string(),
+  practiceConfig: PracticeConfigSchema.optional().nullable(),
+});
+
+export const WorkflowListResponseSchema = z.object({
+  items: z.array(WorkflowTemplateSchema),
+  modelConfigured: z.boolean(),
+});
+
+export type WorkflowTemplateDTO = z.infer<typeof WorkflowTemplateSchema>;
+export type PracticeConfigDTO = z.infer<typeof PracticeConfigSchema>;
+export type WorkflowListResponse = z.infer<typeof WorkflowListResponseSchema>;
 
 // ── Concept Graph schemas ───────────────────────────────────────────
 
@@ -441,6 +478,147 @@ export const api = {
     if (!res.ok) throw new Error(`Failed to fetch artifacts: ${res.status}`);
     const data = await res.json();
     return z.array(ArtifactSchema).parse(data);
+  },
+
+  createArtifact: async (body: {
+    name: string;
+    type?: string;
+    status?: string;
+    domainId?: string;
+    subjectId?: string;
+    chapterId?: string;
+    topicId?: string;
+    payload?: Record<string, any>;
+  }): Promise<ArtifactDTO> => {
+    const res = await fetch(`${API_BASE}/api/artifacts/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`Failed to create artifact: ${res.status}`);
+    return ArtifactSchema.parse(await res.json());
+  },
+
+  // ── Workflows ────────────────────────────────────────────────────
+
+  getWorkflows: async (params?: {
+    scope?: 'global' | 'subject' | 'chapter' | 'topic';
+    subjectId?: string;
+    chapterId?: string;
+    topicId?: string;
+  }): Promise<WorkflowListResponse> => {
+    const qs = params
+      ? '?' + Object.entries(params)
+          .filter(([, v]) => v != null && v !== '')
+          .map(([k, v]) => `${k}=${encodeURIComponent(v as string)}`)
+          .join('&')
+      : '';
+    const res = await fetch(`${API_BASE}/api/workflows/${qs}`);
+    if (!res.ok) throw new Error(`Failed to fetch workflows: ${res.status}`);
+    return WorkflowListResponseSchema.parse(await res.json());
+  },
+
+  getWorkflow: async (id: string): Promise<WorkflowTemplateDTO> => {
+    const res = await fetch(`${API_BASE}/api/workflows/${id}`);
+    if (!res.ok) throw new Error(`Workflow not found: ${id}`);
+    return WorkflowTemplateSchema.parse(await res.json());
+  },
+
+  addWorkflow: async (body: {
+    name: string;
+    targetType?: string;
+    description?: string;
+    scope?: 'global' | 'subject' | 'chapter' | 'topic';
+    subjectId?: string;
+    chapterId?: string;
+    topicId?: string;
+    promptTemplate?: string;
+    practiceConfig?: PracticeConfigDTO;
+    evalGates?: number;
+  }): Promise<WorkflowTemplateDTO> => {
+    const res = await fetch(`${API_BASE}/api/workflows/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`Failed to create workflow: ${res.status}`);
+    return WorkflowTemplateSchema.parse(await res.json());
+  },
+
+  updateWorkflow: async (
+    id: string,
+    fields: Partial<{
+      name: string;
+      targetType: string;
+      description: string;
+      lastRun: string;
+      evalGates: number;
+      scope: 'global' | 'subject' | 'chapter' | 'topic';
+      subjectId: string;
+      chapterId: string;
+      topicId: string;
+      promptTemplate: string;
+      practiceConfig: PracticeConfigDTO;
+    }>,
+  ): Promise<WorkflowTemplateDTO> => {
+    const res = await fetch(`${API_BASE}/api/workflows/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields),
+    });
+    if (!res.ok) throw new Error(`Failed to update workflow: ${res.status}`);
+    return WorkflowTemplateSchema.parse(await res.json());
+  },
+
+  deleteWorkflow: async (id: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}/api/workflows/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error(`Failed to delete workflow: ${res.status}`);
+  },
+
+  duplicateWorkflow: async (id: string): Promise<WorkflowTemplateDTO> => {
+    const res = await fetch(`${API_BASE}/api/workflows/${id}/duplicate`, {
+      method: 'POST',
+    });
+    if (!res.ok) throw new Error(`Failed to duplicate workflow: ${res.status}`);
+    return WorkflowTemplateSchema.parse(await res.json());
+  },
+
+  customizeWorkflow: async (
+    id: string,
+    target: { subjectId?: string; chapterId?: string; topicId?: string },
+  ): Promise<WorkflowTemplateDTO> => {
+    const res = await fetch(`${API_BASE}/api/workflows/${id}/customize`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(target),
+    });
+    if (!res.ok) throw new Error(`Failed to customise workflow: ${res.status}`);
+    return WorkflowTemplateSchema.parse(await res.json());
+  },
+
+  // ── Practice generation (Phase 6 — real LLM call) ────────────────
+
+  runPracticeWorkflow: async (body: {
+    workflowId: string;
+    domainId: string;
+    subjectId: string;
+    chapterId?: string;
+    topicId?: string;
+    count?: number;
+    difficulty?: string;
+  }): Promise<ArtifactDTO> => {
+    const res = await fetch(`${API_BASE}/api/practice-exercises/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail ?? `Practice generation failed: ${res.status}`);
+    }
+    return ArtifactSchema.parse(await res.json());
   },
 
   // ── Concepts / Graph ─────────────────────────────────────────────

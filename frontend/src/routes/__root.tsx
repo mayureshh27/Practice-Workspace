@@ -3,7 +3,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { HotkeysProvider, useHotkey } from '@tanstack/react-hotkeys'
 import type { QueryClient } from '@tanstack/react-query'
 
-import { domainQueries, masteryQueries } from '../api/queries'
+import { domainQueries, masteryQueries, workflowQueries, artifactsQueries } from '../api/queries'
 import { useWorkspaceStore } from '../stores/workspaceStore'
 import { useUIStore } from '../stores/uiStore'
 
@@ -72,6 +72,19 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     try {
       await queryClient.ensureQueryData(masteryQueries.blindSpots())
     } catch (_) {}
+    try {
+      const wfResp = await queryClient.ensureQueryData(workflowQueries.list())
+      useWorkspaceStore.getState().setWorkflows(wfResp.items as any)
+      useWorkspaceStore.getState().setModelConfigured(wfResp.modelConfigured)
+    } catch (err) {
+      console.warn('Failed to fetch workflows from API, using local fallback:', err)
+    }
+    try {
+      const artifacts = await queryClient.ensureQueryData(artifactsQueries.list())
+      useWorkspaceStore.setState({ artifacts: artifacts as any })
+    } catch (err) {
+      console.warn('Failed to fetch artifacts from API, using local fallback:', err)
+    }
   },
   component: RootComponent,
 })
