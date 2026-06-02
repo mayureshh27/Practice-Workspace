@@ -347,3 +347,32 @@ class QdrantRetrievalRouter:
         except Exception as exc:
             logfire.warning("Qdrant exact search failed: {error}", error=str(exc))
             return []
+
+    def chunk_exists(self, chunk_id: str) -> bool:
+        """Return True if ``chunk_id`` is currently indexed in the collection.
+
+        Implements the :class:`ChunkExistenceChecker` protocol consumed
+        by ``artifact_gate._check_source_grounding`` (layered review
+        H-H2). Before this method existed, no concrete checker was
+        registered and the gate silently passed every artifact —
+        including ones citing chunk ids that had been pruned or
+        never indexed. The lookup uses ``client.retrieve`` which
+        returns an empty list for unknown ids without raising.
+        """
+        if not chunk_id:
+            return False
+        try:
+            found = self.client.retrieve(
+                collection_name=self.collection_name,
+                ids=[chunk_id],
+                with_payload=False,
+                with_vectors=False,
+            )
+            return bool(found)
+        except Exception as exc:
+            logfire.warning(
+                "Qdrant chunk_exists lookup failed for {chunk_id}: {error}",
+                chunk_id=chunk_id,
+                error=str(exc),
+            )
+            return False

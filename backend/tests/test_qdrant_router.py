@@ -1,6 +1,6 @@
-"""Tests for QdrantRetrievalRouter (Phase 2: M-B3, M-H1, M-H2).
+"""Tests for QdrantRetrievalRouter (Phase 2: M-B3, M-H1, M-H2; Phase 4: H-H2).
 
-These tests cover the three findings Phase 2 closes:
+These tests cover the four findings that touch this module:
 
 - M-B3 — `_qdrant_healthz_probe` returns ``True`` only for an
   actual Qdrant answering ``/healthz`` with 200; not a raw socket
@@ -10,6 +10,11 @@ These tests cover the three findings Phase 2 closes:
 - M-H2 — ``_get_embedding`` raises ``RuntimeError`` (no silent
   pseudo-embedding fallback) when the embedding model cannot be
   loaded.
+- H-H2 (Phase 4) — ``QdrantRetrievalRouter.chunk_exists`` is the
+  concrete implementation of the ``ChunkExistenceChecker`` protocol
+  consumed by ``artifact_gate._check_source_grounding``. The gate
+  treats unknown ids and client errors the same way (False, not
+  raise).
 """
 
 from __future__ import annotations
@@ -28,6 +33,16 @@ def _bare_router() -> QdrantRetrievalRouter:
     hits Qdrant / disk). Lets the test patch the methods under test.
     """
     return QdrantRetrievalRouter.__new__(QdrantRetrievalRouter)
+
+
+def _new_router() -> QdrantRetrievalRouter:
+    """Build a router backed by an in-memory Qdrant collection.
+
+    We use ``location=":memory:"`` so the test never touches disk and
+    stays fast. The collection is created on ``__init__``.
+    """
+    router = QdrantRetrievalRouter(location=":memory:")
+    return router
 
 
 # ── M-B3: /healthz probe ────────────────────────────────────────
@@ -109,6 +124,50 @@ def test_get_embedding_raises_when_model_unavailable():
         pytest.raises(RuntimeError, match="refusing to fall back"),
     ):
         router._get_embedding("hello world")
+
+
+# ── H-H2 (Phase 4): chunk_exists on QdrantRetrievalRouter ───────
+
+
+def test_chunk_exists_false_for_unknown_id():
+    """An id that was never indexed is reported as not existing."""
+    router = _new_router()
+    assert router.chunk_exists("00000000-0000-0000-0000-000000000000") is False
+
+
+def test_chunk_exists_false_for_empty_id():
+    """Empty string is treated as 'not found' without hitting Qdrant."""
+    router = _new_router()
+    assert router.chunk_exists("") is False
+
+
+def test_chunk_exists_true_for_indexed_chunk():
+    """After ``index_chunks`` returns, the chunk id is reported as present."""
+    router = _new_router()
+    chunk_ids = router.index_chunks(
+        [
+            {
+                "text": "Pydantic AI is a Python agent framework.",
+                "source_id": "src-py",
+                "chunk_index": 0,
+                "page_or_timestamp": "p.1",
+            }
+        ]
+    )
+    assert len(chunk_ids) == 1
+    assert router.chunk_exists(chunk_ids[0]) is True
+
+
+def test_chunk_exists_does_not_raise_on_client_error(monkeypatch):
+    """A failing client returns False (no exception bubbles to the gate)."""
+    router = _new_router()
+
+    def _raise(*_a, **_kw):
+        raise RuntimeError("simulated Qdrant outage")
+
+    monkeypatch.setattr(router.client, "retrieve", _raise)
+    # Must not raise; gate treats it as "not found" and falls through.
+    assert router.chunk_exists("any-id") is False
 
 
 # ── Test helper ──────────────────────────────────────────────────

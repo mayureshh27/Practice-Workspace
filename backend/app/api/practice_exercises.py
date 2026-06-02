@@ -7,10 +7,17 @@ The Studio's Run button hits this endpoint. The endpoint:
   2. Resolves the subject / chapter / topic names.
   3. Substitutes {{…}} placeholders in the workflow's prompt.
   4. Calls the Practice Agent (Pydantic AI + ModelRouter).
-  5. Persists a new artifact via :func:`make_artifact` /
-     :func:`append_artifact` and returns it.
+  5. Runs the result through the Artifact Gate (H-B5) — schema,
+     source grounding, runability, dedup.
+  6. Persists a new artifact via :func:`make_artifact` /
+     :func:`append_artifact`.
+  7. Emits an :class:`ArtifactGenerated` event (H-H5) so the memory
+     store has a row linking the artifact id to the workflow and
+     scope. Downstream ``PracticeAttempted`` events join on
+     ``artifact_id`` to keep the mastery / blind-spot trace intact.
+  8. Returns the new artifact.
 
-The practice agent now returns a typed :class:`PracticePayload`
+The practice agent returns a typed :class:`PracticePayload`
 discriminated union (chat review §3.1, §5.1, §5.2). The agent's parse
 errors propagate as 502 so misbehaving LLM shapes are visible in
 Logfire (chat review §5.1: "Bad shapes surface as errors, not silent
@@ -23,14 +30,20 @@ malformed workflow, etc.).
 
 from __future__ import annotations
 
+import hashlib
+
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field, ValidationError
 
 from app.agents import practice_agent
 from app.api._artifact_factory import append_artifact, make_artifact
 from app.api.artifacts import ArtifactDTO
+from app.domain.events import ArtifactGenerated
 from app.domain.workspace import PracticeConfig
+from app.harness import artifact_gate
+from app.harness.event_emitter import emit_event
 from app.storage import workflows_repo, workspace_repo
+from app.storage.database import get_engine
 
 router = APIRouter(prefix="/api/practice-exercises", tags=["practice"])
 
@@ -124,6 +137,30 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
             ),
         ) from exc
 
+    # ── H-B5: run the result through the Artifact Gate ─────────────
+    # We pass a minimal duck-typed artifact (the gate uses getattr)
+    # plus the live existing-artifacts list and the prompt template
+    # SHA so dedup can fire (H-H1). The gate's failures are
+    # surfaced to the operator; review_queue warnings are stored
+    # alongside the artifact record for the Studio's review panel.
+    prompt_template_sha = hashlib.sha256(
+        (workflow.prompt_template or "").encode("utf-8")
+    ).hexdigest()
+    existing = list(getattr(request.app.state, "artifacts", []) or [])
+    gate_result = await artifact_gate.validate_artifact(
+        typed_payload,
+        existing_artifacts=existing,
+        prompt_template_sha=prompt_template_sha,
+    )
+    if not gate_result.passed:
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                f"Artifact gate rejected the generated artifact: "
+                f"{'; '.join(gate_result.failures)}"
+            ),
+        )
+
     # Persist via the factory; the discriminated union's `kind` rides
     # along on the payload dict for the frontend to narrow on.
     record = make_artifact(
@@ -135,6 +172,39 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
         chapter_id=body.chapter_id,
         topic_id=body.topic_id,
         payload=typed_payload.model_dump(),
+        prompt_template_sha=prompt_template_sha,
     )
     append_artifact(request, record)
+
+    # ── H-H5: emit ArtifactGenerated so the event log has a row
+    # linking the artifact to the workflow + scope. Downstream
+    # PracticeAttempted events join on artifact_id; the mastery
+    # rule (ConceptMasteryUpdated.trigger_event_id) therefore
+    # remains traceable back to a specific artifact and workflow.
+    try:
+        from sqlmodel import Session
+
+        with Session(get_engine()) as session:
+            emit_event(
+                session,
+                ArtifactGenerated(
+                    artifact_id=record["id"],
+                    artifact_type=workflow.target_type,
+                    workflow_id=workflow.id,
+                    source_id=None,
+                    concept_ids=None,
+                ),
+            )
+    except Exception as exc:  # pragma: no cover — DB unavailable
+        # Event emission is best-effort; the artifact is already
+        # persisted. Log via the exception type only — the Studio's
+        # error banner will show the gate result if anything failed.
+        import logfire
+
+        logfire.warning(
+            "Failed to emit ArtifactGenerated for {artifact_id}: {error}",
+            artifact_id=record["id"],
+            error=str(exc),
+        )
+
     return ArtifactDTO(**record)

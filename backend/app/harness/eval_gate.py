@@ -9,13 +9,22 @@ eval check on every tutor response. Three binary conditions:
 Responses failing (1) or (2) are blocked and a HintLeakage event is logged.
 Responses failing only (3) get a guiding question appended.
 
+Also includes the **LocalSandboxRunner**: a concrete implementation of
+the :class:`app.harness.artifact_gate.SandboxRunner` protocol that
+runs Python code in a subprocess with a timeout (layered review H-M4).
+Remote-execution backends (firecracker, gVisor, modal) are out of
+scope for v1.
+
 Pydantic Evals wired after foundation tests pass (ADR-0011). This module
 defines both the Protocol interface and the concrete SocraticGate.
 """
 
 from __future__ import annotations
 
+import asyncio
 import re
+import subprocess
+import sys
 from typing import Any, Protocol
 
 import logfire
@@ -141,3 +150,85 @@ class SocraticGate:
             warnings=warnings,
             amended_text=amended_text,
         )
+
+
+# ── Local sandbox ───────────────────────────────────────────────────
+
+
+class LocalSandboxRunner:
+    """Concrete :class:`SandboxRunner` that runs code in a subprocess.
+
+    Implements the :class:`app.harness.artifact_gate.SandboxRunner`
+    protocol so the artifact gate's ``_check_runability`` can be
+    exercised end-to-end in v1 (layered review H-M4). Remote-execution
+    backends (firecracker, gVisor, modal) are out of scope.
+
+    Constraints:
+
+    * **Python only** for v1. Other languages are not supported;
+      the runner returns ``exit_code=1`` with a warning so the gate
+      fails closed.
+    * **Subprocess with timeout** — the runner refuses to wait
+      forever for the LLM-generated code to terminate.
+    * **No network isolation** — this is a local dev/CI sandbox, not
+      a production isolate. Do not point it at untrusted internet
+      code without layering a real sandbox on top.
+    """
+
+    def __init__(self, python_executable: str | None = None) -> None:
+        self._python = python_executable or sys.executable
+
+    async def run(
+        self,
+        code: str,
+        language: str,
+        timeout_seconds: int = 30,
+    ) -> dict[str, Any]:
+        """Execute ``code`` and return ``{exit_code, stdout, stderr}``.
+
+        Timeouts surface as ``exit_code=124`` (the conventional GNU
+        coreutils timeout code) plus a stderr note. The gate treats
+        any non-zero exit code as a runability failure.
+        """
+        if language.lower() != "python":
+            return {
+                "exit_code": 1,
+                "stdout": "",
+                "stderr": (
+                    f"LocalSandboxRunner only supports 'python' (got "
+                    f"'{language}'). Skip runability check."
+                ),
+            }
+
+        def _exec() -> subprocess.CompletedProcess[str]:
+            return subprocess.run(
+                [self._python, "-c", code],
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+
+        try:
+            completed = await asyncio.to_thread(_exec)
+        except subprocess.TimeoutExpired as exc:
+            return {
+                "exit_code": 124,
+                "stdout": exc.stdout or "",
+                "stderr": (
+                    f"{exc.stderr or ''}\n"
+                    f"[LocalSandboxRunner] code exceeded {timeout_seconds}s timeout"
+                ).strip(),
+            }
+        except Exception as exc:  # network FS errors, OOM, etc.
+            logfire.warning("LocalSandboxRunner: subprocess failed: {error}", error=str(exc))
+            return {
+                "exit_code": 1,
+                "stdout": "",
+                "stderr": f"[LocalSandboxRunner] {exc!s}",
+            }
+
+        return {
+            "exit_code": completed.returncode,
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+        }
