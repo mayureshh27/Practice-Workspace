@@ -140,6 +140,7 @@ def create_app() -> FastAPI:
     from app.api.artifacts import router as artifacts_router
     from app.api.concepts import router as concepts_router
     from app.api.workflows import router as workflows_router
+    from app.api.practice_exercises import router as practice_router
 
     app.include_router(health_router)
     app.include_router(workspace_router)
@@ -151,6 +152,7 @@ def create_app() -> FastAPI:
     app.include_router(artifacts_router)
     app.include_router(concepts_router)
     app.include_router(workflows_router)
+    app.include_router(practice_router)
 
     return app
 

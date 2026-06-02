@@ -601,7 +601,14 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddResource}: Prop
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate({ to: '/workflow-editor', search: { id: wf.id } });
+                          navigate({
+                            to: '/workflow-editor',
+                            search: {
+                              id: wf.id,
+                              fromSubjectId: subject.id,
+                              fromChapterId: firstChapterId,
+                            },
+                          });
                         }}
                         title="Edit workflow"
                         className="press shrink-0 bg-transparent border-none text-ws-muted cursor-pointer p-1 rounded hover:bg-ws-surface-2 hover:text-ws-ink transition-colors"
