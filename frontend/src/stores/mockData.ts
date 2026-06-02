@@ -1,5 +1,21 @@
 import type { Domain, WorkflowTemplate, Artifact } from '../workspaceTypes';
 
+const GO_CHAPTERS = [
+  { id: 'ch1', name: 'Chapter 1: Tutorial', description: 'Command-line programs, files, images, HTTP, and servers.', topics: [{ id: 'ch1-intro', name: 'Getting Started' }] },
+  { id: 'ch2', name: 'Chapter 2: Program Structure', description: 'Names, declarations, variables, assignment, type declarations, packages, and scope.', topics: [{ id: 'ch2-intro', name: 'Getting Started' }] },
+  { id: 'ch3', name: 'Chapter 3: Basic Data Types', description: 'Integers, floats, complex numbers, booleans, strings, constants.', topics: [{ id: 'ch3-intro', name: 'Getting Started' }] },
+  { id: 'ch4', name: 'Chapter 4: Composite Types', description: 'Arrays, slices, maps, structs, JSON, and templates.', topics: [{ id: 'ch4-intro', name: 'Getting Started' }] },
+  { id: 'ch5', name: 'Chapter 5: Functions', description: 'Recursion, multiple returns, errors, closures, variadic functions, defer, panic.', topics: [{ id: 'ch5-intro', name: 'Getting Started' }] },
+  { id: 'ch6', name: 'Chapter 6: Methods', description: 'Method declarations, pointer receivers, struct embedding, method values.', topics: [{ id: 'ch6-intro', name: 'Getting Started' }] },
+  { id: 'ch7', name: 'Chapter 7: Interfaces', description: 'Interfaces as contracts, io.Reader/io.Writer, type assertions, type switches.', topics: [{ id: 'ch7-intro', name: 'Getting Started' }] },
+  { id: 'ch8', name: 'Chapter 8: Goroutines and Channels', description: 'Goroutines, channels, pipelines, cancellation, multiplexing.', topics: [{ id: 'ch8-intro', name: 'Getting Started' }] },
+  { id: 'ch9', name: 'Chapter 9: Shared Variables and Mutexes', description: 'Race conditions, sync.Mutex, sync.RWMutex, memory synchronization.', topics: [{ id: 'ch9-intro', name: 'Getting Started' }] },
+  { id: 'ch10', name: 'Chapter 10: Packages and the Go Tool', description: 'Package organization, import paths, modules, documentation, go tool.', topics: [{ id: 'ch10-intro', name: 'Getting Started' }] },
+  { id: 'ch11', name: 'Chapter 11: Testing', description: 'Test functions, table tests, coverage, benchmarks, profiling.', topics: [{ id: 'ch11-intro', name: 'Getting Started' }] },
+  { id: 'ch12', name: 'Chapter 12: Reflection', description: 'reflect.Type, reflect.Value, struct tags, dynamic inspection.', topics: [{ id: 'ch12-intro', name: 'Getting Started' }] },
+  { id: 'ch13', name: 'Chapter 13: Low-Level Programming', description: 'unsafe, cgo, and when low-level tricks are justified.', topics: [{ id: 'ch13-intro', name: 'Getting Started' }] },
+];
+
 export const INITIAL_DOMAINS: Domain[] = [
   {
     id: 'robotics',
@@ -11,9 +27,27 @@ export const INITIAL_DOMAINS: Domain[] = [
         name: 'Modern Robotics',
         description: 'Master kinematics, rigid body motions, dynamics, and planning of robotic manipulators.',
         instructions: 'Emphasize screw theory, exponential coordinate representations, and homogeneous transformations.',
-        memory: 'Mayuresh is a Computer Science student in India (AI and Data Science specialization, 8/10 GPA, graduating 2027). Transitioning to a robotics/ML engineer. Aiming for top-10 MS programs.',
+        memory: 'CS AI/Data Science student learning robotics — screw theory, kinematics, and trajectory planning.',
         pinned: true,
         chapters: [
+          {
+            id: 'ch2',
+            name: 'Rigid-Body Motions',
+            description: 'Rotation matrices, SO(3), exponential coordinates, skew-symmetric matrices.',
+            topics: [{ id: 'ch2-intro', name: 'Getting Started' }]
+          },
+          {
+            id: 'ch4',
+            name: 'Forward Kinematics',
+            description: 'Forward kinematics of serial manipulators using screw theory.',
+            topics: [{ id: 'ch4-intro', name: 'Getting Started' }]
+          },
+          {
+            id: 'ch9',
+            name: 'Trajectory Generation',
+            description: 'Motion planning and trajectory generation for robotic manipulators.',
+            topics: [{ id: 'ch9-intro', name: 'Getting Started' }]
+          },
           {
             id: 'c2',
             name: 'Chapter 2: Configuration Space',
@@ -22,21 +56,10 @@ export const INITIAL_DOMAINS: Domain[] = [
             memory: 'Focus on screw coordinate systems and spatial tree joints.',
             topics: [
               { id: 'deg-freedom', name: 'Degrees of Freedom', lastMessage: 'Completed 1 hour ago', pinned: true },
-              { id: 'grubler-formula', name: "Grubler's Formula", lastMessage: 'Needs practice' },
+              { id: 'grubler-formula', name: 'Grubler\'s Formula', lastMessage: 'Needs practice' },
               { id: 'cspace-topology', name: 'Configuration Space Topology', lastMessage: 'Solved 2 days ago' }
             ]
           },
-          {
-            id: 'c3',
-            name: 'Chapter 3: Rigid-Body Motions',
-            description: 'Rotation matrices, SO(3), exponential coordinates of rotation, skew-symmetric matrices, Rodrigues\' formula.',
-            instructions: 'Focus on Rodrigues\' formula and 3D coordinate transformations.',
-            memory: 'Rigid body rotations and SO(3) coordinate frames.',
-            topics: [
-              { id: 'rot-matrices', name: 'Rotation Matrices', lastMessage: 'Not started' },
-              { id: 'hom-transforms', name: 'Homogeneous Transformations', lastMessage: 'Not started' }
-            ]
-          }
         ],
         resources: [
           { id: 'res-pdf', name: 'Modern_Robotics_Kinematics.pdf', lines: 14500, fileType: 'PDF' },
@@ -109,19 +132,7 @@ export const INITIAL_DOMAINS: Domain[] = [
         instructions: 'Focus on pointers, array slice internals, maps, goroutines, and channels.',
         memory: 'CS AI/Data Science student learning systems programming and concurrency in Go.',
         pinned: true,
-        chapters: [
-          {
-            id: 'go-basics',
-            name: 'Chapter 1: Basics & Functions',
-            description: 'Go syntax, basic types, variable declarations, loop constructs, and simple functions.',
-            instructions: 'Declare functions with explicit types and explore value vs pointer parameters.',
-            memory: 'Learn clean, idiomatic variable declaration blocks in Go.',
-            topics: [
-              { id: 'hello-world', name: 'Hello World', lastMessage: 'Draft ready', pinned: true },
-              { id: 'fizzbuzz', name: 'FizzBuzz Game', lastMessage: 'Not started' }
-            ]
-          }
-        ],
+        chapters: GO_CHAPTERS,
         resources: [
           { id: 'go-quickstart', name: 'Go_Basics_Quickstart.md', lines: 180, fileType: 'MD' },
           { id: 'go-spec', name: 'Go_Language_Specification.pdf', lines: 8400, fileType: 'PDF' }

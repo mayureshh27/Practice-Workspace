@@ -1,10 +1,27 @@
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>frontend</title>
+    <script>
+      // Apply persisted user settings to <html> BEFORE the first paint, so
+      // the workspace never flashes the default palette on reload. Reads
+      // localStorage and writes both the .dark class (Claude/shadcn) and the
+      // legacy data-* attributes (parametric overrides in styles.css).
+      (function(){
+        try {
+          var theme = localStorage.getItem('theme') || 'dark';
+          if (theme === 'dark') document.documentElement.classList.add('dark');
+          var s = JSON.parse(localStorage.getItem('ws-settings') || '{}');
+          var html = document.documentElement;
+          if (s.base)        html.dataset.base        = s.base;
+          if (s.radius)      html.dataset.radius      = s.radius;
+          if (s.fontHeading) html.dataset.fontHeading = s.fontHeading;
+          if (s.fontBody)    html.dataset.fontBody    = s.fontBody;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>

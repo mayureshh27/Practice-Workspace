@@ -40,7 +40,7 @@ function GraphScreen() {
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
   return (
-    <div className="flex flex-col w-full h-full bg-ws-bg relative">
+    <div className="flex flex-col w-full h-full bg-ws-bg relative screen-full">
       <style>{`
         .ws-graph-node {
           background: #0d1117;
@@ -81,12 +81,12 @@ function GraphScreen() {
       `}</style>
 
       {/* Filters Overlay */}
-      <div className="absolute top-6 left-6 z-10 bg-ws-surface border border-ws-line-soft rounded-lg p-4 shadow-md w-80">
+      <div className="absolute top-6 left-6 z-10 bg-ws-surface border border-ws-edge-soft rounded-ws-lg p-4 shadow-md w-80">
         <h3 className="font-medium text-ws-ink mb-4 flex items-center gap-2"><Filter size={16} /> Graph Filters</h3>
         
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] text-ws-ink-tertiary mb-1">Domain</label>
+            <label className="block text-[11px] text-ws-muted mb-1">Domain</label>
             <CustomSelect 
               value="Robotics Learning"
               onChange={() => {}}
@@ -94,12 +94,12 @@ function GraphScreen() {
                 { value: 'Robotics Learning', label: 'Robotics Learning' },
                 { value: 'CMU MRSD Prep', label: 'CMU MRSD Prep' }
               ]}
-              style={{ width: '100%', padding: '6px' }}
+              className="w-full p-1.5"
             />
           </div>
           
           <div>
-            <label className="block text-[11px] text-ws-ink-tertiary mb-1">Subject</label>
+            <label className="block text-[11px] text-ws-muted mb-1">Subject</label>
             <CustomSelect 
               value="Modern Robotics"
               onChange={() => {}}
@@ -107,20 +107,20 @@ function GraphScreen() {
                 { value: 'Modern Robotics', label: 'Modern Robotics' },
                 { value: 'All Subjects', label: 'All Subjects' }
               ]}
-              style={{ width: '100%', padding: '6px' }}
+              className="w-full p-1.5"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] text-ws-ink-tertiary mb-2">Show Elements</label>
+            <label className="block text-[11px] text-ws-muted mb-2">Show Elements</label>
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm text-ws-ink-secondary cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-ws-soft cursor-pointer">
                 <input type="checkbox" defaultChecked /> Concepts
               </label>
-              <label className="flex items-center gap-2 text-sm text-ws-ink-secondary cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-ws-soft cursor-pointer">
                 <input type="checkbox" defaultChecked /> Prerequisites
               </label>
-              <label className="flex items-center gap-2 text-sm text-ws-ink-secondary cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-ws-soft cursor-pointer">
                 <input type="checkbox" /> Sources
               </label>
             </div>
@@ -141,7 +141,7 @@ function GraphScreen() {
           attributionPosition="bottom-right"
         >
           <Background color="#3f3f46" gap={24} size={2} />
-          <Controls showInteractive={false} position="top-right" style={{margin: '24px'}} />
+          <Controls showInteractive={false} position="top-right" className="m-6" />
         </ReactFlow>
       </div>
 
@@ -149,37 +149,37 @@ function GraphScreen() {
       <div className="h-48 border-t border-ws-line bg-ws-surface p-6 flex gap-6 transition-opacity duration-300">
         {selectedNode ? (
           <>
-            <div className="w-1/3 border-r border-ws-line-soft pr-6 flex flex-col justify-center">
+            <div className="w-1/3 border-r border-ws-edge-soft pr-6 flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-3 h-3 rounded-full ${selectedNode.data.status === 'mastered' ? 'bg-ws-success' : selectedNode.data.status === 'practiced' ? 'bg-ws-success' : selectedNode.data.status === 'blind-spot' ? 'bg-ws-warning' : 'bg-ws-muted'}`}></div>
                 <h2 className="text-xl font-bold text-ws-ink">{selectedNode.data.label as string}</h2>
               </div>
-              <div className="text-ws-ink-secondary text-sm mb-4">Chapter 2 · {Math.floor(Math.random() * 5) + 1} exercises</div>
+              <div className="text-ws-soft text-sm mb-4">Chapter 2 · {Math.floor(Math.random() * 5) + 1} exercises</div>
               <div className="flex gap-2">
-                <button type="button" className="bg-ws-success text-[#0a0a0b] font-medium rounded-md py-1.5 px-4 text-sm hover:brightness-110 transition-all">Practice</button>
-                <button type="button" className="bg-ws-bg border border-ws-line rounded-md text-ws-muted font-semibold cursor-pointer hover:border-ws-success hover:text-ws-success transition-all !w-auto py-1.5 px-3 text-sm">Sources</button>
+                <button type="button" className="bg-ws-success text-[#0a0a0b] font-medium rounded-ws-md py-1.5 px-4 text-sm hover:brightness-110 transition-all">Practice</button>
+                <button type="button" className="bg-ws-bg border border-ws-line rounded-ws-md text-ws-muted font-semibold cursor-pointer hover:border-ws-success hover:text-ws-success transition-all !w-auto py-1.5 px-3 text-sm">Sources</button>
               </div>
             </div>
             
             <div className="flex-1 flex flex-col justify-center">
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <div className="text-[11px] text-ws-ink-tertiary uppercase tracking-wider mb-1">Status</div>
+                  <div className="text-[11px] text-ws-muted uppercase tracking-wider mb-1">Status</div>
                   <div className="text-ws-ink font-medium capitalize">{selectedNode.data.status as string}</div>
                 </div>
                 <div>
-                  <div className="text-[11px] text-ws-ink-tertiary uppercase tracking-wider mb-1">Attempts</div>
+                  <div className="text-[11px] text-ws-muted uppercase tracking-wider mb-1">Attempts</div>
                   <div className="text-ws-ink font-medium">{Math.floor(Math.random() * 10)} attempts</div>
                 </div>
                 <div>
-                  <div className="text-[11px] text-ws-ink-tertiary uppercase tracking-wider mb-1">Last Practiced</div>
+                  <div className="text-[11px] text-ws-muted uppercase tracking-wider mb-1">Last Practiced</div>
                   <div className="text-ws-ink font-medium">{Math.floor(Math.random() * 5) + 1} days ago</div>
                 </div>
               </div>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-ws-ink-muted">
+          <div className="flex-1 flex items-center justify-center text-ws-faint">
             <span className="flex items-center gap-2"><GitBranch size={20} /> Select a node in the graph to view details.</span>
           </div>
         )}

@@ -33,15 +33,6 @@ const setLocalStorageItem = (key: string, value: any) => {
   }
 };
 
-type SetState = (partial: WorkspaceState | Partial<WorkspaceState> | ((state: WorkspaceState) => WorkspaceState | Partial<WorkspaceState>)) => void
-
-const mutateDomains = (set: SetState, mapper: (domains: Domain[]) => Domain[]) =>
-  set((state: WorkspaceState) => {
-    const next = mapper(state.domains);
-    setLocalStorageItem('domains', next);
-    return { domains: next };
-  });
-
 interface WorkspaceState {
   domains: Domain[];
   workflows: WorkflowTemplate[];
@@ -66,26 +57,27 @@ interface WorkspaceState {
     durationMs?: number;
   }) => Promise<void>;
 
-  // Domains
   setDomains: (domains: Domain[]) => void;
-  renameDomain: (id: string, name: string) => void;
-  deleteDomain: (id: string) => void;
-  togglePinDomain: (id: string) => void;
-  toggleArchiveDomain: (id: string) => void;
-  addDomain: (name: string) => void;
 
-  // Subjects
-  addSubject: (domainId: string, name: string, description?: string) => void;
-  renameSubject: (domainId: string, subjectId: string, name: string) => void;
-  deleteSubject: (domainId: string, subjectId: string) => void;
+  // Domains — persisted to API + localStorage
+  renameDomain: (id: string, name: string) => Promise<void>;
+  deleteDomain: (id: string) => Promise<void>;
+  togglePinDomain: (id: string) => Promise<void>;
+  toggleArchiveDomain: (id: string) => Promise<void>;
+  addDomain: (name: string) => Promise<void>;
+
+  // Subjects — persisted to API + localStorage
+  addSubject: (domainId: string, name: string, description?: string) => Promise<void>;
+  renameSubject: (domainId: string, subjectId: string, name: string) => Promise<void>;
+  deleteSubject: (domainId: string, subjectId: string) => Promise<void>;
   updateSubject: (domainId: string, subjectId: string, fields: Partial<Subject>) => void;
 
   // Chapters
-  addChapter: (domainId: string, subjectId: string, name: string, description?: string) => void;
+  addChapter: (domainId: string, subjectId: string, name: string, description?: string) => Promise<void>;
   updateChapter: (domainId: string, subjectId: string, chapterId: string, fields: Partial<Chapter>) => void;
 
   // Topics
-  addTopic: (domainId: string, subjectId: string, chapterId: string, name: string) => void;
+  addTopic: (domainId: string, subjectId: string, chapterId: string, name: string) => Promise<void>;
 
   // Resources
   addResource: (domainId: string, subjectId: string, name: string, fileType: string, linesCount: number) => void;
@@ -157,8 +149,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
 
   sendChatMessage: async (text, conceptIds = [], sourceIds = []) => {
     let { chatSessionId } = useWorkspaceStore.getState();
-
-    // Auto-create session if none exists
     if (!chatSessionId) {
       try {
         const { sessionId } = await api.createChatSession();
@@ -170,7 +160,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
       }
     }
 
-    // Add user message
     const userMsg: ChatMessage = {
       id: `msg-${Date.now()}`,
       role: 'user',
@@ -214,87 +203,206 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
     }
   },
 
-  setDomains: (domains) => mutateDomains(set, () => domains),
+  setDomains: (domains) => {
+    set({ domains });
+    setLocalStorageItem('domains', domains);
+  },
 
-  renameDomain: (id, name) => mutateDomains(set,
-    ds => ds.map(d => d.id === id ? { ...d, name } : d)),
+  renameDomain: async (id, name) => {
+    try {
+      const updated = await api.renameDomain(id, name);
+      set((state) => {
+        const next = state.domains.map(d => d.id === id ? { ...d, name: updated.name } : d);
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to rename domain:', err);
+    }
+  },
 
-  deleteDomain: (id) => mutateDomains(set,
-    ds => ds.filter(d => d.id !== id)),
+  deleteDomain: async (id) => {
+    try {
+      await api.deleteDomain(id);
+      set((state) => {
+        const next = state.domains.filter(d => d.id !== id);
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to delete domain:', err);
+    }
+  },
 
-  togglePinDomain: (id) => mutateDomains(set,
-    ds => ds.map(d => d.id === id ? { ...d, pinned: !d.pinned } : d)),
+  togglePinDomain: async (id) => {
+    const current = useWorkspaceStore.getState().domains.find(d => d.id === id);
+    if (!current) return;
+    try {
+      const updated = await api.togglePinDomain(id, !current.pinned);
+      set((state) => {
+        const next = state.domains.map(d => d.id === id ? { ...d, pinned: updated.pinned } : d);
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to toggle pin:', err);
+    }
+  },
 
-  toggleArchiveDomain: (id) => mutateDomains(set,
-    ds => ds.map(d => d.id === id ? { ...d, archived: !d.archived } : d)),
+  toggleArchiveDomain: async (id) => {
+    const current = useWorkspaceStore.getState().domains.find(d => d.id === id);
+    if (!current) return;
+    try {
+      const updated = await api.toggleArchiveDomain(id, !current.archived);
+      set((state) => {
+        const next = state.domains.map(d => d.id === id ? { ...d, archived: updated.archived } : d);
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to toggle archive:', err);
+    }
+  },
 
-  addDomain: (name) => mutateDomains(set, ds => [...ds, {
-    id: `domain-${Date.now()}`, name, subjects: []
-  }]),
+  addDomain: async (name) => {
+    try {
+      const created = await api.addDomain(name);
+      set((state) => {
+        const next = [...state.domains, created as any];
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to create domain:', err);
+    }
+  },
 
-  addSubject: (domainId, name, description) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: [...d.subjects, {
-        id: `subject-${Date.now()}`, name, description,
-        chapters: [{ id: `c-init-${Date.now()}`, name: 'Chapter 1: Foundations', topics: [] }],
-        resources: []
-      }]
-    })),
+  addSubject: async (domainId, name, description) => {
+    try {
+      const created = await api.addSubject(domainId, name, description);
+      set((state) => {
+        const next = state.domains.map(d => d.id !== domainId ? d : {
+          ...d, subjects: [...d.subjects, created as any]
+        });
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to create subject:', err);
+    }
+  },
 
-  renameSubject: (domainId, subjectId, name) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: d.subjects.map(s => s.id === subjectId ? { ...s, name } : s)
-    })),
+  renameSubject: async (domainId, subjectId, name) => {
+    try {
+      const updated = await api.renameSubject(domainId, subjectId, name);
+      set((state) => {
+        const next = state.domains.map(d => d.id !== domainId ? d : {
+          ...d, subjects: d.subjects.map(s => s.id === subjectId ? { ...s, name: updated.name } : s)
+        });
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to rename subject:', err);
+    }
+  },
 
-  deleteSubject: (domainId, subjectId) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: d.subjects.filter(s => s.id !== subjectId)
-    })),
+  deleteSubject: async (domainId, subjectId) => {
+    try {
+      await api.deleteSubject(domainId, subjectId);
+      set((state) => {
+        const next = state.domains.map(d => d.id !== domainId ? d : {
+          ...d, subjects: d.subjects.filter(s => s.id !== subjectId)
+        });
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to delete subject:', err);
+    }
+  },
 
-  updateSubject: (domainId, subjectId, fields) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: d.subjects.map(s => s.id === subjectId ? { ...s, ...fields } : s)
-    })),
+  updateSubject: (domainId, subjectId, fields) => {
+    set((state) => {
+      const next = state.domains.map(d => d.id !== domainId ? d : {
+        ...d, subjects: d.subjects.map(s => s.id === subjectId ? { ...s, ...fields } : s)
+      });
+      setLocalStorageItem('domains', next);
+      return { domains: next };
+    });
+  },
 
-  addChapter: (domainId, subjectId, name, description) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
-        ...s, chapters: [...s.chapters, {
-          id: `chapter-${Date.now()}`, name,
-          description: description || `Learning modules for ${name}.`, topics: []
-        }]
-      })
-    })),
+  addChapter: async (domainId, subjectId, name, description) => {
+    try {
+      const created = await api.addChapter(domainId, subjectId, name, description);
+      set((state) => {
+        const next = state.domains.map(d => d.id !== domainId ? d : {
+          ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
+            ...s, chapters: [...s.chapters, created as any]
+          })
+        });
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to create chapter:', err);
+    }
+  },
 
-  updateChapter: (domainId, subjectId, chapterId, fields) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
-        ...s, chapters: s.chapters.map(c => c.id === chapterId ? { ...c, ...fields } : c)
-      })
-    })),
-
-  addTopic: (domainId, subjectId, chapterId, name) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
-        ...s, chapters: s.chapters.map(c => c.id !== chapterId ? c : {
-          ...c, topics: [...c.topics, { id: `topic-${Date.now()}`, name, lastMessage: 'Not started' }]
+  updateChapter: (domainId, subjectId, chapterId, fields) => {
+    set((state) => {
+      const next = state.domains.map(d => d.id !== domainId ? d : {
+        ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
+          ...s, chapters: s.chapters.map(c => c.id === chapterId ? { ...c, ...fields } : c)
         })
-      })
-    })),
+      });
+      setLocalStorageItem('domains', next);
+      return { domains: next };
+    });
+  },
 
-  addResource: (domainId, subjectId, name, fileType, linesCount) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
-        ...s, resources: [...s.resources, { id: `res-${Date.now()}`, name, fileType, lines: linesCount }]
-      })
-    })),
+  addTopic: async (domainId, subjectId, chapterId, name) => {
+    try {
+      const created = await api.addTopic(domainId, subjectId, chapterId, name);
+      set((state) => {
+        const next = state.domains.map(d => d.id !== domainId ? d : {
+          ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
+            ...s, chapters: s.chapters.map(c => c.id !== chapterId ? c : {
+              ...c, topics: [...c.topics, created as any]
+            })
+          })
+        });
+        setLocalStorageItem('domains', next);
+        return { domains: next };
+      });
+    } catch (err) {
+      console.error('Failed to create topic:', err);
+    }
+  },
 
-  removeResource: (domainId, subjectId, resourceId) => mutateDomains(set,
-    ds => ds.map(d => d.id !== domainId ? d : {
-      ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
-        ...s, resources: s.resources.filter(r => r.id !== resourceId)
-      })
-    })),
+  addResource: (domainId, subjectId, name, fileType, linesCount) => {
+    set((state) => {
+      const next = state.domains.map(d => d.id !== domainId ? d : {
+        ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
+          ...s, resources: [...s.resources, { id: `res-${Date.now()}`, name, fileType, lines: linesCount }]
+        })
+      });
+      setLocalStorageItem('domains', next);
+      return { domains: next };
+    });
+  },
+
+  removeResource: (domainId, subjectId, resourceId) => {
+    set((state) => {
+      const next = state.domains.map(d => d.id !== domainId ? d : {
+        ...d, subjects: d.subjects.map(s => s.id !== subjectId ? s : {
+          ...s, resources: s.resources.filter(r => r.id !== resourceId)
+        })
+      });
+      setLocalStorageItem('domains', next);
+      return { domains: next };
+    });
+  },
 
   addToRecents: (label, type, loc) => set((state) => {
     const filtered = state.recentItems.filter(r => JSON.stringify(r.loc) !== JSON.stringify(loc));

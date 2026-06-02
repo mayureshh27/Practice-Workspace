@@ -41,26 +41,22 @@ export function RootScreen({
   };
 
   return (
-    <div className="px-6 py-8 max-w-[1000px] mx-auto h-full overflow-y-auto">
-      <div className="flex justify-between items-center mb-7">
+    <div className="screen-container">
+      <div className="screen-header flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-extrabold text-ws-ink m-0 mb-1.5 tracking-tight">
-            Learning Domains
-          </h1>
-          <p className="text-[13px] text-ws-muted m-0">
-            Explore your structured practice workspace hierarchy and coordinate resource notebook extraction.
-          </p>
+          <h1>Learning Domains</h1>
+          <p>Explore your structured practice workspace hierarchy and coordinate resource notebook extraction.</p>
         </div>
         <button
           type="button"
-          className="bg-ws-success text-[#0a0a0b] font-semibold rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-110 transition-all cursor-pointer shadow-md"
+          className="press bg-ws-success text-[#0a0a0b] font-semibold rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-110 transition-[filter,box-shadow] shadow-md"
           onClick={() => onOpenCreateModal('domain')}
         >
           <Plus size={16} /> New Domain
         </button>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+      <div className="card-grid">
         {activeDomains.map(domain => {
           const totalSubjects = domain.subjects.length;
           const totalChapters = domain.subjects.reduce((acc, s) => acc + s.chapters.length, 0);
@@ -70,7 +66,7 @@ export function RootScreen({
               key={domain.id}
               to="/domain/$domainId"
               params={{ domainId: domain.id }}
-              className="no-underline flex flex-col bg-ws-bg border border-ws-line rounded-lg p-5 cursor-pointer relative transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:border-ws-success hover:-translate-y-0.5 group"
+              className="card no-underline flex flex-col cursor-pointer relative shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:border-ws-success hover:-translate-y-0.5 group"
             >
               <div className="flex items-center gap-2 mb-2">
                 <Folder size={18} className="text-ws-success" />
@@ -90,12 +86,12 @@ export function RootScreen({
                     {domain.name}
                   </h2>
                 )}
-                
+
                 {domain.pinned && <Pin size={12} className="text-ws-success" />}
-                
+
                 <button
                   type="button"
-                  className="bg-transparent border-none text-ws-muted cursor-pointer p-1 rounded hover:text-ws-soft"
+                  className="press bg-transparent border-none text-ws-muted p-1 rounded hover:text-ws-soft transition-colors"
                   onClick={e => {
                     e.stopPropagation();
                     setContextMenu({id: domain.id, x: e.clientX, y: e.clientY});
@@ -112,7 +108,7 @@ export function RootScreen({
                   return (
                     <div
                       key={sub.id}
-                      className="flex items-center justify-between bg-ws-bg border border-ws-line px-2.5 py-1.5 rounded-md cursor-pointer transition-all duration-150 hover:border-ws-success"
+                      className="press flex items-center justify-between bg-ws-bg border border-ws-line px-2.5 py-1.5 rounded-md transition-[border-color] hover:border-ws-success"
                       onClick={() => onNavigate({level: 'subject', domainId: domain.id, subjectId: sub.id})}
                     >
                       <span className="text-[12px] font-semibold text-ws-ink flex items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap flex-1">
@@ -124,7 +120,7 @@ export function RootScreen({
                           type="button"
                           onClick={() => onOpenCreateModal('chapter', domain.id, sub.id)}
                           title="Add Chapter to this subject"
-                          className="bg-transparent border-none cursor-pointer text-ws-muted text-[10px] p-0.5 flex items-center gap-0.5 hover:text-ws-success transition-colors"
+                          className="press bg-transparent border-none text-ws-muted text-[10px] p-0.5 flex items-center gap-0.5 hover:text-ws-success transition-colors"
                         >
                           <Layers size={10} /> <span>+Ch</span>
                         </button>
@@ -132,7 +128,7 @@ export function RootScreen({
                           type="button"
                           onClick={() => onOpenCreateModal('topic', domain.id, sub.id, firstChId)}
                           title="Add Topic to this subject"
-                          className="bg-transparent border-none cursor-pointer text-ws-muted text-[10px] p-0.5 flex items-center gap-0.5 hover:text-ws-success transition-colors"
+                          className="press bg-transparent border-none text-ws-muted text-[10px] p-0.5 flex items-center gap-0.5 hover:text-ws-success transition-colors"
                         >
                           <Plus size={10} /> <span>+Topic</span>
                         </button>
@@ -173,8 +169,8 @@ export function RootScreen({
             className="fixed inset-0 z-[999]"
             onClick={() => setContextMenu(null)}
           />
-          <div 
-            className="fixed z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[145px] shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
+          <div
+            className="fixed z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[145px] shadow-[0_8px_24px_rgba(0,0,0,0.5)] scale-in"
             style={{left: contextMenu.x, top: contextMenu.y}}
           >
             {[
@@ -213,7 +209,7 @@ export function RootScreen({
                 key={item.label}
                 type="button"
                 onClick={item.action}
-                className={`w-full flex items-center gap-2 px-2.5 py-1.5 bg-transparent border-none rounded text-xs cursor-pointer text-left transition-colors hover:bg-ws-surface-2 ${(item as {danger?: boolean}).danger ? 'text-red-500' : 'text-ws-muted'}`}
+                className={`press w-full flex items-center gap-2 px-2.5 py-1.5 bg-transparent border-none rounded text-xs text-left transition-colors hover:bg-ws-surface-2 ${(item as {danger?: boolean}).danger ? 'text-red-500' : 'text-ws-muted'}`}
               >
                 <item.icon size={12} /> {item.label}
               </button>
@@ -260,40 +256,36 @@ export function DomainScreen({
   };
 
   return (
-    <div className="px-6 py-8 max-w-[1000px] mx-auto h-full overflow-y-auto">
+    <div className="screen-container">
       <Link
         to="/"
-        className="flex items-center gap-1.5 bg-transparent border-none text-ws-muted text-xs cursor-pointer p-0 mb-4 no-underline hover:text-ws-soft transition-colors"
+        className="press flex items-center gap-1.5 bg-transparent border-none text-ws-muted text-xs p-0 mb-4 no-underline hover:text-ws-soft transition-colors"
       >
         <ArrowLeft size={14} /> Back to Domains
       </Link>
 
-      <div className="flex justify-between items-center mb-7">
+      <div className="screen-header flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-extrabold text-ws-ink m-0 mb-1.5 tracking-tight">
-            {domain.name} Subjects
-          </h1>
-          <p className="text-[13px] text-ws-muted m-0">
-            Select a subject to open the workspace study dashboard, practice tests, and workflows.
-          </p>
+          <h1>{domain.name} Subjects</h1>
+          <p>Select a subject to open the workspace study dashboard, practice tests, and workflows.</p>
         </div>
         <button
           type="button"
-          className="bg-ws-success text-[#0a0a0b] font-semibold rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-110 transition-all cursor-pointer shadow-md"
+          className="press bg-ws-success text-[#0a0a0b] font-semibold rounded-md py-2 px-4 flex items-center gap-2 hover:brightness-110 transition-[filter,box-shadow] shadow-md"
           onClick={() => onOpenCreateModal('subject', domain.id)}
         >
           <Plus size={16} /> New Subject
         </button>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+      <div className="card-grid-2">
         {activeSubjects.map(subject => {
           return (
             <Link
               key={subject.id}
               to="/subject/$domainId/$subjectId"
               params={{ domainId: domain.id, subjectId: subject.id }}
-              className="no-underline bg-ws-bg border border-ws-line rounded-lg p-5 cursor-pointer relative flex flex-col gap-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:border-ws-success hover:-translate-y-0.5 group"
+              className="card no-underline cursor-pointer relative flex flex-col gap-2 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:border-ws-success hover:-translate-y-0.5 group"
             >
               <div className="flex items-center gap-2">
                 <FileText size={18} className="text-ws-success" />
@@ -316,7 +308,7 @@ export function DomainScreen({
 
                 <button
                   type="button"
-                  className="bg-transparent border-none text-ws-muted cursor-pointer p-1 rounded hover:text-ws-soft"
+                  className="press bg-transparent border-none text-ws-muted p-1 rounded hover:text-ws-soft transition-colors"
                   onClick={e => {
                     e.stopPropagation();
                     setContextMenu({id: subject.id, x: e.clientX, y: e.clientY});
@@ -337,21 +329,21 @@ export function DomainScreen({
                 {subject.chapters.slice(0, 3).map(ch => (
                   <div
                     key={ch.id}
-                    className="flex items-center justify-between bg-ws-bg border border-ws-line px-2 py-1 rounded-md cursor-pointer transition-all duration-150 hover:border-ws-success"
+                    className="press flex items-center justify-between bg-ws-bg border border-ws-line px-2 py-1 rounded-md transition-[border-color] hover:border-ws-success"
                     onClick={() => onNavigate({level: 'chapter', domainId: domain.id, subjectId: subject.id, chapterId: ch.id})}
                   >
                     <span className="text-[11px] font-semibold text-ws-muted flex items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap flex-1">
                       <Layers size={11} className="text-ws-success shrink-0" />
                       {ch.name}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => onOpenCreateModal('topic', domain.id, subject.id, ch.id)}
-                      title="Add topic/concept directly inside this chapter"
-                      className="bg-transparent border-none cursor-pointer text-ws-muted text-[10px] p-0.5 flex items-center gap-0.5 hover:text-ws-success transition-colors"
-                    >
-                      <Plus size={10} /> <span>Topic</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => onOpenCreateModal('topic', domain.id, subject.id, ch.id)}
+                        title="Add topic/concept directly inside this chapter"
+                        className="press bg-transparent border-none text-ws-muted text-[10px] p-0.5 flex items-center gap-0.5 hover:text-ws-success transition-colors"
+                      >
+                        <Plus size={10} /> <span>Topic</span>
+                      </button>
                   </div>
                 ))}
                 {subject.chapters.length > 3 && (
@@ -369,7 +361,7 @@ export function DomainScreen({
                 <button
                   type="button"
                   onClick={() => onOpenCreateModal('chapter', domain.id, subject.id)}
-                  className="flex-1 flex items-center justify-center gap-1 bg-transparent border border-dashed border-ws-line-strong rounded text-ws-success px-2 py-1 text-[11px] font-semibold cursor-pointer transition-all duration-150 hover:border-ws-success hover:bg-ws-success/10"
+                  className="press flex-1 flex items-center justify-center gap-1 bg-transparent border border-dashed border-ws-line-strong rounded text-ws-success px-2 py-1 text-[11px] font-semibold transition-[border-color,background-color] hover:border-ws-success hover:bg-ws-success/10"
                 >
                   <Plus size={11} /> Chapter
                 </button>
@@ -379,7 +371,7 @@ export function DomainScreen({
                     const firstChId = subject.chapters[0]?.id;
                     onOpenCreateModal('topic', domain.id, subject.id, firstChId);
                   }}
-                  className="flex-1 flex items-center justify-center gap-1 bg-transparent border border-dashed border-ws-line-strong rounded text-ws-success px-2 py-1 text-[11px] font-semibold cursor-pointer transition-all duration-150 hover:border-ws-success hover:bg-ws-success/10"
+                  className="press flex-1 flex items-center justify-center gap-1 bg-transparent border border-dashed border-ws-line-strong rounded text-ws-success px-2 py-1 text-[11px] font-semibold transition-[border-color,background-color] hover:border-ws-success hover:bg-ws-success/10"
                 >
                   <Plus size={11} /> Topic
                 </button>
@@ -395,8 +387,8 @@ export function DomainScreen({
             className="fixed inset-0 z-[999]"
             onClick={() => setContextMenu(null)}
           />
-          <div 
-            className="fixed z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[120px] shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
+          <div
+            className="fixed z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[120px] shadow-[0_8px_24px_rgba(0,0,0,0.5)] scale-in"
             style={{left: contextMenu.x, top: contextMenu.y}}
           >
             {[
@@ -425,7 +417,7 @@ export function DomainScreen({
                 key={item.label}
                 type="button"
                 onClick={item.action}
-                className={`w-full flex items-center gap-2 px-2.5 py-1.5 bg-transparent border-none rounded text-xs cursor-pointer text-left transition-colors hover:bg-ws-surface-2 ${(item as {danger?: boolean}).danger ? 'text-red-500' : 'text-ws-muted'}`}
+                className={`press w-full flex items-center gap-2 px-2.5 py-1.5 bg-transparent border-none rounded text-xs text-left transition-colors hover:bg-ws-surface-2 ${(item as {danger?: boolean}).danger ? 'text-red-500' : 'text-ws-muted'}`}
               >
                 <item.icon size={12} /> {item.label}
               </button>

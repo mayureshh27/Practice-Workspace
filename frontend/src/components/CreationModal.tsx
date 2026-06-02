@@ -1,6 +1,10 @@
 import { useUIStore } from '../stores/uiStore';
 import { useWorkspaceStore } from '../stores/workspaceStore';
 import { ModalShell } from './ModalShell';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export function CreationModal() {
   const modal = useUIStore(s => s.creationModal);
@@ -23,17 +27,16 @@ export function CreationModal() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!modalName.trim()) return;
+    if (!modalName.trim() || !modal) return;
 
-    const m = modal!
-    if (m.type === 'domain') {
+    if (modal.type === 'domain') {
       addDomain(modalName.trim());
-    } else if (m.type === 'subject' && m.domainId) {
-      addSubject(m.domainId, modalName.trim(), modalDesc.trim());
-    } else if (m.type === 'chapter' && m.domainId && m.subjectId) {
-      addChapter(m.domainId, m.subjectId, modalName.trim(), modalDesc.trim());
-    } else if (m.type === 'topic' && m.domainId && m.subjectId && m.chapterId) {
-      addTopic(m.domainId, m.subjectId, m.chapterId, modalName.trim());
+    } else if (modal.type === 'subject' && modal.domainId) {
+      addSubject(modal.domainId, modalName.trim(), modalDesc.trim());
+    } else if (modal.type === 'chapter' && modal.domainId && modal.subjectId) {
+      addChapter(modal.domainId, modal.subjectId, modalName.trim(), modalDesc.trim());
+    } else if (modal.type === 'topic' && modal.domainId && modal.subjectId && modal.chapterId) {
+      addTopic(modal.domainId, modal.subjectId, modal.chapterId, modalName.trim());
     }
 
     handleClose();
@@ -42,98 +45,61 @@ export function CreationModal() {
   if (!modal || !modal.open) return null;
 
   const title = `New ${modal.type.charAt(0).toUpperCase() + modal.type.slice(1)}`;
+  const showDesc = modal.type === 'subject' || modal.type === 'chapter';
 
   return (
     <ModalShell open={true} onClose={handleClose} title={title}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ws-soft)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Name</label>
-            <input 
-              type="text"
-              required
-              autoFocus
-              value={modalName}
-              onChange={e => setModalName(e.target.value)}
-              placeholder={`Enter ${modal.type} name...`}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                background: 'var(--ws-bg)',
-                border: '1px solid var(--ws-line)',
-                borderRadius: 6,
-                color: 'var(--ws-ink)',
-                fontSize: 13,
-                outline: 'none',
-              }}
-              onFocus={e => e.currentTarget.style.borderColor = 'var(--ws-accent)'}
-              onBlur={e => e.currentTarget.style.borderColor = 'var(--ws-line)'}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="creation-name" className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            Name
+          </Label>
+          <Input
+            id="creation-name"
+            type="text"
+            required
+            autoFocus
+            value={modalName}
+            onChange={e => setModalName(e.target.value)}
+            placeholder={`Enter ${modal.type} name...`}
+          />
+        </div>
+
+        {showDesc && (
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="creation-desc" className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              Description
+            </Label>
+            <Textarea
+              id="creation-desc"
+              value={modalDesc}
+              onChange={e => setModalDesc(e.target.value)}
+              placeholder="Optional description..."
+              rows={3}
+              className="resize-none"
             />
           </div>
+        )}
 
-          {(modal.type === 'subject' || modal.type === 'chapter') && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ws-soft)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Description</label>
-              <textarea 
-                value={modalDesc}
-                onChange={e => setModalDesc(e.target.value)}
-                placeholder="Optional description..."
-                rows={3}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  background: 'var(--ws-bg)',
-                  border: '1px solid var(--ws-line)',
-                  borderRadius: 6,
-                  color: 'var(--ws-ink)',
-                  fontSize: 13,
-                  outline: 'none',
-                  resize: 'none',
-                }}
-                onFocus={e => e.currentTarget.style.borderColor = 'var(--ws-accent)'}
-                onBlur={e => e.currentTarget.style.borderColor = 'var(--ws-line)'}
-              />
-            </div>
-          )}
-
-          {/* Footer Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 6 }}>
-            <button 
-              type="button"
-              onClick={handleClose}
-              style={{
-                padding: '8px 16px',
-                background: 'transparent',
-                border: '1px solid var(--ws-line)',
-                borderRadius: 6,
-                color: 'var(--ws-soft)',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-              onMouseEnter={e => e.currentTarget.style.color = 'var(--ws-ink)'}
-              onMouseLeave={e => e.currentTarget.style.color = 'var(--ws-soft)'}
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit"
-              style={{
-                padding: '8px 16px',
-                background: 'var(--ws-accent)',
-                border: 'none',
-                borderRadius: 6,
-                color: 'var(--ws-bg)',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              Create
-            </button>
-          </div>
-        </form>
+        <div className="flex justify-end gap-2.5 mt-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleClose}
+            className="press"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            size="sm"
+            className="press"
+          >
+            Create
+          </Button>
+        </div>
+      </form>
     </ModalShell>
   );
 }

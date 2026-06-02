@@ -1,5 +1,8 @@
 import {RefreshCw, ChevronDown, ChevronRight, Clock} from 'lucide-react';
 import {useState} from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 type EvalCheck = {
   id: string;
@@ -29,6 +32,12 @@ const INITIAL_RUN: WorkflowRun = {
   ],
 };
 
+const STATUS_COLOR: Record<EvalCheck['status'], string> = {
+  pass: 'text-primary',
+  warn: 'text-[#f59e0b]',
+  fail: 'text-destructive',
+};
+
 function InspectorPanel() {
   const [run, setRun] = useState<WorkflowRun>(INITIAL_RUN);
   const [expandedCheck, setExpandedCheck] = useState<string | null>(null);
@@ -52,81 +61,72 @@ function InspectorPanel() {
     }, 2000);
   };
 
-  const statusColor = (s: string) => s === 'pass' ? "var(--ws-accent)" : s === 'warn' ? "#f59e0b" : "#ef4444";
+  const statusBorderColor = (s: string) => s === 'pass' ? "hsl(var(--primary))" : s === 'warn' ? "#f59e0b" : "hsl(var(--destructive))";
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <p className="text-ws-muted text-sm m-0">Debug metadata and eval results.</p>
-        <button
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground text-sm m-0">Debug metadata and eval results.</p>
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
           onClick={handleRerun}
           disabled={rerunning}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px',
-            background: 'none', border: '1px solid var(--ws-edge-soft)', borderRadius: "4px",
-            color: rerunning ? "var(--ws-muted)" : "var(--ws-accent)", cursor: rerunning ? 'wait' : 'pointer',
-            fontSize: 'var(--ws-type-xs)', fontWeight: 600,
-          }}
+          className={cn("h-7 text-xs", rerunning ? 'text-muted-foreground' : 'text-primary')}
         >
           <RefreshCw size={10} className={rerunning ? 'animate-spin' : ''} />
           {rerunning ? 'Running...' : 'Re-run Evals'}
-        </button>
+        </Button>
       </div>
 
-      <div className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2">
-        <div className="text-ws-ink font-medium">Workflow Run</div>
+      <div className="bg-card border border-border rounded-md p-3 flex flex-col gap-2">
+        <div className="text-foreground font-medium">Workflow Run</div>
         <div className="flex items-center justify-between py-1">
-          <span style={{color: 'var(--ws-muted)'}}>ID</span>
-          <span style={{fontFamily: 'var(--ws-font-mono)', color: "var(--ws-muted)"}}>{run.id}</span>
+          <span className="text-muted-foreground">ID</span>
+          <span className="text-muted-foreground font-mono">{run.id}</span>
         </div>
         <div className="flex items-center justify-between py-1">
-          <span style={{color: 'var(--ws-muted)'}}>Template</span>
-          <span style={{color: "var(--ws-muted)"}}>{run.template}</span>
+          <span className="text-muted-foreground">Template</span>
+          <span className="text-muted-foreground">{run.template}</span>
         </div>
         <div className="flex items-center justify-between py-1">
-          <span style={{color: 'var(--ws-muted)'}}>Latency</span>
-          <span style={{color: "var(--ws-muted)"}}>{run.latency}</span>
+          <span className="text-muted-foreground">Latency</span>
+          <span className="text-muted-foreground">{run.latency}</span>
         </div>
         <div className="flex items-center justify-between py-1">
-          <span style={{color: 'var(--ws-muted)'}}>Ran at</span>
-          <span style={{color: "var(--ws-muted)", display: 'flex', alignItems: 'center', gap: 4}}>
+          <span className="text-muted-foreground">Ran at</span>
+          <span className="text-muted-foreground flex items-center gap-1">
             <Clock size={10} /> {run.timestamp}
           </span>
         </div>
       </div>
-      
-      <div className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2">
-        <div className="text-ws-ink font-medium">Eval Checks</div>
+
+      <div className="bg-card border border-border rounded-md p-3 flex flex-col gap-2">
+        <div className="text-foreground font-medium">Eval Checks</div>
         {run.checks.map(check => (
           <div key={check.id}>
             <button
               type="button"
               onClick={() => setExpandedCheck(expandedCheck === check.id ? null : check.id)}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
-                padding: '6px 0', background: 'none', border: 'none', borderBottom: '1px solid var(--ws-edge-soft)',
-                cursor: 'pointer', color: "var(--ws-soft)",
-              }}
+              className="flex items-center justify-between w-full py-1.5 bg-transparent border-0 border-b border-border cursor-pointer text-muted-foreground"
             >
-              <span style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <span className="flex items-center gap-1.5">
                 {expandedCheck === check.id ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                <span style={{fontSize: '11px'}}>{check.name}</span>
+                <span className="text-[11px]">{check.name}</span>
               </span>
-              <span style={{display: 'flex', alignItems: 'center', gap: 6}}>
-                <span style={{fontSize: 'var(--ws-type-xs)', color: "var(--ws-muted)"}}>{check.latency}</span>
-                <span className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider ${check.status}`} style={{textTransform: 'uppercase', fontSize: 10}}>{check.status}</span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-xs text-muted-foreground">{check.latency}</span>
+                <Badge variant={check.status === 'pass' ? 'default' : check.status === 'warn' ? 'secondary' : 'destructive'} className="text-[10px] font-bold uppercase tracking-wider">
+                  {check.status}
+                </Badge>
               </span>
             </button>
             {expandedCheck === check.id && (
-              <pre style={{
-                margin: '4px 0 8px 18px', padding: 8,
-                background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-                borderRadius: "4px", fontSize: 'var(--ws-type-xs)',
-                color: "var(--ws-soft)", lineHeight: 1.6,
-                whiteSpace: 'pre-wrap', fontFamily: 'var(--ws-font-mono)',
-                borderLeft: `2px solid ${statusColor(check.status)}`,
-              }}>
+              <pre
+                className="my-1 mb-2 ml-[18px] p-2 bg-background border border-border rounded text-xs text-muted-foreground leading-[1.6] whitespace-pre-wrap font-mono"
+                style={{ borderLeft: `2px solid ${statusBorderColor(check.status)}` }}
+              >
                 {check.log}
               </pre>
             )}

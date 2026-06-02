@@ -25,26 +25,19 @@ function ArtifactsPanel() {
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
-      <div style={{display: 'flex', alignItems: 'center', gap: 8}}>
-        <Filter size={12} style={{color: "var(--ws-muted)", flexShrink: 0}} />
-        <div style={{display: 'flex', gap: 4, flex: 1}}>
+      <div className="flex items-center gap-2">
+        <Filter size={12} className="text-ws-muted shrink-0" />
+        <div className="flex gap-1 flex-1">
           {STATUSES.map(s => (
             <button
               key={s}
               type="button"
               onClick={() => setStatusFilter(s)}
-              style={{
-                padding: '3px 8px',
-                fontSize: 'var(--ws-type-xs)',
-                fontWeight: 600,
-                border: '1px solid',
-                borderColor: statusFilter === s ? "var(--ws-accent)" : "var(--ws-line)",
-                borderRadius: "4px",
-                background: statusFilter === s ? "rgba(16,185,129,0.1)" : 'transparent',
-                color: statusFilter === s ? "var(--ws-accent)" : "var(--ws-muted)",
-                cursor: 'pointer',
-                textTransform: 'capitalize',
-              }}
+              className={`px-2 py-[3px] text-xs font-semibold border rounded cursor-pointer capitalize ${
+                statusFilter === s
+                  ? 'bg-ws-accent/10 border-ws-accent text-ws-accent'
+                  : 'bg-transparent border-ws-line text-ws-muted'
+              }`}
             >
               {s}
             </button>
@@ -53,17 +46,14 @@ function ArtifactsPanel() {
       </div>
 
       <p className="text-ws-muted text-sm m-0">{filtered.length} artifact{filtered.length !== 1 ? 's' : ''}</p>
-      
+
       <div className="flex flex-col gap-3 overflow-y-auto flex-1">
         {filtered.map(artifact => (
           <div
             key={artifact.id}
-            className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2"
-            style={{
-              cursor: 'pointer',
-              borderColor: selectedId === artifact.id ? "var(--ws-accent)" : undefined,
-              background: selectedId === artifact.id ? "rgba(16,185,129,0.1)" : undefined,
-            }}
+            className={`bg-ws-surface border rounded-md p-3 flex flex-col gap-2 cursor-pointer ${
+              selectedId === artifact.id ? 'border-ws-accent bg-ws-accent/10' : 'border-ws-line'
+            }`}
             onClick={() => setSelectedId(selectedId === artifact.id ? null : artifact.id)}
           >
             <div className="flex items-center gap-2">
@@ -75,7 +65,7 @@ function ArtifactsPanel() {
                 onClick={(e) => { e.stopPropagation(); handleDelete(artifact.id); }}
                 title="Delete artifact"
               >
-                <Trash2 size={12} style={{color: "#ef4444"}} />
+                <Trash2 size={12} className="text-ws-danger" />
               </button>
             </div>
             <div className="flex items-center justify-between text-ws-muted text-sm">
@@ -86,20 +76,12 @@ function ArtifactsPanel() {
               <span>{artifact.time}</span>
             </div>
             {selectedId === artifact.id && (
-              <div style={{
-                marginTop: 4,
-                padding: '8px',
-                background: "var(--ws-bg)",
-                borderRadius: "4px",
-                border: '1px solid var(--ws-edge-soft)',
-                fontSize: '11px',
-                color: "var(--ws-soft)",
-              }}>
-                <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: 4}}>
+              <div className="mt-1 p-2 bg-ws-bg rounded border border-ws-edge-soft text-[11px] text-ws-soft">
+                <div className="flex justify-between mb-1">
                   <span>Type: {artifact.type}</span>
                   <span>Status: {artifact.status}</span>
                 </div>
-                <div style={{color: "var(--ws-muted)", fontSize: 'var(--ws-type-xs)'}}>
+                <div className="text-ws-muted text-xs">
                   Generated {artifact.time} · Click "Artifacts" in left nav to view full content
                 </div>
               </div>
@@ -107,7 +89,7 @@ function ArtifactsPanel() {
           </div>
         ))}
         {filtered.length === 0 && (
-          <div style={{color: "var(--ws-muted)", fontSize: '11px', textAlign: 'center', padding: 'var(--ws-sp-6) 0'}}>
+          <div className="text-ws-muted text-[11px] text-center py-[var(--ws-sp-6)]">
             No artifacts match this filter
           </div>
         )}

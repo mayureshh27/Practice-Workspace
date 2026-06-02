@@ -88,9 +88,13 @@ function TutorPanel() {
             <div className="px-3 py-2 rounded-lg bg-ws-surface border border-ws-line leading-[1.4]">
               <span className="text-ws-muted italic flex items-center gap-2">
                 <span className="inline-flex gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-ws-success animate-pulse" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-ws-success animate-pulse delay-150" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-ws-success animate-pulse delay-300" />
+                  {[0, 150, 300].map((d) => (
+                    <span
+                      key={d}
+                      className="w-1.5 h-1.5 rounded-full bg-ws-success animate-pulse"
+                      style={{ animationDelay: `${d}ms` }}
+                    />
+                  ))}
                 </span>
                 Thinking...
               </span>

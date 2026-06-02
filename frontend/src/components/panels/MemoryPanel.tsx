@@ -2,6 +2,9 @@ import { Brain, AlertTriangle, CheckCircle, X, Plus, Send, RefreshCw } from 'luc
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { masteryQueries } from '../../api/queries';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 type MemoryEvent = { id: string; type: 'blind-spot' | 'mastery' | 'attempt' | 'note'; text: string; time: string; };
 
@@ -57,84 +60,85 @@ function MemoryPanel() {
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <p className="text-ws-muted text-sm m-0">{events.length} learning events tracked</p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground text-sm m-0">{events.length} learning events tracked</p>
         <div className="flex gap-1">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={handleRefresh}
-            className="bg-transparent border border-ws-line rounded p-1 cursor-pointer text-ws-muted hover:text-ws-soft transition-colors"
             title="Refresh from backend"
+            className="size-7"
           >
             <RefreshCw size={12} />
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => setShowAdd(!showAdd)}
-            style={{
-              background: 'none', border: '1px solid var(--ws-edge-soft)', borderRadius: "4px",
-              padding: '3px 8px', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', alignItems: 'center', gap: 4,
-              fontSize: 'var(--ws-type-xs)',
-            }}
+            className="h-7 text-xs"
           >
             <Plus size={10} /> Add Note
-          </button>
+          </Button>
         </div>
       </div>
 
       {showAdd && (
-        <div style={{ display: 'flex', gap: 6 }}>
-          <input
+        <div className="flex gap-1.5">
+          <Input
             type="text"
-            className="flex-1 bg-ws-surface border border-ws-line rounded px-3 py-2 text-ws-ink outline-none focus:border-ws-success transition-colors"
-            style={{ flex: 1 }}
             placeholder="Add a study note..."
             value={noteInput}
             onChange={e => setNoteInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleAddNote(); }}
             autoFocus
+            className="flex-1"
           />
-          <button
+          <Button
             type="button"
-            className="bg-transparent border-none text-ws-muted cursor-pointer p-1 rounded hover:text-ws-soft"
+            variant="ghost"
+            size="icon"
             onClick={handleAddNote}
-            style={{ color: noteInput.trim() ? "var(--ws-accent)" : "var(--ws-muted)" }}
+            disabled={!noteInput.trim()}
+            className={cn("size-9", noteInput.trim() ? 'text-primary' : 'text-muted-foreground')}
+            aria-label="Save note"
           >
             <Send size={14} />
-          </button>
+          </Button>
         </div>
       )}
 
-      <div className="flex flex-col gap-3 overflow-y-auto flex-1" style={{ paddingTop: 4 }}>
+      <div className="flex flex-col gap-3 overflow-y-auto flex-1 pt-1">
         {events.map(event => (
           <div key={event.id} className="flex gap-3 pb-4 relative">
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center bg-ws-surface border border-ws-line shrink-0 z-10 ${event.type}`}>
+            <div className="w-6 h-6 rounded-full flex items-center justify-center bg-card border border-border shrink-0 z-10">
               {event.type === 'blind-spot' && <AlertTriangle size={12} />}
               {event.type === 'mastery' && <CheckCircle size={12} />}
               {event.type === 'attempt' && <Brain size={12} />}
               {event.type === 'note' && <Plus size={12} />}
             </div>
-            <div className="flex flex-col gap-1 pt-[2px]" style={{ flex: 1 }}>
-              <div className="text-ws-soft leading-[1.4]">{event.text}</div>
-              <div className="text-ws-muted text-xs">{event.time}</div>
+            <div className="flex flex-col gap-1 pt-[2px] flex-1">
+              <div className="text-muted-foreground leading-[1.4]">{event.text}</div>
+              <div className="text-muted-foreground text-xs">{event.time}</div>
             </div>
             {event.type === 'note' && (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => handleDismiss(event.id)}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer', padding: 2,
-                  color: "var(--ws-muted)", opacity: 0.5, flexShrink: 0, alignSelf: 'flex-start',
-                }}
+                className="size-6 opacity-50 shrink-0 self-start"
                 title="Dismiss"
               >
                 <X size={12} />
-              </button>
+              </Button>
             )}
           </div>
         ))}
         {events.length === 0 && (
-          <div style={{ color: "var(--ws-muted)", fontSize: '11px', textAlign: 'center', padding: 'var(--ws-sp-6) 0' }}>
+          <div className="text-muted-foreground text-[11px] text-center py-6">
             No memory events yet. Practice some exercises to see mastery and blind spots here.
           </div>
         )}

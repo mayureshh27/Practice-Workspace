@@ -1,301 +1,172 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap');
 
 /* ─────────────────────────────────────────────
-   Design Tokens — Tailwind v4 @theme
-   Exposes all ws-* utilities: bg-ws-bg, text-ws-ink, border-ws-line, etc.
-──────────────────────────────────────────────── */
-@theme {
-  /* Fonts */
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+   Custom utilities — coexist with shadcn/tw-animate-css
+   - press, fade-in, scale-in, slide-up, pop-pop: tactile + entrance
+   - h-*: hover-gated to real pointers only
+   - origin-trigger-*: transform-origin helpers for popovers
+   - stagger-1..8: list entrance delays
+   - hover-capable: @custom-variant matching `(hover:hover) and (pointer:fine)`
+   shadcn component animations use `data-[state=open]:animate-in ...` and
+   `tw-animate-css` for keyframes. The custom utilities here cover
+   pre-shadcn behavior and the stagger / press micro-interactions that
+   shadcn does not provide.
+──────────────────────────────────────────── */
 
-  /* Surfaces — warm charcoal elevation scale */
-  --color-ws-floor:       var(--ws-floor);
-  --color-ws-bench:       var(--ws-bench);
-  --color-ws-shelf:       var(--ws-shelf);
-  --color-ws-tray:        var(--ws-tray);
-  --color-ws-glass:       var(--ws-glass);
-
-  /* Text — warm off-white hierarchy */
-  --color-ws-ink:         var(--ws-ink);
-  --color-ws-ink-2:       var(--ws-ink-2);
-  --color-ws-ink-3:       var(--ws-ink-3);
-  --color-ws-ink-muted:   var(--ws-ink-muted);
-
-  /* Borders — graphite separation */
-  --color-ws-edge:        var(--ws-edge);
-  --color-ws-edge-soft:   var(--ws-edge-soft);
-  --color-ws-edge-strong: var(--ws-edge-strong);
-  --color-ws-edge-focus:  var(--ws-edge-focus);
-
-  /* Accent — teal instrument glow */
-  --color-ws-glow:        var(--ws-glow);
-  --color-ws-glow-dim:    var(--ws-glow-dim);
-  --color-ws-glow-wash:   var(--ws-glow-wash);
-  --color-ws-glow-ring:   var(--ws-glow-ring);
-
-  /* Secondary — slate violet for AI indicators */
-  --color-ws-aura:        var(--ws-aura);
-  --color-ws-aura-dim:    var(--ws-aura-dim);
-  --color-ws-aura-wash:   var(--ws-aura-wash);
-
-  /* Semantic */
-  --color-ws-pass:        var(--ws-pass);
-  --color-ws-warn:        var(--ws-warn);
-  --color-ws-fail:        var(--ws-fail);
-  --color-ws-info:        var(--ws-info);
-
-  /* Editor surfaces */
-  --color-ws-editor:      var(--ws-editor);
-  --color-ws-editor-line: var(--ws-editor-line);
-
-  /* Mapping legacy Tailwind aliases to maintain backward compatibility */
-  --color-ws-bg:          var(--ws-floor);
-  --color-ws-surface:     var(--ws-bench);
-  --color-ws-surface-2:   var(--ws-shelf);
-  --color-ws-surface-3:   var(--ws-tray);
-  --color-ws-soft:        var(--ws-ink-2);
-  --color-ws-muted:       var(--ws-ink-3);
-  --color-ws-faint:       var(--ws-ink-muted);
-  --color-ws-line:        var(--ws-edge);
-  --color-ws-line-strong: var(--ws-edge-strong);
-  --color-ws-accent:      var(--ws-glow);
-  --color-ws-accent-2:    var(--ws-aura);
-  --color-ws-success:     var(--ws-pass);
-  --color-ws-danger:      var(--ws-fail);
-  --color-ws-warning:     var(--ws-warn);
+@utility press {
+  transition: transform 160ms var(--ease-emil-out, cubic-bezier(0.23, 1, 0.32, 1));
+  cursor: pointer;
+  &:active { transform: scale(0.97); }
 }
+
+@utility fade-in {
+  animation: emilFadeIn 200ms var(--ease-emil-out, cubic-bezier(0.23, 1, 0.32, 1)) forwards;
+  @starting-style { opacity: 0; }
+}
+@keyframes emilFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@utility slide-up {
+  animation: emilSlideUp 250ms var(--ease-emil-out, cubic-bezier(0.23, 1, 0.32, 1)) forwards;
+  @starting-style { opacity: 0; transform: translateY(6px); }
+}
+@keyframes emilSlideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility scale-in {
+  animation: emilScaleIn 200ms var(--ease-emil-out, cubic-bezier(0.23, 1, 0.32, 1)) forwards;
+  @starting-style { opacity: 0; transform: scale(0.95); }
+}
+@keyframes emilScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@utility pop-pop {
+  animation: emilPopPop 150ms var(--ease-emil-out, cubic-bezier(0.23, 1, 0.32, 1)) forwards;
+  @starting-style { opacity: 0; transform: scale(0.96); }
+}
+@keyframes emilPopPop {
+  to { opacity: 1; transform: scale(1); }
+}
+
+@utility stagger-1 { animation-delay: 0ms; }
+@utility stagger-2 { animation-delay: 50ms; }
+@utility stagger-3 { animation-delay: 100ms; }
+@utility stagger-4 { animation-delay: 150ms; }
+@utility stagger-5 { animation-delay: 200ms; }
+@utility stagger-6 { animation-delay: 250ms; }
+@utility stagger-7 { animation-delay: 300ms; }
+@utility stagger-8 { animation-delay: 350ms; }
+
+/* Hover utility for elements with inline background:none (replaces onMouseEnter/onMouseLeave anti-patterns) */
+.hover-bg {
+  transition: background 100ms ease !important;
+}
+.hover-bg:hover {
+  background: var(--color-accent) !important;
+}
+
+/* Pattern hover utilities — gated to real pointers */
+@utility h-surface-2 {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { background: var(--color-accent) !important; }
+  }
+}
+@utility h-accent-tint {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { background: color-mix(in oklch, var(--color-primary) 10%, transparent) !important; }
+  }
+}
+@utility h-bd-accent {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { border-color: var(--color-primary) !important; }
+  }
+}
+@utility h-bd-muted {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { border-color: var(--color-muted-foreground) !important; }
+  }
+}
+@utility h-bd-strong {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { border-color: var(--color-border) !important; }
+  }
+}
+@utility h-cl-accent {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { color: var(--color-primary) !important; }
+  }
+}
+@utility h-cl-danger {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { color: var(--color-destructive) !important; }
+  }
+}
+@utility h-cl-ink {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { color: var(--color-foreground) !important; }
+  }
+}
+@utility h-bd-surface-2 {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { border-color: var(--color-accent) !important; }
+  }
+}
+@utility h-bright {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { filter: brightness(1.1) !important; }
+  }
+}
+@utility h-dim {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { opacity: 0.9 !important; }
+  }
+}
+
+/* Touch-safe hover variant — used as `hover-capable:hover:bg-…` in className */
+@custom-variant hover-capable (@media (hover: hover) and (pointer: fine));
+
+/* Popover / trigger-anchored transform origins */
+@utility origin-trigger-tl { transform-origin: top left; }
+@utility origin-trigger-tr { transform-origin: top right; }
+@utility origin-trigger-bl { transform-origin: bottom left; }
+@utility origin-trigger-br { transform-origin: bottom right; }
 
 /* ─────────────────────────────────────────────
-   CSS Custom Properties & Theme Variables
-──────────────────────────────────────────────── */
-:root {
-  color-scheme: dark;
-
-  /* Surfaces — warm charcoal elevation scale */
-  --ws-floor:       hsl(210, 8%, 7%);
-  --ws-bench:       hsl(210, 7%, 10%);
-  --ws-shelf:       hsl(210, 6%, 13%);
-  --ws-tray:        hsl(210, 5%, 16%);
-  --ws-glass:       hsl(210, 4%, 19%);
-
-  /* Text — warm off-white hierarchy */
-  --ws-ink:         hsl(40, 10%, 88%);
-  --ws-ink-2:       hsl(40, 6%, 62%);
-  --ws-ink-3:       hsl(40, 4%, 45%);
-  --ws-ink-muted:   hsl(40, 3%, 32%);
-
-  /* Borders — graphite separation */
-  --ws-edge:        hsla(210, 6%, 40%, 0.18);
-  --ws-edge-soft:   hsla(210, 6%, 40%, 0.10);
-  --ws-edge-strong: hsla(210, 6%, 40%, 0.30);
-  --ws-edge-focus:  hsla(178, 60%, 48%, 0.50);
-
-  /* Accent — teal instrument glow */
-  --ws-glow:        hsl(178, 55%, 48%);
-  --ws-glow-dim:    hsl(178, 40%, 35%);
-  --ws-glow-wash:   hsla(178, 55%, 48%, 0.08);
-  --ws-glow-ring:   hsla(178, 55%, 48%, 0.25);
-
-  /* Secondary — slate violet for AI indicators */
-  --ws-aura:        hsl(255, 30%, 58%);
-  --ws-aura-dim:    hsl(255, 20%, 42%);
-  --ws-aura-wash:   hsla(255, 30%, 58%, 0.08);
-
-  /* Semantic signals */
-  --ws-pass:        hsl(178, 55%, 48%); /* teal is the "success" signal in practice views */
-  --ws-warn:        hsl(38,  92%, 50%);
-  --ws-fail:        hsl(0,   65%, 52%);
-  --ws-info:        hsl(210, 45%, 55%);
-
-  /* Editor surfaces */
-  --ws-editor:      hsl(214, 28%, 8%);
-  --ws-editor-line: hsl(214, 28%, 17%);
-
-  /* Radius */
-  --ws-radius-sm: 4px;
-  --ws-radius-md: 6px;
-  --ws-radius-lg: 8px;
-
-  /* Legacy aliases for inline style backward compatibility */
-  --ws-bg:          var(--ws-floor);
-  --ws-surface:     var(--ws-bench);
-  --ws-surface-2:   var(--ws-shelf);
-  --ws-surface-3:   var(--ws-tray);
-  --ws-line:        var(--ws-edge);
-  --ws-line-strong: var(--ws-edge-strong);
-  --ws-soft:        var(--ws-ink-2);
-  --ws-muted:       var(--ws-ink-3);
-  --ws-faint:       var(--ws-ink-muted);
-  --ws-accent:      var(--ws-glow);
-  --ws-accent-2:    var(--ws-aura);
-  --ws-success:     var(--ws-pass);
-  --ws-danger:      var(--ws-fail);
-  --ws-warning:     var(--ws-warn);
-}
-
-:root[data-theme="light"] {
-  color-scheme: light;
-
-  /* Surfaces — light clean elevation scale */
-  --ws-floor:       hsl(210, 15%, 95%);
-  --ws-bench:       #ffffff;
-  --ws-shelf:       hsl(210, 12%, 91%);
-  --ws-tray:        hsl(210, 10%, 86%);
-  --ws-glass:       hsl(210, 8%, 80%);
-
-  /* Text — deep charcoal hierarchy */
-  --ws-ink:         hsl(210, 24%, 12%);
-  --ws-ink-2:       hsl(210, 12%, 36%);
-  --ws-ink-3:       hsl(210, 8%, 52%);
-  --ws-ink-muted:   hsl(210, 8%, 60%);
-
-  /* Borders — soft separation */
-  --ws-edge:        hsla(210, 8%, 20%, 0.12);
-  --ws-edge-soft:   hsla(210, 8%, 20%, 0.08);
-  --ws-edge-strong: hsla(210, 8%, 20%, 0.22);
-  --ws-edge-focus:  hsla(178, 60%, 48%, 0.50);
-
-  /* Accent — deep teal glow */
-  --ws-glow:        hsl(178, 70%, 32%);
-  --ws-glow-dim:    hsl(178, 70%, 26%);
-  --ws-glow-wash:   hsla(178, 70%, 32%, 0.08);
-  --ws-glow-ring:   hsla(178, 70%, 32%, 0.22);
-
-  /* Secondary — slate violet */
-  --ws-aura:        hsl(255, 45%, 45%);
-  --ws-aura-dim:    hsl(255, 35%, 35%);
-  --ws-aura-wash:   hsla(255, 45%, 45%, 0.08);
-
-  /* Legacy aliases for light mode inline style compatibility */
-  --ws-bg:          var(--ws-floor);
-  --ws-surface:     var(--ws-bench);
-  --ws-surface-2:   var(--ws-shelf);
-  --ws-surface-3:   var(--ws-tray);
-  --ws-line:        var(--ws-edge);
-  --ws-line-strong: var(--ws-edge-strong);
-  --ws-soft:        var(--ws-ink-2);
-  --ws-muted:       var(--ws-ink-3);
-  --ws-faint:       var(--ws-ink-muted);
-  --ws-accent:      var(--ws-glow);
-  --ws-accent-2:    var(--ws-aura);
-  --ws-success:     var(--ws-pass);
-  --ws-danger:      var(--ws-fail);
-  --ws-warning:     var(--ws-warn);
+   Heading font hook (separate from body)
+──────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* ─────────────────────────────────────────────
-   Practice Workspace Selector Override
-   Forces Dark Navy-Slate theme variables
-   inside code panels for high-contrast focus
-──────────────────────────────────────────────── */
-.ws-practice {
-  /* Surfaces — warm charcoal elevation scale */
-  --ws-floor:       hsl(210, 8%, 7%);
-  --ws-bench:       hsl(210, 7%, 10%);
-  --ws-shelf:       hsl(210, 6%, 13%);
-  --ws-tray:        hsl(210, 5%, 16%);
-  --ws-glass:       hsl(210, 4%, 19%);
-
-  /* Text — warm off-white hierarchy */
-  --ws-ink:         hsl(40, 10%, 88%);
-  --ws-ink-2:       hsl(40, 6%, 62%);
-  --ws-ink-3:       hsl(40, 4%, 45%);
-  --ws-ink-muted:   hsl(40, 3%, 32%);
-
-  /* Borders — graphite separation */
-  --ws-edge:        hsla(210, 6%, 40%, 0.18);
-  --ws-edge-soft:   hsla(210, 6%, 40%, 0.10);
-  --ws-edge-strong: hsla(210, 6%, 40%, 0.30);
-  --ws-edge-focus:  hsla(178, 60%, 48%, 0.50);
-
-  /* Accent — teal instrument glow */
-  --ws-glow:        hsl(178, 55%, 48%);
-  --ws-glow-dim:    hsl(178, 40%, 35%);
-  --ws-glow-wash:   hsla(178, 55%, 48%, 0.08);
-  --ws-glow-ring:   hsla(178, 55%, 48%, 0.25);
-
-  /* Secondary — slate violet */
-  --ws-aura:        hsl(255, 30%, 58%);
-  --ws-aura-dim:    hsl(255, 20%, 42%);
-  --ws-aura-wash:   hsla(255, 30%, 58%, 0.08);
-
-  /* Semantic */
-  --ws-pass:        hsl(178, 55%, 48%);
-  --ws-warn:        hsl(38,  92%, 50%);
-  --ws-fail:        hsl(0,   65%, 52%);
-  --ws-info:        hsl(210, 45%, 55%);
-
-  /* Legacy aliases for practice view inline style compatibility */
-  --ws-bg:          var(--ws-floor);
-  --ws-surface:     var(--ws-bench);
-  --ws-surface-2:   var(--ws-shelf);
-  --ws-surface-3:   var(--ws-tray);
-  --ws-line:        var(--ws-edge);
-  --ws-line-strong: var(--ws-edge-strong);
-  --ws-soft:        var(--ws-ink-2);
-  --ws-muted:       var(--ws-ink-3);
-  --ws-faint:       var(--ws-ink-muted);
-  --ws-accent:      var(--ws-glow);
-  --ws-accent-2:    var(--ws-aura);
-  --ws-success:     var(--ws-pass);
-  --ws-danger:      var(--ws-fail);
-  --ws-warning:     var(--ws-warn);
-}
-
-/* ─────────────────────────────────────────────
-   Global Resets
-──────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-html, body, #app {
-  min-height: 100%;
-}
-
-html {
-  overflow-x: hidden;
-}
-
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-feature-settings: "calt", "kern", "liga", "ss03";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--ws-bg);
-  color: var(--ws-ink);
-}
-
-/* ─────────────────────────────────────────────
-   Scrollbar Utilities (Global & Class-based)
-──────────────────────────────────────────────── */
+   Scrollbar styling
+──────────────────────────────────────────── */
 * {
-  scrollbar-color: var(--ws-faint) transparent;
+  scrollbar-color: var(--color-muted-foreground) transparent;
   scrollbar-width: thin;
 }
-
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--ws-faint);
+  background: var(--color-muted-foreground);
   border-radius: 999px;
   transition: background 150ms ease;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--ws-soft);
+  background: var(--color-muted-foreground);
 }
-
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
@@ -304,15 +175,15 @@ body {
 }
 
 /* ─────────────────────────────────────────────
-   ws-nav-item — used by LeftNav tools section
-──────────────────────────────────────────────── */
+   .ws-nav-item — LeftNav tools section
+──────────────────────────────────────────── */
 .ws-nav-item {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
   border-radius: 5px;
-  color: var(--ws-muted);
+  color: var(--color-muted-foreground);
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
@@ -322,30 +193,27 @@ body {
   overflow: hidden;
   margin-bottom: 1px;
 }
-
 .ws-nav-item:hover {
-  background: var(--ws-surface-2);
-  color: var(--ws-ink);
+  background: var(--color-accent);
+  color: var(--color-foreground);
 }
-
 .ws-nav-item.active,
 .ws-nav-item[data-status="active"] {
-  background: hsla(178, 55%, 48%, 0.1);
-  color: var(--ws-accent);
+  background: color-mix(in oklch, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
 }
 
 /* ─────────────────────────────────────────────
-   Practice Workspace Responsive Column Layout
-──────────────────────────────────────────────── */
+   Layout system — workspace, screens, card grids
+──────────────────────────────────────────── */
 .workspace-layout {
   display: flex;
   flex-direction: row;
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  background-color: var(--ws-floor);
+  background-color: var(--color-background);
 }
-
 .workspace-main {
   display: flex;
   flex-direction: row;
@@ -355,10 +223,8 @@ body {
   overflow: hidden;
   gap: 16px;
   padding: 16px;
-  background-color: var(--ws-floor);
+  background-color: var(--color-background);
 }
-
-/* LearningPanel and WorkPanel side-by-side flex split */
 .workspace-main > section {
   flex: 1;
   min-width: 0;
@@ -368,3 +234,90 @@ body {
   flex-direction: column;
 }
 
+.screen-container {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 24px;
+  height: 100%;
+  overflow-y: auto;
+}
+.screen-full {
+  padding: 24px;
+  height: 100%;
+  overflow-y: auto;
+}
+.screen-header {
+  margin-bottom: 24px;
+}
+.screen-header h1 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+.screen-header p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-muted-foreground);
+}
+.screen-section {
+  margin-bottom: 24px;
+}
+.screen-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.card-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Base card — flat, no shadow, hover tint */
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 160ms var(--ease-emil-out, cubic-bezier(0.23, 1, 0.32, 1)),
+              border-color 160ms var(--ease-emil-out, cubic-bezier(0.23, 1, 0.32, 1)),
+              box-shadow 160ms var(--ease-emil-out, cubic-bezier(0.23, 1, 0.32, 1));
+}
+.card:hover {
+  border-color: var(--color-primary);
+}
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+/* ─────────────────────────────────────────────
+   Reduced motion — kill all transitions / animations
+──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
+}

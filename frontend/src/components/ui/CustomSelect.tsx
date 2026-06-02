@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
 interface Option {
@@ -18,7 +18,7 @@ interface CustomSelectProps {
 export function CustomSelect({ value, onChange, options, style, className, disabled }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const selectedOption = options.find(o => o.value === value);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function CustomSelect({ value, onChange, options, style, className, disab
   }, []);
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={className}
       style={{ position: 'relative', display: 'inline-block', opacity: disabled ? 0.5 : 1, ...style }}
@@ -41,37 +41,19 @@ export function CustomSelect({ value, onChange, options, style, className, disab
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: '100%', height: '100%',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
-          background: 'transparent',
-          border: 'none',
-          color: 'inherit',
-          fontSize: 'inherit',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          outline: 'none',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          padding: 0,
-        }}
+        className="w-full h-full flex items-center justify-between gap-2 bg-transparent border-0 text-inherit text-inherit outline-none whitespace-nowrap overflow-hidden p-0 cursor-pointer disabled:cursor-not-allowed"
+        style={{ fontSize: 'inherit' }}
       >
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textAlign: 'left' }}>
+        <span className="overflow-hidden text-ellipsis flex-1 text-left">
           {selectedOption ? selectedOption.label : 'Select...'}
         </span>
-        <ChevronDown size={14} style={{ flexShrink: 0, color: "var(--ws-muted)" }} />
+        <ChevronDown size={14} className="shrink-0 text-ws-muted" />
       </button>
 
       {isOpen && !disabled && (
-        <div style={{
-          position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 1000,
-          minWidth: '100%', width: 'max-content',
-          background: "var(--ws-bg)", border: '1px solid var(--ws-edge)',
-          borderRadius: "6px", padding: 4,
-          boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-          maxHeight: 300, overflowY: 'auto',
-          display: 'flex', flexDirection: 'column', gap: 2
-        }}>
+        <div
+          className="pop-pop origin-trigger-tl absolute top-full left-0 z-[1000] min-w-full w-max bg-ws-bg border border-ws-edge rounded-ws-md p-1 shadow-[0_8px_24px_rgba(0,0,0,0.4)] max-h-60 overflow-y-auto flex flex-col gap-0.5"
+        >
           {options.map(opt => (
             <button
               key={opt.value}
@@ -80,23 +62,11 @@ export function CustomSelect({ value, onChange, options, style, className, disab
                 onChange(opt.value);
                 setIsOpen(false);
               }}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                width: '100%', padding: '8px 12px',
-                background: 'none', border: 'none', borderRadius: "4px",
-                color: value === opt.value ? "var(--ws-accent)" : "var(--ws-ink)", 
-                fontSize: 13, cursor: 'pointer', textAlign: 'left',
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = "var(--ws-surface-2)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'none';
-              }}
+              className="flex items-center justify-between w-full px-3 py-2 bg-none border-0 rounded-ws-md text-xs text-left whitespace-nowrap cursor-pointer h-surface-2"
+              style={{ color: value === opt.value ? 'var(--ws-accent)' : 'var(--ws-ink)' }}
             >
               {opt.label}
-              {value === opt.value && <Check size={14} style={{ color: "var(--ws-accent)", marginLeft: 12 }} />}
+              {value === opt.value && <Check size={14} className="text-ws-accent ml-3" />}
             </button>
           ))}
         </div>

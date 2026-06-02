@@ -7,10 +7,9 @@ import MemoryPanel from './panels/MemoryPanel';
 import GraphPanel from './panels/GraphPanel';
 import ContextPanel from './panels/ContextPanel';
 import InspectorPanel from './panels/InspectorPanel';
-
+import { Button } from '@/components/ui/button';
 import { useUIStore } from '../stores/uiStore';
-
-// No props needed since we use Zustand
+import { cn } from '@/lib/utils';
 
 const PANEL_TITLES: Record<Exclude<RightDockPanelType, null>, string> = {
   sources:   'Source Chunks',
@@ -35,26 +34,36 @@ function renderPanelContent(activePanel: Exclude<RightDockPanelType, null>) {
   }
 }
 
-/** Slide-in panel that overlays from the right side of ws-main. Rendered inside ws-main so positioning is correct. */
+/** Slide-in panel that overlays from the right side of ws-main. Rendered inside ws-main so
+ *  positioning is correct and the 42px RightDockRail stays accessible. Uses shadcn Button
+ *  for the close button; the slide animation is a CSS width transition (preserved from
+ *  the original hand-rolled version because Radix Sheet is full-viewport). */
 function RightDockPanel() {
   const activePanel = useUIStore(s => s.rightPanel);
   const onClose = () => useUIStore.getState().setRightPanel(null);
 
   return (
-    <div className={`absolute right-[42px] top-0 bottom-0 z-20 bg-white dark:bg-ws-bg transition-[width,border] duration-200 ease-out overflow-hidden ${activePanel ? 'w-[360px] border-l border-zinc-200 dark:border-ws-line' : 'w-0 border-l-0 border-transparent'}`}>
+    <div
+      className={cn(
+        "absolute right-[42px] top-0 bottom-0 z-20 bg-background overflow-hidden",
+        "transition-[width,border] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
+        activePanel ? 'w-[360px] border-l border-border' : 'w-0 border-l-0 border-transparent'
+      )}
+    >
       {activePanel && (
         <div className="flex flex-col w-[360px] h-full">
-          <div className="flex items-center justify-between px-4 h-11 shrink-0 border-b border-zinc-200 dark:border-ws-line bg-ws-bg">
-            <span className="font-bold text-[13px] text-ws-ink">{PANEL_TITLES[activePanel]}</span>
-            <button
+          <div className="flex items-center justify-between px-4 h-11 shrink-0 border-b border-border bg-background">
+            <span className="font-bold text-[13px] text-foreground">{PANEL_TITLES[activePanel]}</span>
+            <Button
               type="button"
-              className="flex items-center justify-center w-7 h-7 rounded text-ws-muted hover:bg-zinc-200 hover:text-ws-ink dark:hover:bg-ws-surface-2 dark:hover:text-ws-ink transition-colors"
+              variant="ghost"
+              size="icon"
               onClick={onClose}
-              title="Close panel"
               aria-label="Close panel"
+              className="size-7 text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               <X size={14} />
-            </button>
+            </Button>
           </div>
           <div className="flex-1 overflow-y-auto">
             {renderPanelContent(activePanel)}

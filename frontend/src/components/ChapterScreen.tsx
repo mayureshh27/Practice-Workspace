@@ -37,67 +37,50 @@ function ChapterScreen({domain, subject, chapter, onNavigate: _onNavigate, onUpd
   };
 
   return (
-    <div style={{display: 'flex', height: '100%', overflow: 'hidden'}}>
+    <div className="flex h-full overflow-hidden">
       {/* Left column — topics */}
-      <div style={{flex: '1 1 60%', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: '1px solid var(--ws-edge-soft)'}}>
+      <div className="flex-[1_1_60%] flex-col overflow-hidden border-r border-ws-edge-soft flex">
         {/* Header */}
-        <div style={{padding: '20px 24px 16px'}}>
+        <div className="px-6 pt-5 pb-4">
           <Link
             to="/subject/$domainId/$subjectId"
             params={{ domainId: domain.id, subjectId: subject.id }}
-            style={{
-              textDecoration: 'none',
-              display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none',
-              color: "var(--ws-muted)", fontSize: 12, cursor: 'pointer', padding: 0, marginBottom: 12,
-            }}
+            className="no-underline flex items-center gap-1.5 bg-transparent border-0 text-ws-muted text-xs cursor-pointer p-0 mb-3"
           >
             <ArrowLeft size={14} /> Back to {subject.name}
           </Link>
 
-          <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
-            <h1 style={{fontSize: 22, fontWeight: 700, color: "var(--ws-ink)", margin: 0, flex: 1}}>{chapter.name}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-[22px] font-bold text-ws-ink m-0 flex-1">{chapter.name}</h1>
             <button
               type="button"
               onClick={() => setStarred(!starred)}
-              style={{background: 'none', border: 'none', cursor: 'pointer', color: starred ? "var(--ws-accent)" : "var(--ws-muted)", display: 'flex'}}
+              className={`bg-transparent border-0 cursor-pointer flex ${starred ? 'text-ws-accent' : 'text-ws-muted'}`}
             >
               <Star size={18} fill={starred ? 'currentColor' : 'none'} />
             </button>
           </div>
 
-          <p style={{color: "var(--ws-soft)", fontSize: 13, marginTop: 6, lineHeight: 1.5}}>
+          <p className="text-ws-soft text-[13px] mt-1.5 leading-normal">
             {chapter.description || `Explore learning modules and practice exercises for ${chapter.name}.`}
           </p>
         </div>
 
         {/* Topics list */}
-        <div style={{flex: 1, overflowY: 'auto', padding: '0 24px'}}>
-          <div style={{
-            fontSize: 10, fontWeight: 700, color: "var(--ws-muted)",
-            textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10
-          }}>
-            Topics & Concepts
-          </div>
-          
-          <div style={{display: 'flex', flexDirection: 'column', gap: 2}}>
+        <div className="flex-1 overflow-y-auto px-6">
+          <div className="screen-section-title">Topics & Concepts</div>
+
+          <div className="flex flex-col gap-0.5">
             {chapter.topics.map(topic => (
               <Link
                 key={topic.id}
                 to="/topic/$domainId/$subjectId/$chapterId/$topicId"
                 params={{ domainId: domain.id, subjectId: subject.id, chapterId: chapter.id, topicId: topic.id }}
-                style={{
-                  textDecoration: 'none',
-                  display: 'flex', flexDirection: 'column', gap: 2, width: '100%',
-                  padding: '12px 14px', background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-                  borderRadius: "6px", textAlign: 'left', cursor: 'pointer', color: "var(--ws-ink)",
-                  transition: 'all 150ms ease',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--ws-accent)"; e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--ws-line)"; e.currentTarget.style.background = "var(--ws-bg)"; }}
+                className="no-underline flex flex-col gap-0.5 w-full px-3.5 py-3 bg-ws-bg border border-ws-edge-soft rounded-ws-md text-left cursor-pointer text-ws-ink transition-colors duration-150 h-bd-accent h-surface-2"
               >
-                <span style={{fontSize: 14, fontWeight: 600}}>{topic.name}</span>
+                <span className="text-sm font-semibold">{topic.name}</span>
                 {topic.lastMessage && (
-                  <span style={{fontSize: 11, color: "var(--ws-muted)"}}>{topic.lastMessage}</span>
+                  <span className="text-[11px] text-ws-muted">{topic.lastMessage}</span>
                 )}
               </Link>
             ))}
@@ -106,16 +89,7 @@ function ChapterScreen({domain, subject, chapter, onNavigate: _onNavigate, onUpd
             <Link
               to="/notebook/$domainId/$subjectId"
               params={{ domainId: domain.id, subjectId: subject.id }}
-              style={{
-                textDecoration: 'none',
-                display: 'flex', alignItems: 'center', gap: 6, width: '100%',
-                padding: '12px', background: 'none', border: '1px dashed var(--ws-edge)',
-                borderRadius: "6px", color: "var(--ws-accent)", cursor: 'pointer',
-                fontSize: 13, fontWeight: 500, marginTop: 8, marginBottom: 16,
-                transition: 'all 150ms ease',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--ws-accent)"; e.currentTarget.style.background = "rgba(16,185,129,0.1)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--ws-surface-2)"; e.currentTarget.style.background = 'none'; }}
+              className="no-underline flex items-center gap-1.5 w-full p-3 bg-transparent border border-dashed border-ws-edge rounded-ws-md text-ws-accent cursor-pointer text-[13px] font-medium mt-2 mb-4 transition-colors duration-150 h-bd-accent h-accent-tint"
             >
               <Plus size={14} /> New Topic / Concept
             </Link>
@@ -124,20 +98,13 @@ function ChapterScreen({domain, subject, chapter, onNavigate: _onNavigate, onUpd
       </div>
 
       {/* Right column — metadata + files */}
-      <div style={{flex: '1 1 40%', overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 16}}>
+      <div className="flex-[1_1_40%] overflow-y-auto p-5 flex flex-col gap-4">
         {/* Memory card */}
-        <div style={{
-          background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-          borderRadius: 'var(--ws-r-lg)', padding: 16,
-        }}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
-              <span style={{fontWeight: 600, color: "var(--ws-ink)", fontSize: 13}}>Chapter Memory</span>
-              <span style={{
-                fontSize: 10, color: "var(--ws-muted)", background: "var(--ws-bg)",
-                border: '1px solid var(--ws-edge-soft)', padding: '1px 6px', borderRadius: "4px",
-                display: 'flex', alignItems: 'center', gap: 3
-              }}>
+        <div className="bg-ws-bg border border-ws-edge-soft rounded-ws-lg p-4">
+          <div className="flex justify-between items-center mb-2.5">
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-ws-ink text-[13px]">Chapter Memory</span>
+              <span className="text-[10px] text-ws-muted bg-ws-bg border border-ws-edge-soft px-1.5 py-0.5 rounded-ws-sm flex items-center gap-[3px]">
                 <Lock size={10} /> Only you
               </span>
             </div>
@@ -145,118 +112,89 @@ function ChapterScreen({domain, subject, chapter, onNavigate: _onNavigate, onUpd
               <button
                 type="button"
                 onClick={() => setIsEditingMemory(true)}
-                style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', padding: 2}}
+                className="bg-transparent border-0 cursor-pointer text-ws-muted flex p-0.5"
                 title="Edit Chapter Memory"
               >
                 <Pencil size={13} />
               </button>
             )}
           </div>
-          
+
           {isEditingMemory ? (
-            <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+            <div className="flex flex-col gap-2">
               <textarea
                 value={memoryText}
                 onChange={e => setMemoryText(e.target.value)}
-                style={{
-                  width: '100%', minHeight: 80, padding: 8, background: "var(--ws-bg)",
-                  border: '1px solid var(--ws-glow)', borderRadius: "6px",
-                  color: "var(--ws-ink)", fontSize: 12, outline: 'none', fontFamily: 'inherit',
-                  resize: 'vertical'
-                }}
+                className="w-full min-h-[80px] p-2 bg-ws-bg border border-[var(--ws-glow)] rounded-ws-md text-ws-ink text-xs outline-none font-sans resize-y"
                 autoFocus
               />
-              <div style={{display: 'flex', gap: 6, justifyContent: 'flex-end'}}>
+              <div className="flex gap-1.5 justify-end">
                 <button
                   type="button"
                   onClick={handleSaveMemory}
-                  style={{
-                    padding: '4px 10px', background: "var(--ws-accent)", color: "var(--ws-bg)",
-                    fontWeight: 600, border: 'none', borderRadius: "4px", cursor: 'pointer',
-                    fontSize: 11, display: 'flex', alignItems: 'center', gap: 4
-                  }}
+                  className="px-2.5 py-1 bg-ws-accent text-ws-bg font-semibold border-0 rounded-ws-sm cursor-pointer text-[11px] flex items-center gap-1"
                 >
                   <Save size={10} /> Save
                 </button>
                 <button
                   type="button"
                   onClick={() => { setMemoryText(chapter.memory || ''); setIsEditingMemory(false); }}
-                  style={{
-                    padding: '4px 10px', background: 'none', border: '1px solid var(--ws-edge-soft)',
-                    color: "var(--ws-soft)", borderRadius: "4px", cursor: 'pointer',
-                    fontSize: 11, display: 'flex', alignItems: 'center', gap: 4
-                  }}
+                  className="px-2.5 py-1 bg-transparent border border-ws-edge-soft text-ws-soft rounded-ws-sm cursor-pointer text-[11px] flex items-center gap-1"
                 >
                   <X size={10} /> Cancel
                 </button>
               </div>
             </div>
           ) : (
-            <p style={{fontSize: 12, color: "var(--ws-soft)", lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap'}}>
+            <p className="text-xs text-ws-soft leading-normal m-0 whitespace-pre-wrap">
               {chapter.memory || 'Record chapter concepts and formulas for targeted problem evaluation.'}
             </p>
           )}
         </div>
 
         {/* Instructions card */}
-        <div style={{
-          background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-          borderRadius: 'var(--ws-r-lg)', padding: 16,
-        }}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10}}>
-            <span style={{fontWeight: 600, color: "var(--ws-ink)", fontSize: 13}}>Chapter Instructions</span>
+        <div className="bg-ws-bg border border-ws-edge-soft rounded-ws-lg p-4">
+          <div className="flex justify-between items-center mb-2.5">
+            <span className="font-semibold text-ws-ink text-[13px]">Chapter Instructions</span>
             {!isEditingInst && (
               <button
                 type="button"
                 onClick={() => setIsEditingInst(true)}
-                style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', padding: 2}}
+                className="bg-transparent border-0 cursor-pointer text-ws-muted flex p-0.5"
                 title="Edit Chapter Instructions"
               >
                 <Pencil size={13} />
               </button>
             )}
           </div>
-          
+
           {isEditingInst ? (
-            <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+            <div className="flex flex-col gap-2">
               <textarea
                 value={instText}
                 onChange={e => setInstText(e.target.value)}
-                style={{
-                  width: '100%', minHeight: 80, padding: 8, background: "var(--ws-bg)",
-                  border: '1px solid var(--ws-glow)', borderRadius: "6px",
-                  color: "var(--ws-ink)", fontSize: 12, outline: 'none', fontFamily: 'inherit',
-                  resize: 'vertical'
-                }}
+                className="w-full min-h-[80px] p-2 bg-ws-bg border border-[var(--ws-glow)] rounded-ws-md text-ws-ink text-xs outline-none font-sans resize-y"
                 autoFocus
               />
-              <div style={{display: 'flex', gap: 6, justifyContent: 'flex-end'}}>
+              <div className="flex gap-1.5 justify-end">
                 <button
                   type="button"
                   onClick={handleSaveInst}
-                  style={{
-                    padding: '4px 10px', background: "var(--ws-accent)", color: "var(--ws-bg)",
-                    fontWeight: 600, border: 'none', borderRadius: "4px", cursor: 'pointer',
-                    fontSize: 11, display: 'flex', alignItems: 'center', gap: 4
-                  }}
+                  className="px-2.5 py-1 bg-ws-accent text-ws-bg font-semibold border-0 rounded-ws-sm cursor-pointer text-[11px] flex items-center gap-1"
                 >
                   <Save size={10} /> Save
                 </button>
                 <button
                   type="button"
                   onClick={() => { setInstText(chapter.instructions || ''); setIsEditingInst(false); }}
-                  style={{
-                    padding: '4px 10px', background: 'none', border: '1px solid var(--ws-edge-soft)',
-                    color: "var(--ws-soft)", borderRadius: "4px", cursor: 'pointer',
-                    fontSize: 11, display: 'flex', alignItems: 'center', gap: 4
-                  }}
+                  className="px-2.5 py-1 bg-transparent border border-ws-edge-soft text-ws-soft rounded-ws-sm cursor-pointer text-[11px] flex items-center gap-1"
                 >
                   <X size={10} /> Cancel
                 </button>
               </div>
             </div>
           ) : (
-            <p style={{fontSize: 12, color: "var(--ws-soft)", lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap'}}>
+            <p className="text-xs text-ws-soft leading-normal m-0 whitespace-pre-wrap">
               {chapter.instructions || 'Set custom chapter-level prompt variables here.'}
             </p>
           )}
@@ -264,15 +202,15 @@ function ChapterScreen({domain, subject, chapter, onNavigate: _onNavigate, onUpd
 
         {/* References list */}
         <div>
-          <div style={{fontWeight: 600, color: "var(--ws-ink)", marginBottom: 12}}>
+          <div className="font-semibold text-ws-ink mb-3">
             Subject References
           </div>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8}}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2">
             {subject.resources.map(res => (
               <ResourceCard key={res.id} resource={res} onRemove={() => onRemoveResource(domain.id, subject.id, res.id)} />
             ))}
             {subject.resources.length === 0 && (
-              <div style={{gridColumn: '1 / -1', padding: 24, textAlign: 'center', color: "var(--ws-muted)", fontSize: 12}}>
+              <div className="col-span-full p-6 text-center text-ws-muted text-xs">
                 No reference files loaded.
               </div>
             )}
@@ -294,32 +232,20 @@ function ResourceCard({resource, onRemove}: {resource: Resource, onRemove: () =>
   const color = typeColors[resource.fileType] || "var(--ws-muted)";
 
   return (
-    <div style={{
-      background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-      borderRadius: "6px", padding: 12,
-      display: 'flex', flexDirection: 'column', gap: 6,
-      position: 'relative', transition: 'border-color 150ms ease',
-    }}
-    >
+    <div className="bg-ws-bg border border-ws-edge-soft rounded-ws-md p-3 flex flex-col gap-1.5 relative transition-colors duration-150">
       <button
         type="button"
         onClick={e => { e.stopPropagation(); onRemove(); }}
-        style={{
-          position: 'absolute', top: 4, right: 4, background: 'none', border: 'none',
-          color: "var(--ws-muted)", cursor: 'pointer', display: 'flex', padding: 2,
-          transition: 'color 100ms ease'
-        }}
-        onMouseEnter={e => e.currentTarget.style.color = "#ef4444"}
-        onMouseLeave={e => e.currentTarget.style.color = "var(--ws-muted)"}
+        className="absolute top-1 right-1 bg-transparent border-0 text-ws-muted cursor-pointer flex p-0.5 transition-colors duration-150 h-cl-danger"
         title="Remove resource"
       >
         <X size={11} />
       </button>
 
-      <div style={{fontSize: 12, fontWeight: 500, color: "var(--ws-ink)", wordBreak: 'break-all', lineHeight: 1.3, paddingRight: 12}}>
+      <div className="text-xs font-medium text-ws-ink break-all leading-tight pr-3">
         {resource.name}
       </div>
-      <div style={{fontSize: 10, color: "var(--ws-muted)"}}>
+      <div className="text-[10px] text-ws-muted">
         {resource.lines.toLocaleString()} lines
       </div>
       <span style={{

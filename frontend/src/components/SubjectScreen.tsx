@@ -21,7 +21,6 @@ function SubjectScreen({domain, subject, onNavigate: _onNavigate, onUpdateSubjec
   const [isEditingInst, setIsEditingInst] = useState(false);
   const [instText, setInstText] = useState(subject.instructions || '');
 
-  // Keep state in sync with prop updates
   useEffect(() => {
     setMemoryText(subject.memory || '');
     setInstText(subject.instructions || '');
@@ -38,70 +37,56 @@ function SubjectScreen({domain, subject, onNavigate: _onNavigate, onUpdateSubjec
   };
 
   return (
-    <div style={{display: 'flex', height: '100%', overflow: 'hidden'}}>
+    <div className="flex h-full overflow-hidden">
       {/* Left column — topics */}
-      <div style={{flex: '1 1 60%', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: '1px solid var(--ws-edge-soft)'}}>
+      <div className="flex-[1_1_60%] flex flex-col overflow-hidden border-r border-ws-edge-soft border-solid">
         {/* Header */}
-        <div style={{padding: '20px 24px 16px'}}>
+        <div className="screen-header px-6 pt-5 pb-4">
           <Link
             to="/"
-            style={{
-              textDecoration: 'none',
-              display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none',
-              color: "var(--ws-muted)", fontSize: 12, cursor: 'pointer', padding: 0, marginBottom: 12,
-            }}
+            className="no-underline flex items-center gap-1.5 bg-transparent border-0 text-ws-muted text-xs cursor-pointer p-0 mb-3"
           >
             <ArrowLeft size={14} /> All Domains
           </Link>
 
-          <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
-            <h1 style={{fontSize: 22, fontWeight: 700, color: "var(--ws-ink)", margin: 0, flex: 1}}>{subject.name}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-[22px] font-bold text-ws-ink m-0 flex-1">{subject.name}</h1>
             <button
               type="button"
               onClick={() => setStarred(!starred)}
-              style={{background: 'none', border: 'none', cursor: 'pointer', color: starred ? "var(--ws-accent)" : "var(--ws-muted)", display: 'flex'}}
+              className={`bg-transparent border-0 cursor-pointer flex ${starred ? 'text-ws-accent' : 'text-ws-muted'}`}
             >
               <Star size={18} fill={starred ? 'currentColor' : 'none'} />
             </button>
             <button
               type="button"
-              style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex'}}
+              className="bg-transparent border-0 cursor-pointer text-ws-muted flex"
             >
               <MoreHorizontal size={18} />
             </button>
           </div>
 
           {subject.description && (
-            <p style={{color: "var(--ws-soft)", fontSize: 13, marginTop: 6, lineHeight: 1.5}}>{subject.description}</p>
+            <p className="text-ws-soft text-[13px] mt-1.5 leading-normal">{subject.description}</p>
           )}
         </div>
 
         {/* Chat input placeholder */}
-        <div style={{padding: '0 24px 16px'}}>
-          <div style={{
-            background: "var(--ws-bg)", border: '1px solid var(--ws-edge)',
-            borderRadius: 'var(--ws-r-lg)', padding: '12px 16px',
-            display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <MessageCircle size={16} style={{color: "var(--ws-muted)"}} />
-            <span style={{color: "var(--ws-muted)", fontSize: 13}}>How can I help you today?</span>
+        <div className="px-6 pb-4">
+          <div className="bg-ws-bg border border-ws-edge rounded-ws-lg px-4 py-3 flex items-center gap-2">
+            <MessageCircle size={16} className="text-ws-muted shrink-0" />
+            <span className="text-ws-muted text-[13px]">How can I help you today?</span>
           </div>
         </div>
 
         {/* Topics list */}
-        <div style={{flex: 1, overflowY: 'auto', padding: '0 12px'}}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 12px 10px', borderBottom: '1px solid var(--ws-edge-soft)', marginBottom: 12}}>
-            <span style={{fontSize: 11, fontWeight: 700, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: '0.05em'}}>Chapters</span>
+        <div className="flex-1 overflow-y-auto px-6">
+          <div className="flex justify-between items-center px-3 pt-1 pb-2.5 border-b border-ws-edge-soft border-solid mb-3">
+            <span className="text-[11px] font-bold text-ws-muted uppercase tracking-wider">Chapters</span>
             <button
               type="button"
               onClick={() => onOpenCreateModal('chapter', domain.id, subject.id)}
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-accent)",
-                fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, padding: '2px 6px',
-                borderRadius: "4px", transition: 'background 100ms ease'
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(16,185,129,0.1)"}
-              onMouseLeave={e => e.currentTarget.style.background = 'none'}
+              className="bg-transparent border-0 cursor-pointer text-ws-accent text-[11px] font-semibold flex items-center gap-1 px-1.5 py-0.5 rounded-ws-sm transition-colors duration-100 h-accent-tint"
             >
               <Plus size={12} /> New Chapter
             </button>
@@ -111,129 +96,44 @@ function SubjectScreen({domain, subject, onNavigate: _onNavigate, onUpdateSubjec
             return (
               <div
                 key={ch.id}
-                style={{
-                  background: "var(--ws-bg)",
-                  border: '1px solid var(--ws-edge-soft)',
-                  borderRadius: 'var(--ws-r-lg)',
-                  marginBottom: 20,
-                  overflow: 'hidden',
-                  transition: 'border-color 150ms ease, background-color 150ms ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = "var(--ws-surface-2)";
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = "var(--ws-line)";
-                }}
+                className="bg-ws-bg border border-ws-edge-soft border-solid rounded-ws-lg mb-5 overflow-hidden transition-colors duration-150 h-bd-surface-2"
               >
                 {/* Chapter Header */}
-                <div
-                  style={{
-                    background: "var(--ws-surface-2)",
-                    padding: '14px 16px',
-                    borderBottom: '1px solid var(--ws-edge-soft)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 12,
-                  }}
-                >
-                  <div style={{minWidth: 0, flex: 1, display: 'flex', gap: 10, alignItems: 'center'}}>
-                    {/* Visual Badge representing Chapter Index */}
-                    <div
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: '50%',
-                        background: "var(--ws-bg)",
-                        border: '1px solid var(--ws-edge-soft)',
-                        color: "var(--ws-ink)",
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 11,
-                        fontWeight: 700,
-                        flexShrink: 0
-                      }}
-                    >
+                <div className="bg-ws-surface-2 px-4 py-3.5 border-b border-ws-edge-soft border-solid flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1 flex gap-2.5 items-center">
+                    <div className="w-7 h-7 rounded-full bg-ws-bg border border-ws-edge-soft border-solid text-ws-ink flex items-center justify-center text-[11px] font-bold shrink-0">
                       {idx + 1}
                     </div>
 
-                    <div style={{minWidth: 0, flex: 1}}>
+                    <div className="min-w-0 flex-1">
                       <Link
                         to="/chapter/$domainId/$subjectId/$chapterId"
                         params={{ domainId: domain.id, subjectId: subject.id, chapterId: ch.id }}
-                        style={{
-                          textDecoration: 'none',
-                          fontSize: 14,
-                          fontWeight: 700,
-                          color: "var(--ws-ink)",
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          transition: 'color 150ms ease'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.color = "var(--ws-accent)"}
-                        onMouseLeave={e => e.currentTarget.style.color = "var(--ws-ink)"}
+                        className="no-underline text-sm font-bold text-ws-ink cursor-pointer inline-flex items-center gap-1.5 transition-colors duration-150 h-cl-accent"
                       >
                         {ch.name}
                       </Link>
                       {ch.description && (
-                        <div style={{fontSize: 11, color: "var(--ws-muted)", marginTop: 2, lineHeight: 1.4}}>
+                        <div className="text-[11px] text-ws-muted mt-0.5 leading-[1.4]">
                           {ch.description}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  <div style={{display: 'flex', gap: 6, flexShrink: 0}}>
+                  <div className="flex gap-1.5 shrink-0">
                     <button
                       type="button"
                       onClick={() => onOpenCreateModal('topic', domain.id, subject.id, ch.id)}
                       title="Add new topic or concept inside this chapter"
-                      style={{
-                        background: 'none',
-                        border: '1px solid var(--ws-edge-soft)',
-                        borderRadius: "4px",
-                        color: "var(--ws-accent)",
-                        fontSize: 11,
-                        fontWeight: 600,
-                        padding: '4px 8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        transition: 'all 150ms ease',
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.borderColor = "var(--ws-accent)";
-                        e.currentTarget.style.background = "rgba(16,185,129,0.1)";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = "var(--ws-line)";
-                        e.currentTarget.style.background = 'none';
-                      }}
+                      className="bg-transparent border border-ws-edge-soft border-solid rounded-ws-sm text-ws-accent text-[11px] font-semibold px-2 py-1 cursor-pointer flex items-center gap-1 transition-all duration-150 h-bd-accent h-accent-tint"
                     >
                       <Plus size={11} /> Topic
                     </button>
                     <Link
                       to="/chapter/$domainId/$subjectId/$chapterId"
                       params={{ domainId: domain.id, subjectId: subject.id, chapterId: ch.id }}
-                      style={{
-                        textDecoration: 'none',
-                        background: 'none',
-                        border: '1px solid var(--ws-edge-soft)',
-                        borderRadius: "4px",
-                        color: "var(--ws-soft)",
-                        fontSize: 11,
-                        fontWeight: 600,
-                        padding: '4px 8px',
-                        cursor: 'pointer',
-                        transition: 'all 150ms ease',
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.background = "var(--ws-surface-2)"}
-                      onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                      className="no-underline bg-transparent border border-ws-edge-soft border-solid rounded-ws-sm text-ws-soft text-[11px] font-semibold px-2 py-1 cursor-pointer transition-all duration-150 h-surface-2"
                     >
                       Open Chapter
                     </Link>
@@ -241,72 +141,31 @@ function SubjectScreen({domain, subject, onNavigate: _onNavigate, onUpdateSubjec
                 </div>
 
                 {/* Topics list inside the card */}
-                <div style={{display: 'flex', flexDirection: 'column'}}>
+                <div className="flex flex-col">
                   {ch.topics.map((topic, tIdx) => (
                     <Link
                       key={topic.id}
                       to="/topic/$domainId/$subjectId/$chapterId/$topicId"
                       params={{ domainId: domain.id, subjectId: subject.id, chapterId: ch.id, topicId: topic.id }}
-                      style={{
-                        textDecoration: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        width: '100%',
-                        padding: '12px 16px',
-                        background: 'none',
-                        border: 'none',
-                        borderBottom: tIdx < ch.topics.length - 1 ? '1px solid var(--ws-edge-soft)' : 'none',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        color: "var(--ws-ink)",
-                        transition: 'background 100ms ease',
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = "var(--ws-surface-2)";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = 'none';
-                      }}
+                      className={`no-underline flex items-center gap-2.5 w-full px-4 py-3 bg-transparent border-0 text-left cursor-pointer text-ws-ink transition-colors duration-100 h-surface-2 ${tIdx < ch.topics.length - 1 ? 'border-b border-ws-edge-soft border-solid' : ''}`}
                     >
-                      <div
-                        style={{
-                          width: 20,
-                          height: 20,
-                          borderRadius: "4px",
-                          background: "var(--ws-bg)",
-                          border: '1px solid var(--ws-edge-soft)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: "var(--ws-muted)",
-                          flexShrink: 0
-                        }}
-                      >
+                      <div className="w-5 h-5 rounded-ws-sm bg-ws-bg border border-ws-edge-soft border-solid flex items-center justify-center text-ws-muted shrink-0">
                         <FileCode size={12} />
                       </div>
-                      <div style={{flex: 1, minWidth: 0}}>
-                        <div style={{fontSize: 13, fontWeight: 500, color: "var(--ws-ink)"}}>{topic.name}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-medium text-ws-ink">{topic.name}</div>
                         {topic.lastMessage && (
-                          <div style={{fontSize: 10, color: "var(--ws-muted)", marginTop: 2}}>{topic.lastMessage}</div>
+                          <div className="text-[10px] text-ws-muted mt-0.5">{topic.lastMessage}</div>
                         )}
                       </div>
-                      <span style={{
-                        fontSize: 10,
-                        padding: '2px 6px',
-                        background: "var(--ws-bg)",
-                        color: "var(--ws-muted)",
-                        border: '1px solid var(--ws-edge-soft)',
-                        borderRadius: 3,
-                        fontWeight: 500
-                      }}>
+                      <span className="text-[10px] px-1.5 py-0.5 bg-ws-bg text-ws-muted border border-ws-edge-soft border-solid rounded-[3px] font-medium">
                         Open Exercise
                       </span>
                     </Link>
                   ))}
                   {ch.topics.length === 0 && (
-                    <div style={{padding: '24px 16px', textAlign: 'center', color: "var(--ws-muted)", fontSize: 12, fontStyle: 'italic'}}>
-                      No topics inside this chapter yet. Click "+ Topic" to add one!
+                    <div className="px-4 py-6 text-center text-ws-muted text-xs italic">
+                      No topics inside this chapter yet. Click &quot;+ Topic&quot; to add one!
                     </div>
                   )}
                 </div>
@@ -318,32 +177,7 @@ function SubjectScreen({domain, subject, onNavigate: _onNavigate, onUpdateSubjec
           <button
             type="button"
             onClick={() => onOpenCreateModal('chapter', domain.id, subject.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              width: '100%',
-              padding: '14px',
-              background: 'none',
-              border: '1px dashed var(--ws-edge)',
-              borderRadius: 'var(--ws-r-lg)',
-              color: "var(--ws-accent)",
-              cursor: 'pointer',
-              fontSize: 13,
-              fontWeight: 600,
-              marginTop: 8,
-              marginBottom: 24,
-              transition: 'all 150ms ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = "var(--ws-accent)";
-              e.currentTarget.style.background = "rgba(16,185,129,0.1)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = "var(--ws-surface-2)";
-              e.currentTarget.style.background = 'none';
-            }}
+            className="flex items-center justify-center gap-2 w-full p-3.5 bg-transparent border border-dashed border-ws-edge border-solid rounded-ws-lg text-ws-accent cursor-pointer text-[13px] font-semibold mt-2 mb-6 transition-all duration-150 h-bd-accent h-accent-tint"
           >
             <Plus size={14} /> Add New Chapter
           </button>
@@ -351,163 +185,131 @@ function SubjectScreen({domain, subject, onNavigate: _onNavigate, onUpdateSubjec
       </div>
 
       {/* Right column — metadata + files */}
-      <div style={{flex: '1 1 40%', overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 16}}>
+      <div className="flex-[1_1_40%] overflow-y-auto p-5 flex flex-col gap-4">
         {/* Memory card */}
-        <div style={{
-          background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-          borderRadius: 'var(--ws-r-lg)', padding: 16,
-        }}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
-              <span style={{fontWeight: 600, color: "var(--ws-ink)", fontSize: 13}}>Memory</span>
-              <span style={{
-                fontSize: 10, color: "var(--ws-muted)", background: "var(--ws-bg)",
-                border: '1px solid var(--ws-edge-soft)', padding: '1px 6px', borderRadius: "4px",
-                display: 'flex', alignItems: 'center', gap: 3
-              }}>
-                <Lock size={10} /> Only you
-              </span>
-            </div>
-            {!isEditingMemory && (
+        <div className="screen-section">
+          <div className="bg-ws-bg border border-ws-edge-soft border-solid rounded-ws-lg p-4">
+            <div className="flex justify-between items-center mb-2.5">
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-ws-ink text-[13px]">Memory</span>
+                <span className="text-[10px] text-ws-muted bg-ws-bg border border-ws-edge-soft border-solid px-1.5 py-[1px] rounded-ws-sm flex items-center gap-[3px]">
+                  <Lock size={10} /> Only you
+                </span>
+              </div>
+              {!isEditingMemory && (
               <button
-                type="button"
-                onClick={() => setIsEditingMemory(true)}
-                style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', padding: 2}}
-                title="Edit Memory"
-              >
-                <Pencil size={13} />
-              </button>
+                  type="button"
+                  onClick={() => setIsEditingMemory(true)}
+                  className="bg-transparent border-0 cursor-pointer text-ws-muted flex p-0.5"
+                  title="Edit Memory"
+                >
+                  <Pencil size={13} />
+                </button>
+              )}
+            </div>
+
+            {isEditingMemory ? (
+              <div className="flex flex-col gap-2">
+                <textarea
+                  value={memoryText}
+                  onChange={e => setMemoryText(e.target.value)}
+                  className="w-full min-h-20 p-2 bg-ws-bg border border-[var(--ws-glow)] rounded-ws-md text-ws-ink text-xs outline-none resize-y"
+                  autoFocus
+                />
+                <div className="flex gap-1.5 justify-end">
+                  <button
+                    type="button"
+                    onClick={handleSaveMemory}
+                    className="px-2.5 py-1 bg-ws-accent text-ws-bg font-semibold border-0 rounded-ws-sm cursor-pointer text-[11px] flex items-center gap-1"
+                  >
+                    <Save size={10} /> Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setMemoryText(subject.memory || ''); setIsEditingMemory(false); }}
+                    className="px-2.5 py-1 bg-transparent border border-ws-edge-soft border-solid text-ws-soft rounded-ws-sm cursor-pointer text-[11px] flex items-center gap-1"
+                  >
+                    <X size={10} /> Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-ws-soft leading-normal m-0 whitespace-pre-wrap">
+                {subject.memory || 'No memory recorded. Click the pencil icon to align the learning tutor.'}
+              </p>
             )}
           </div>
-          
-          {isEditingMemory ? (
-            <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
-              <textarea
-                value={memoryText}
-                onChange={e => setMemoryText(e.target.value)}
-                style={{
-                  width: '100%', minHeight: 80, padding: 8, background: "var(--ws-bg)",
-                  border: '1px solid var(--ws-glow)', borderRadius: "6px",
-                  color: "var(--ws-ink)", fontSize: 12, outline: 'none', fontFamily: 'inherit',
-                  resize: 'vertical'
-                }}
-                autoFocus
-              />
-              <div style={{display: 'flex', gap: 6, justifyContent: 'flex-end'}}>
-                <button
-                  type="button"
-                  onClick={handleSaveMemory}
-                  style={{
-                    padding: '4px 10px', background: "var(--ws-accent)", color: "var(--ws-bg)",
-                    fontWeight: 600, border: 'none', borderRadius: "4px", cursor: 'pointer',
-                    fontSize: 11, display: 'flex', alignItems: 'center', gap: 4
-                  }}
-                >
-                  <Save size={10} /> Save
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setMemoryText(subject.memory || ''); setIsEditingMemory(false); }}
-                  style={{
-                    padding: '4px 10px', background: 'none', border: '1px solid var(--ws-edge-soft)',
-                    color: "var(--ws-soft)", borderRadius: "4px", cursor: 'pointer',
-                    fontSize: 11, display: 'flex', alignItems: 'center', gap: 4
-                  }}
-                >
-                  <X size={10} /> Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p style={{fontSize: 12, color: "var(--ws-soft)", lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap'}}>
-              {subject.memory || 'No memory recorded. Click the pencil icon to align the learning tutor.'}
-            </p>
-          )}
         </div>
 
         {/* Instructions card */}
-        <div style={{
-          background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-          borderRadius: 'var(--ws-r-lg)', padding: 16,
-        }}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10}}>
-            <span style={{fontWeight: 600, color: "var(--ws-ink)", fontSize: 13}}>Instructions</span>
-            {!isEditingInst && (
-              <button
-                type="button"
-                onClick={() => setIsEditingInst(true)}
-                style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', padding: 2}}
-                title="Edit Instructions"
-              >
-                <Pencil size={13} />
-              </button>
+        <div className="screen-section">
+          <div className="bg-ws-bg border border-ws-edge-soft border-solid rounded-ws-lg p-4">
+            <div className="flex justify-between items-center mb-2.5">
+              <span className="font-semibold text-ws-ink text-[13px]">Instructions</span>
+              {!isEditingInst && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingInst(true)}
+                  className="bg-transparent border-0 cursor-pointer text-ws-muted flex p-0.5"
+                  title="Edit Instructions"
+                >
+                  <Pencil size={13} />
+                </button>
+              )}
+            </div>
+
+            {isEditingInst ? (
+              <div className="flex flex-col gap-2">
+                <textarea
+                  value={instText}
+                  onChange={e => setInstText(e.target.value)}
+                  className="w-full min-h-20 p-2 bg-ws-bg border border-[var(--ws-glow)] rounded-ws-md text-ws-ink text-xs outline-none resize-y"
+                  autoFocus
+                />
+                <div className="flex gap-1.5 justify-end">
+                  <button
+                    type="button"
+                    onClick={handleSaveInst}
+                    className="px-2.5 py-1 bg-ws-accent text-ws-bg font-semibold border-0 rounded-ws-sm cursor-pointer text-[11px] flex items-center gap-1"
+                  >
+                    <Save size={10} /> Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setInstText(subject.instructions || ''); setIsEditingInst(false); }}
+                    className="px-2.5 py-1 bg-transparent border border-ws-edge-soft border-solid text-ws-soft rounded-ws-sm cursor-pointer text-[11px] flex items-center gap-1"
+                  >
+                    <X size={10} /> Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-ws-soft leading-normal m-0 whitespace-pre-wrap">
+                {subject.instructions || 'Define study focus and workspace constraints here.'}
+              </p>
             )}
           </div>
-          
-          {isEditingInst ? (
-            <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
-              <textarea
-                value={instText}
-                onChange={e => setInstText(e.target.value)}
-                style={{
-                  width: '100%', minHeight: 80, padding: 8, background: "var(--ws-bg)",
-                  border: '1px solid var(--ws-glow)', borderRadius: "6px",
-                  color: "var(--ws-ink)", fontSize: 12, outline: 'none', fontFamily: 'inherit',
-                  resize: 'vertical'
-                }}
-                autoFocus
-              />
-              <div style={{display: 'flex', gap: 6, justifyContent: 'flex-end'}}>
-                <button
-                  type="button"
-                  onClick={handleSaveInst}
-                  style={{
-                    padding: '4px 10px', background: "var(--ws-accent)", color: "var(--ws-bg)",
-                    fontWeight: 600, border: 'none', borderRadius: "4px", cursor: 'pointer',
-                    fontSize: 11, display: 'flex', alignItems: 'center', gap: 4
-                  }}
-                >
-                  <Save size={10} /> Save
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setInstText(subject.instructions || ''); setIsEditingInst(false); }}
-                  style={{
-                    padding: '4px 10px', background: 'none', border: '1px solid var(--ws-edge-soft)',
-                    color: "var(--ws-soft)", borderRadius: "4px", cursor: 'pointer',
-                    fontSize: 11, display: 'flex', alignItems: 'center', gap: 4
-                  }}
-                >
-                  <X size={10} /> Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p style={{fontSize: 12, color: "var(--ws-soft)", lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap'}}>
-              {subject.instructions || 'Define study focus and workspace constraints here.'}
-            </p>
-          )}
         </div>
 
         {/* Files grid */}
-        <div>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12}}>
-            <span style={{fontWeight: 600, color: "var(--ws-ink)"}}>Files</span>
+        <div className="screen-section">
+          <div className="flex justify-between items-center mb-3">
+            <span className="font-semibold text-ws-ink">Files</span>
             <Link
               to="/notebook/$domainId/$subjectId"
               params={{ domainId: domain.id, subjectId: subject.id }}
-              style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex'}}
+              className="bg-transparent border-0 cursor-pointer text-ws-muted flex"
               title="Add files"
             >
               <Plus size={16} />
             </Link>
           </div>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8}}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2">
             {subject.resources.map(res => (
               <ResourceCard key={res.id} resource={res} onRemove={() => onRemoveResource(domain.id, subject.id, res.id)} />
             ))}
             {subject.resources.length === 0 && (
-              <div style={{gridColumn: '1 / -1', padding: 24, textAlign: 'center', color: "var(--ws-muted)", fontSize: 12}}>
+              <div className="col-span-full p-6 text-center text-ws-muted text-xs">
                 No files yet. Click + to add resources.
               </div>
             )}
@@ -529,32 +331,20 @@ function ResourceCard({resource, onRemove}: {resource: Resource, onRemove: () =>
   const color = typeColors[resource.fileType] || "var(--ws-muted)";
 
   return (
-    <div style={{
-      background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-      borderRadius: "6px", padding: 12,
-      display: 'flex', flexDirection: 'column', gap: 6,
-      position: 'relative', transition: 'border-color 150ms ease',
-    }}
-    >
+    <div className="bg-ws-bg border border-ws-edge-soft border-solid rounded-ws-md p-3 flex flex-col gap-1.5 relative transition-colors duration-150">
       <button
         type="button"
         onClick={e => { e.stopPropagation(); onRemove(); }}
-        style={{
-          position: 'absolute', top: 4, right: 4, background: 'none', border: 'none',
-          color: "var(--ws-muted)", cursor: 'pointer', display: 'flex', padding: 2,
-          transition: 'color 100ms ease'
-        }}
-        onMouseEnter={e => e.currentTarget.style.color = "#ef4444"}
-        onMouseLeave={e => e.currentTarget.style.color = "var(--ws-muted)"}
+        className="absolute top-1 right-1 bg-transparent border-0 text-ws-muted cursor-pointer flex p-0.5 transition-colors duration-100 h-cl-danger"
         title="Remove resource"
       >
         <X size={11} />
       </button>
 
-      <div style={{fontSize: 12, fontWeight: 500, color: "var(--ws-ink)", wordBreak: 'break-all', lineHeight: 1.3, paddingRight: 12}}>
+      <div className="text-xs font-medium text-ws-ink break-all leading-[1.3] pr-3">
         {resource.name}
       </div>
-      <div style={{fontSize: 10, color: "var(--ws-muted)"}}>
+      <div className="text-[10px] text-ws-muted">
         {resource.lines.toLocaleString()} lines
       </div>
       <span style={{

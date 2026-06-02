@@ -20,20 +20,21 @@ function TopicRoute() {
   const [practiceNavCollapsed, setPracticeNavCollapsed] = useState(false)
   const [tab, setTab] = useState<FlowTab>('explanation')
 
-  const { data: catalogProblems } = useSuspenseQuery(problemsQueries.catalog())
+  const domainKey = domainId === 'go-programming' ? 'go' : domainId === 'robotics' ? 'robotics' : undefined
+  const { data: catalogProblems } = useSuspenseQuery(problemsQueries.catalog(domainKey))
   const domains = useWorkspaceStore(s => s.domains)
   const submitPracticeAttempt = useWorkspaceStore(s => s.submitPracticeAttempt)
   const chatSessionId = useWorkspaceStore(s => s.chatSessionId)
 
   const store = useMemo<Store | null>(() => {
-    const goDomain = domains.find(d => d.id === 'go-programming')
-    const goSubject = goDomain?.subjects.find(s => s.id === 'go-fundamentals')
-    if (!goSubject) return null
+    const domain = domains.find(d => d.id === domainId)
+    const subject = domain?.subjects.find(s => s.id === subjectId)
+    if (!subject) return null
     return {
-      chapters: goSubject.chapters.map(ch => ({ id: ch.id, title: ch.name })),
+      chapters: subject.chapters.map(ch => ({ id: ch.id, title: ch.name })),
       problems: catalogProblems.problems
     }
-  }, [catalogProblems, domains])
+  }, [catalogProblems, domains, domainId, subjectId])
 
   const [pid, setPid] = useState('')
   const [query, setQuery] = useState('')

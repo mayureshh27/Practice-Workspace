@@ -276,13 +276,13 @@ function LeftNav() {
   };
 
   return (
-    <nav className={`flex flex-col bg-ws-bg border-r border-ws-line transition-[width] duration-300 ${collapsed ? 'w-12' : 'w-[220px]'}`} aria-label="Domain navigation" onClick={closeContext}>
+    <nav className={`flex flex-col bg-ws-bg border-r border-ws-line transition-[width] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] ${collapsed ? 'w-12' : 'w-[220px]'}`} aria-label="Domain navigation" onClick={closeContext}>
       {/* Integrated Platform Header & Collapse Switch */}
       {collapsed ? (
         <div className="flex items-center justify-center h-11 shrink-0">
           <button
             type="button"
-            className="flex items-center justify-center w-7 h-7 text-ws-muted rounded hover:text-ws-ink hover:bg-ws-surface-2 transition-colors"
+            className="press transition-colors flex items-center justify-center w-7 h-7 text-ws-muted rounded hover:text-ws-ink hover:bg-ws-surface-2"
             onClick={toggleLeftCollapsed}
             title="Expand sidebar"
           >
@@ -294,7 +294,7 @@ function LeftNav() {
           <span className="font-bold text-[13px] text-ws-ink tracking-tight">Practice Workspace</span>
           <button
             type="button"
-            className="flex items-center justify-center w-7 h-7 text-ws-muted rounded hover:text-ws-ink hover:bg-ws-surface-2 transition-colors"
+            className="press transition-colors flex items-center justify-center w-7 h-7 text-ws-muted rounded hover:text-ws-ink hover:bg-ws-surface-2"
             onClick={toggleLeftCollapsed}
             title="Collapse sidebar"
           >
@@ -306,10 +306,10 @@ function LeftNav() {
       {/* Search + nav arrows */}
       {!collapsed && (
         <div className="flex items-center gap-1 p-2">
-          <button type="button" className={`flex items-center justify-center rounded hover:bg-ws-surface-2 text-ws-muted hover:text-ws-ink transition-colors w-6 h-6 ${canGoBack ? 'opacity-100' : 'opacity-30'}`} onClick={onBack} disabled={!canGoBack} title="Back">
+          <button type="button" className={`press transition-colors flex items-center justify-center rounded hover:bg-ws-surface-2 text-ws-muted hover:text-ws-ink w-6 h-6 ${canGoBack ? 'opacity-100' : 'opacity-30'}`} onClick={onBack} disabled={!canGoBack} title="Back">
             <ChevronLeft size={14} />
           </button>
-          <button type="button" className={`flex items-center justify-center rounded hover:bg-ws-surface-2 text-ws-muted hover:text-ws-ink transition-colors w-6 h-6 ${canGoForward ? 'opacity-100' : 'opacity-30'}`} onClick={onForward} disabled={!canGoForward} title="Forward">
+          <button type="button" className={`press transition-colors flex items-center justify-center rounded hover:bg-ws-surface-2 text-ws-muted hover:text-ws-ink w-6 h-6 ${canGoForward ? 'opacity-100' : 'opacity-30'}`} onClick={onForward} disabled={!canGoForward} title="Forward">
             <ChevronRight size={14} />
           </button>
           <div className="relative flex-1 min-w-0 ml-1">
@@ -319,7 +319,7 @@ function LeftNav() {
               placeholder="Search..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-6 pr-1.5 py-1 text-[13px] bg-ws-bg text-ws-ink border border-ws-line rounded outline-none focus:border-ws-success/50 focus:ring-1 focus:ring-ws-success/50 placeholder-zinc-600 transition-all"
+              className="w-full pl-6 pr-1.5 py-1 text-[13px] bg-ws-bg text-ws-ink border border-ws-line rounded outline-none focus:border-ws-success/50 focus:ring-1 focus:ring-ws-success/50 placeholder-zinc-600"
             />
           </div>
         </div>
@@ -335,7 +335,7 @@ function LeftNav() {
                 type="button"
                 onClick={() => setShowArchived(!showArchived)}
                 title={showArchived ? 'Hide archived' : 'Show archived'}
-                className={`flex p-0.5 rounded hover:bg-ws-surface-2 transition-colors ${showArchived ? 'text-ws-success' : 'text-ws-muted'}`}
+                className={`press transition-colors flex p-0.5 rounded hover:bg-ws-surface-2 ${showArchived ? 'text-ws-success' : 'text-ws-muted'}`}
               >
                 <Archive size={14} />
               </button>
@@ -343,7 +343,7 @@ function LeftNav() {
                 type="button"
                 onClick={() => onOpenCreateModal('domain')}
                 title="New domain"
-                className="flex p-0.5 rounded hover:bg-ws-surface-2 text-ws-muted transition-colors"
+                className="press transition-colors flex p-0.5 rounded hover:bg-ws-surface-2 text-ws-muted"
               >
                 <Plus size={14} />
               </button>
@@ -360,15 +360,15 @@ function LeftNav() {
                 {/* Topmost Domain Folder */}
                 <Link
                   to="/"
-                  className={`no-underline flex items-center justify-center h-8 w-8 mx-auto cursor-pointer rounded mb-2 transition-colors ${isDomainsActive ? 'bg-ws-accent/10' : 'bg-transparent hover:bg-ws-surface-2'}`}
+                  className={`press no-underline flex items-center justify-center h-8 w-8 mx-auto rounded mb-2 transition-colors ${isDomainsActive ? 'bg-ws-accent/10' : 'bg-transparent hover:bg-ws-surface-2'}`}
                   title="All Domains"
                 >
                   <Folder size={16} className={isDomainsActive ? 'text-ws-accent' : 'text-ws-soft'} />
                 </Link>
 
-                {/* Global search launcher icon */}
+                {/* Global search launcher icon — no animation, keyboard action */}
                 <div
-                  className="flex items-center justify-center h-8 w-8 mx-auto cursor-pointer rounded mb-3 border-b border-ws-edge-soft pb-2 bg-transparent hover:bg-ws-surface-2 transition-colors"
+                  className="flex items-center justify-center h-8 w-8 mx-auto rounded mb-3 border-b border-ws-edge-soft pb-2 bg-transparent hover:bg-ws-surface-2"
                   onClick={() => onSearchTrigger?.()}
                   title="Search specializations and concepts (Ctrl+K)"
                 >
@@ -421,14 +421,14 @@ function LeftNav() {
                   type="button"
                   onClick={e => { e.stopPropagation(); onOpenCreateModal('subject', domain.id); }}
                   title="Add subject"
-                  className="bg-transparent border-none cursor-pointer text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-all"
+                  className="press bg-transparent border-none text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-colors"
                 >
                   <Plus size={14} />
                 </button>
                 <button
                   type="button"
                   onClick={e => handleContextMenu(e, domain.id)}
-                  className="bg-transparent border-none cursor-pointer text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-all"
+                  className="press bg-transparent border-none text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-colors"
                 >
                   <MoreHorizontal size={14} />
                 </button>
@@ -458,7 +458,7 @@ function LeftNav() {
                         type="button"
                         onClick={e => { e.stopPropagation(); onOpenCreateModal('chapter', domain.id, subject.id); }}
                         title="Add chapter"
-                        className="bg-transparent border-none cursor-pointer text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-all"
+                        className="press bg-transparent border-none text-ws-muted hover:text-ws-accent flex shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-colors"
                       >
                         <Plus size={14} />
                       </button>
@@ -529,7 +529,7 @@ function LeftNav() {
             className={`ws-nav-item no-underline ${location.pathname.startsWith('/notebook') ? 'active' : ''} ${collapsed ? 'justify-center py-2' : ''}`}
             title="Notebooks"
           >
-            <BookOpen size={14} />
+            <BookOpen size={collapsed ? 16 : 14} />
             {!collapsed && <span className="text-[13px] font-medium">Notebooks</span>}
           </Link>
           <Link
@@ -537,7 +537,7 @@ function LeftNav() {
             className={`ws-nav-item no-underline ${location.pathname.startsWith('/workflow') ? 'active' : ''} ${collapsed ? 'justify-center py-2' : ''}`}
             title="Workflows"
           >
-            <Workflow size={14} />
+            <Workflow size={collapsed ? 16 : 14} />
             {!collapsed && <span className="text-[13px] font-medium">Workflows</span>}
           </Link>
           <Link
@@ -545,7 +545,7 @@ function LeftNav() {
             className={`ws-nav-item no-underline ${location.pathname.startsWith('/artifact') ? 'active' : ''} ${collapsed ? 'justify-center py-2' : ''}`}
             title="Artifacts"
           >
-            <LayoutGrid size={14} />
+            <LayoutGrid size={collapsed ? 16 : 14} />
             {!collapsed && <span className="text-[13px] font-medium">Artifacts</span>}
           </Link>
           <Link
@@ -553,7 +553,7 @@ function LeftNav() {
             className={`ws-nav-item no-underline ${location.pathname.startsWith('/graph') ? 'active' : ''} ${collapsed ? 'justify-center py-2' : ''}`}
             title="Knowledge Graph"
           >
-            <GitBranch size={14} />
+            <GitBranch size={collapsed ? 16 : 14} />
             {!collapsed && <span className="text-[13px] font-medium">Knowledge Graph</span>}
           </Link>
         </div>
@@ -578,7 +578,7 @@ function LeftNav() {
                 {showRecentMenu && (
                   <>
                     <div className="fixed inset-0 z-[999]" onClick={(e) => { e.stopPropagation(); setShowRecentMenu(false); }} />
-                    <div className="absolute right-0 top-5.5 z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[120px] shadow-2xl" onClick={e => e.stopPropagation()}>
+                    <div className="pop-pop origin-trigger-tr absolute right-0 top-5.5 z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[120px] shadow-2xl" onClick={e => e.stopPropagation()}>
                       <div className="px-2 py-1.5 text-[10px] text-ws-muted uppercase tracking-wider">Group by</div>
                       {['None', 'Date', 'Project'].map(g => (
                          <button
@@ -613,7 +613,7 @@ function LeftNav() {
         <>
           <div className="fixed inset-0 z-[999]" onClick={closeContext} />
           <div 
-            className="fixed z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[140px] shadow-2xl"
+            className="fixed z-[1000] bg-ws-bg border border-ws-line rounded-md p-1 min-w-[140px] shadow-2xl fade-in"
             style={{ left: contextMenu.x, top: contextMenu.y }}
           >
             {[
@@ -626,7 +626,7 @@ function LeftNav() {
                 key={item.label}
                 type="button"
                 onClick={item.action}
-                className={`flex items-center gap-2 w-full px-2.5 py-1.5 bg-transparent border-none rounded text-[13px] cursor-pointer text-left transition-colors hover:bg-ws-surface-2 ${item.danger ? 'text-[#ef4444]' : 'text-ws-soft'}`}
+                className={`press flex items-center gap-2 w-full px-2.5 py-1.5 bg-transparent border-none rounded text-[13px] text-left transition-colors hover:bg-ws-surface-2 ${item.danger ? 'text-[#ef4444]' : 'text-ws-soft'}`}
               >
                 <item.icon size={14} /> {item.label}
               </button>

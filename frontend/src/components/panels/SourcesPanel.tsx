@@ -1,7 +1,10 @@
-import {FileText, Search, ChevronDown, ChevronRight, ToggleLeft, ToggleRight} from 'lucide-react';
+import {FileText, Search, ChevronDown, ChevronRight} from 'lucide-react';
 import {useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {sourcesQueries} from '../../api/queries';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
 
 function SourcesPanel() {
   const {data: sources = [], isLoading} = useQuery(sourcesQueries.list());
@@ -25,67 +28,61 @@ function SourcesPanel() {
   const totalChunks = sources.filter(s => localContext[s.id] ?? s.inContext).reduce((sum, s) => sum + s.chunkCount, 0);
 
   if (isLoading) {
-    return <div className="flex flex-col h-full p-4 gap-4"><p className="text-ws-muted text-sm">Loading sources...</p></div>;
+    return <div className="flex flex-col h-full p-4 gap-4"><p className="text-muted-foreground text-sm">Loading sources...</p></div>;
   }
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <p className="text-ws-muted text-sm m-0">{contextCount} sources · {totalChunks} chunks active</p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground text-sm m-0">{contextCount} sources · {totalChunks} chunks active</p>
       </div>
 
-      <div style={{position: 'relative'}}>
-        <Search size={12} style={{position: 'absolute', left: 8, top: 9, color: "var(--ws-muted)"}} />
-        <input
+      <div className="relative">
+        <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <Input
           type="text"
-          className="flex-1 bg-ws-surface border border-ws-line rounded px-3 py-2 text-ws-ink outline-none focus:border-ws-success transition-colors"
-          style={{paddingLeft: 28, width: '100%'}}
           placeholder="Filter sources..."
           value={filter}
           onChange={e => setFilter(e.target.value)}
+          className="pl-7"
         />
       </div>
-      
+
       <div className="flex flex-col gap-3 overflow-y-auto flex-1">
         {filtered.map(source => {
           const inContext = localContext[source.id] ?? source.inContext;
           return (
-            <div key={source.id} className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2">
+            <div key={source.id} className="bg-card border border-border rounded-md p-3 flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => toggleExpand(source.id)}
-                  style={{background: 'none', border: 'none', padding: 0, color: "var(--ws-muted)", cursor: 'pointer', display: 'flex'}}
+                  className="bg-transparent border-0 p-0 text-muted-foreground cursor-pointer flex"
+                  aria-label={expandedId === source.id ? 'Collapse' : 'Expand'}
                 >
                   {expandedId === source.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                 </button>
-                <FileText size={14} className="text-ws-muted" />
-                <span className="text-ws-ink font-medium">{source.title}</span>
-                <button
-                  type="button"
-                  onClick={() => toggleContext(source.id)}
-                  style={{background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginLeft: 'auto', display: 'flex', color: inContext ? "var(--ws-accent)" : "var(--ws-muted)"}}
-                  title={inContext ? 'Remove from context' : 'Add to context'}
-                >
-                  {inContext ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
-                </button>
+                <FileText size={14} className="text-muted-foreground" />
+                <span className="text-foreground font-medium flex-1">{source.title}</span>
+                <div className="flex items-center gap-1.5 ml-auto">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {inContext ? 'In context' : 'Off'}
+                  </span>
+                  <Switch
+                    checked={inContext}
+                    onCheckedChange={() => toggleContext(source.id)}
+                    aria-label={inContext ? 'Remove from context' : 'Add to context'}
+                  />
+                </div>
               </div>
-              <div className="flex items-center justify-between text-ws-muted text-sm">
+              <div className="flex items-center justify-between text-muted-foreground text-sm">
                 <span>{source.type}</span>
                 <span>{source.chunkCount} chunks</span>
               </div>
               {expandedId === source.id && (
-                <div style={{marginTop: 4, display: 'flex', flexDirection: 'column', gap: 6}}>
+                <div className="mt-1 flex flex-col gap-1.5">
                   {source.chunks.map(chunk => (
-                    <div key={chunk.id} style={{
-                      padding: '6px 8px',
-                      background: "var(--ws-bg)",
-                      borderRadius: "4px",
-                      border: '1px solid var(--ws-edge-soft)',
-                      fontSize: 'var(--ws-type-xs)',
-                      color: "var(--ws-soft)",
-                      lineHeight: 1.4,
-                    }}>
+                    <div key={chunk.id} className="px-2 py-1.5 bg-background rounded border border-border text-xs text-muted-foreground leading-[1.4]">
                       {chunk.text}
                     </div>
                   ))}
@@ -95,7 +92,7 @@ function SourcesPanel() {
           );
         })}
         {filtered.length === 0 && (
-          <div style={{color: "var(--ws-muted)", fontSize: '11px', textAlign: 'center', padding: 'var(--ws-sp-6) 0'}}>
+          <div className={cn("text-muted-foreground text-[11px] text-center py-6")}>
             {isLoading ? 'Loading...' : `No sources match "${filter}"`}
           </div>
         )}

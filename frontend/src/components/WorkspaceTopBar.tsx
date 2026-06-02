@@ -1,18 +1,30 @@
-import { Search, Settings, Moon, Sun, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Settings, Moon, Sun, ChevronLeft, ChevronRight, PanelBottom } from 'lucide-react';
 import { Link, useRouter, useMatches } from '@tanstack/react-router';
 import { useUIStore } from '../stores/uiStore';
 import { useWorkspaceStore } from '../stores/workspaceStore';
+import { Button } from '@/components/ui/button';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { cn } from '@/lib/utils';
 
 function WorkspaceTopBar() {
   const theme = useUIStore(s => s.theme);
   const toggleTheme = useUIStore(s => s.toggleTheme);
   const setSearchModalOpen = useUIStore(s => s.setSearchModalOpen);
+  const toggleSettings = useUIStore(s => s.toggleSettings);
+  const bottomOpen = useUIStore(s => s.bottomOpen);
+  const toggleBottom = () => useUIStore.getState().setBottomOpen(!bottomOpen);
   const domains = useWorkspaceStore(s => s.domains);
 
   const router = useRouter();
   const matches = useMatches();
 
-  // Build human-readable breadcrumbs from matched routes + params
   const params: any = {};
   matches.forEach(m => {
     if (m.params) {
@@ -33,7 +45,7 @@ function WorkspaceTopBar() {
     if (subjectId) {
       const subject = domain?.subjects.find(s => s.id === subjectId);
       const isNotebook = matches.some(m => m.pathname.includes('/notebook/'));
-      
+
       if (isNotebook) {
         crumbs.push({
           label: subject?.name ?? subjectId,
@@ -92,63 +104,107 @@ function WorkspaceTopBar() {
   const allCrumbs = [{ label: 'Domains', to: '/' }, ...crumbs];
 
   return (
-    <header className="flex items-center justify-between gap-4 h-11 px-4 bg-ws-bg border-b border-ws-line z-30 min-w-0 shrink-0">
+    <header className="flex items-center justify-between gap-4 h-11 px-4 bg-background border-b border-border z-30 min-w-0 shrink-0">
 
       {/* Breadcrumb navigation */}
-      <div className="flex-1 flex items-center gap-1 min-w-0 overflow-x-auto pr-4 flex-nowrap scrollbar-none [mask-image:linear-gradient(to_right,black_85%,transparent_100%)]">
-        {allCrumbs.map((crumb, i) => (
-          <span key={i} className="flex items-center gap-1 shrink-0">
-            {i > 0 && <span className="text-ws-faint text-[13px] shrink-0">›</span>}
-            <Link
-              to={crumb.to}
-              className={`text-[13px] font-medium hover:bg-ws-surface-2 hover:text-ws-ink px-1.5 py-0.5 rounded transition-colors ${i === allCrumbs.length - 1 ? 'text-ws-ink' : 'text-ws-muted'}`}
-              activeProps={{ className: 'text-ws-ink bg-ws-surface-2' }}
-            >
-              {crumb.label}
-            </Link>
-          </span>
-        ))}
-      </div>
+      <Breadcrumb className="flex-1 min-w-0 overflow-x-auto pr-4 scrollbar-none [mask-image:linear-gradient(to_right,black_85%,transparent_100%)]">
+        <BreadcrumbList className="flex-nowrap gap-1">
+          {allCrumbs.map((crumb, i) => {
+            const isLast = i === allCrumbs.length - 1;
+            return (
+              <BreadcrumbItem key={i} className="shrink-0">
+                {isLast ? (
+                  <BreadcrumbPage className="text-[13px] font-medium text-foreground px-1.5 py-0.5">
+                    {crumb.label}
+                  </BreadcrumbPage>
+                ) : (
+                  <>
+                    <BreadcrumbLink asChild>
+                      <Link
+                        to={crumb.to}
+                        className={cn(
+                          "press text-[13px] font-medium text-muted-foreground hover:bg-accent hover:text-foreground px-1.5 py-0.5 rounded transition-colors"
+                        )}
+                      >
+                        {crumb.label}
+                      </Link>
+                    </BreadcrumbLink>
+                    <BreadcrumbSeparator className="text-muted-foreground text-[13px]">›</BreadcrumbSeparator>
+                  </>
+                )}
+              </BreadcrumbItem>
+            );
+          })}
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <div className="flex items-center justify-end gap-1 shrink-0">
-        <button
+        <Button
           type="button"
-          className="flex items-center justify-center w-7 h-7 text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2 rounded transition-colors"
+          variant="ghost"
+          size="icon"
           onClick={() => setSearchModalOpen(true)}
           title="Search (⌘K)"
+          className="size-7 text-muted-foreground hover:text-foreground hover:bg-accent"
         >
           <Search size={14} />
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
-          className="flex items-center justify-center w-7 h-7 text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2 rounded transition-colors"
+          variant="ghost"
+          size="icon"
           onClick={() => router.history.back()}
           title="Back"
+          className="size-7 text-muted-foreground hover:text-foreground hover:bg-accent"
         >
           <ChevronLeft size={14} />
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="flex items-center justify-center w-7 h-7 text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2 rounded transition-colors"
+          variant="ghost"
+          size="icon"
           onClick={() => router.history.forward()}
           title="Forward"
+          className="size-7 text-muted-foreground hover:text-foreground hover:bg-accent"
         >
           <ChevronRight size={14} />
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
-          className="flex items-center justify-center w-7 h-7 text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2 rounded transition-colors"
+          variant="ghost"
+          size="icon"
+          onClick={toggleBottom}
+          title={`${bottomOpen ? 'Hide' : 'Show'} output panel`}
+          aria-label={bottomOpen ? 'Hide output panel' : 'Show output panel'}
+          className="size-7 text-muted-foreground hover:text-foreground hover:bg-accent"
+        >
+          <PanelBottom size={14} />
+        </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={toggleTheme}
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          className="size-7 text-muted-foreground hover:text-foreground hover:bg-accent"
         >
           {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
-        </button>
+        </Button>
 
-        <button type="button" className="flex items-center justify-center w-7 h-7 text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2 rounded transition-colors" title="Settings">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          data-settings-trigger
+          onClick={toggleSettings}
+          title="Appearance settings (⌘J)"
+          className="size-7 text-muted-foreground hover:text-foreground hover:bg-accent"
+        >
           <Settings size={14} />
-        </button>
+        </Button>
       </div>
     </header>
   );

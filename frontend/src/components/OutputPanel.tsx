@@ -20,27 +20,12 @@ function OutputPanel({ verdict, output, emptyMessage, comparison }: Props) {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  // Determine status color configurations based on compiler verdict
   const isAccepted = verdict === 'Accepted' || verdict === 'Solved' || verdict === 'Pass';
   const isError = verdict === 'Error' || verdict === 'Fail' || verdict === 'Compile Error';
-  
-  const getStatusColor = () => {
-    if (isAccepted) return 'hsl(140, 60%, 45%)';
-    if (isError) return 'hsl(0, 75%, 55%)';
-    if (verdict) return 'hsl(40, 75%, 50%)'; // Warning/Other
-    return "var(--ws-muted)";
-  };
-
-  const getStatusBg = () => {
-    if (isAccepted) return 'rgba(16, 185, 129, 0.08)';
-    if (isError) return 'rgba(239, 68, 68, 0.08)';
-    if (verdict) return 'rgba(217, 119, 6, 0.08)';
-    return "var(--ws-surface-2)";
-  };
 
   return (
     <div className="flex flex-col h-[220px] flex-[0_0_220px] overflow-hidden relative bg-[#090c10] border-t border-ws-line">
-      
+
       {/* Terminal Control Header Bar */}
       <div className="flex justify-between items-center bg-ws-surface border-b border-[#1f242c] px-4 h-[34px] shrink-0">
         <div className="flex items-center gap-2">
@@ -48,23 +33,30 @@ function OutputPanel({ verdict, output, emptyMessage, comparison }: Props) {
           <span className="text-[10px] font-mono font-bold text-ws-muted uppercase tracking-widest">
             Compile & Evaluation Terminal
           </span>
-          
-          {/* Dynamic glowing circular status badge */}
+
           {verdict && (
-            <div 
-              className="inline-flex items-center gap-1.25 px-2 py-0.5 rounded ml-2 text-[9.5px] font-extrabold uppercase tracking-wide"
-              style={{ 
-                background: getStatusBg(), 
-                border: `1px solid ${getStatusColor()}`, 
-                color: getStatusColor(),
-              }}
+            <div
+              className={`inline-flex items-center gap-1.25 px-2 py-0.5 rounded ml-2 text-[9.5px] font-extrabold uppercase tracking-wide border ${
+                isAccepted
+                  ? 'bg-ws-success/10 border-ws-success/20 text-ws-success'
+                  : isError
+                    ? 'bg-red-500/10 border-red-500/20 text-red-500'
+                    : 'bg-amber-500/10 border-amber-500/20 text-amber-500'
+              }`}
             >
-              <span 
-                className="w-1.25 h-1.25 rounded-full inline-block"
-                style={{ 
-                  background: getStatusColor(),
-                  boxShadow: `0 0 6px ${getStatusColor()}`,
-                }} 
+              <span
+                className={`w-1.25 h-1.25 rounded-full inline-block ${
+                  isAccepted ? 'bg-ws-success' : isError ? 'bg-red-500' : 'bg-amber-500'
+                }`}
+                style={{
+                  boxShadow: `0 0 6px ${
+                    isAccepted
+                      ? 'var(--color-ws-success)'
+                      : isError
+                        ? 'var(--color-red-500)'
+                        : 'var(--color-amber-500)'
+                  }`,
+                }}
               />
               <span>{verdict}</span>
             </div>
@@ -87,24 +79,20 @@ function OutputPanel({ verdict, output, emptyMessage, comparison }: Props) {
 
       {/* Terminal View Body scroll area */}
       <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3 scrollbar">
-        {/* Expected vs Actual high-fidelity Git diff representation */}
         {comparison && (
           <div className="flex flex-col bg-ws-surface border border-[#21262d] rounded-md overflow-hidden">
-            {/* Header section details */}
             <div className="flex justify-between items-center px-3 py-1.5 bg-ws-surface-2 border-b border-[#21262d]">
               <b className="text-[11px] font-bold text-ws-muted font-mono">
                 {comparison.title}
               </b>
-              <span 
+              <span
                 className={`text-[9.5px] font-extrabold uppercase tracking-wide px-1.5 py-0.5 rounded border ${comparison.status === 'match' ? 'bg-ws-success/10 text-ws-success border-ws-success/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}
               >
                 {comparison.status === 'match' ? 'Matches Expected' : 'Difference Found'}
               </span>
             </div>
 
-            {/* Gutter Comparison Cells Grid */}
             <div className="grid grid-cols-2">
-              {/* Expected Output Column Cell */}
               <div className="flex flex-col gap-1 p-2.5 border-r border-[#21262d]">
                 <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wide font-mono">
                   Expected Standard Output
@@ -114,7 +102,6 @@ function OutputPanel({ verdict, output, emptyMessage, comparison }: Props) {
                 </pre>
               </div>
 
-              {/* Actual Output Column Cell */}
               <div className="flex flex-col gap-1 p-2.5">
                 <span className="text-[9px] font-bold text-red-600 uppercase tracking-wide font-mono">
                   Actual Program Output
@@ -125,7 +112,6 @@ function OutputPanel({ verdict, output, emptyMessage, comparison }: Props) {
               </div>
             </div>
 
-            {/* Expected vs Actual gutter diff line marking diagnostics */}
             {comparison.diff && (
               <div className="flex flex-col gap-0.5 bg-ws-surface-2 border-t border-[#21262d] px-3 py-2 text-[10.5px] font-mono text-ws-muted">
                 <div className="font-extrabold text-ws-ink flex items-center gap-1.5 mb-0.5">
@@ -145,7 +131,6 @@ function OutputPanel({ verdict, output, emptyMessage, comparison }: Props) {
           </div>
         )}
 
-        {/* Stdout stream container panel */}
         <div className="text-[#c9d1d9] text-[11.5px] font-mono leading-[1.6]">
           <MarkdownView text={output || emptyMessage} className="output-markdown" />
         </div>

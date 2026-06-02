@@ -15,11 +15,12 @@ export const domainQueries = {
 }
 
 export const problemsQueries = {
-  catalog: () => queryOptions({
-    queryKey: ['problems'],
+  catalog: (domain?: string) => queryOptions({
+    queryKey: ['problems', domain],
     queryFn: async () => {
       const { API } = await import('../problemContent')
-      const res = await fetch(`${API}/api/problems`)
+      const params = domain ? `?domain=${domain}` : ''
+      const res = await fetch(`${API}/api/problems${params}`)
       if (!res.ok) throw new Error('Failed to fetch problems')
       return res.json()
     },

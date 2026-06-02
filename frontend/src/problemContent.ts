@@ -1,6 +1,6 @@
 import type {FlowTab,LessonSection,OutputComparison,Problem,RunMode,RunResp} from './types';
 
-export const API=import.meta.env.VITE_API_URL||'http://localhost:8080';
+export const API=import.meta.env.VITE_API_URL||'http://localhost:8000';
 
 export const flowTabs:{id:FlowTab;label:string}[]=[
   {id:'explanation',label:'Explanation'},

@@ -32,7 +32,7 @@ function GraphPanel() {
     return (
       <div className="flex flex-col h-full p-4 gap-4">
         <p className="text-ws-muted text-sm">Concept prerequisite map. Click a node for details.</p>
-        <div style={{color: "var(--ws-muted)", fontSize: '11px', textAlign: 'center', padding: '40px 0'}}>
+        <div className="text-ws-muted text-[11px] text-center py-10">
           No concepts yet. Start practicing to build your graph.
         </div>
       </div>
@@ -43,15 +43,11 @@ function GraphPanel() {
     <div className="flex flex-col h-full p-4 gap-4">
       <p className="text-ws-muted text-sm">Concept prerequisite map. Click a node for details.</p>
 
-      <div style={{
-        position: 'relative',
-        height: Math.max(200, Math.ceil(nodes.length / 3) * 70 + 20),
-        background: "var(--ws-bg)",
-        border: '1px solid var(--ws-edge-soft)',
-        borderRadius: "6px",
-        overflow: 'hidden',
-      }}>
-        <svg width="100%" height="100%" style={{position: 'absolute', top: 0, left: 0}}>
+      <div
+        className="relative bg-ws-bg border border-ws-edge-soft rounded-md overflow-hidden"
+        style={{ height: Math.max(200, Math.ceil(nodes.length / 3) * 70 + 20) }}
+      >
+        <svg width="100%" height="100%" className="absolute top-0 left-0">
           {edges.map((edge, i) => {
             const fromIdx = nodes.findIndex(n => n.id === edge.fromId);
             const toIdx = nodes.findIndex(n => n.id === edge.toId);
@@ -75,22 +71,11 @@ function GraphPanel() {
               key={node.id}
               type="button"
               onClick={() => setSelectedId(selectedId === node.id ? null : node.id)}
+              className="absolute w-20 h-6 rounded text-ws-ink text-[10px] font-semibold cursor-pointer flex items-center justify-center z-10 transition-[opacity,border-color] duration-150"
               style={{
-                position: 'absolute',
                 left: pos.x, top: pos.y,
-                width: 80, height: 24,
                 background: selectedId === node.id ? "rgba(16,185,129,0.1)" : "var(--ws-bg)",
                 border: `1.5px solid ${selectedId === node.id ? "var(--ws-accent)" : MASTERY_COLORS[node.mastery]}`,
-                borderRadius: "4px",
-                color: "var(--ws-ink)",
-                fontSize: 10,
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 1,
-                transition: 'all 150ms ease',
               }}
             >
               {node.label}
@@ -100,24 +85,24 @@ function GraphPanel() {
       </div>
 
       {selected && (
-        <div className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2" style={{marginTop: 8}}>
+        <div className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2 mt-2">
           <div className="text-ws-ink font-medium">{selected.label}</div>
           <div className="flex items-center justify-between text-ws-muted text-sm">
-            <span className={`ws-tag mastery-${selected.mastery}`} style={{textTransform: 'capitalize'}}>{selected.mastery}</span>
+            <span className={`ws-tag capitalize mastery-${selected.mastery}`}>{selected.mastery}</span>
           </div>
-          <div style={{fontSize: '11px', color: "var(--ws-soft)", marginTop: 4}}>
+          <div className="text-[11px] text-ws-soft mt-1">
             {selected.mastery === 'mastered' && 'You have demonstrated consistent understanding of this concept.'}
             {selected.mastery === 'practiced' && 'You have practiced this concept but may still have gaps.'}
             {selected.mastery === 'unseen' && 'You have not yet encountered exercises on this concept.'}
           </div>
-          <div style={{fontSize: 'var(--ws-type-xs)', color: "var(--ws-muted)", marginTop: 4}}>
+          <div className="text-xs text-ws-muted mt-1">
             Prerequisites: {edges.filter(e => e.toId === selected.id).map(e => nodes.find(n => n.id === e.fromId)?.label).filter(Boolean).join(', ') || 'None'}
           </div>
         </div>
       )}
 
       {!selected && (
-        <div className="flex flex-col gap-3 overflow-y-auto flex-1" style={{marginTop: 4}}>
+        <div className="flex flex-col gap-3 overflow-y-auto flex-1 mt-1">
           <div className="bg-ws-surface border border-ws-line rounded-md p-3 flex flex-col gap-2">
             <div className="text-ws-ink font-medium">Legend</div>
             <div className="flex flex-wrap gap-2 mt-2">

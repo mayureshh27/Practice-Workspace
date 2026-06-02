@@ -62,19 +62,17 @@ function ProblemNav({
   if (collapsed) {
     return (
       <aside className="flex flex-col items-center gap-4 w-12 h-full py-4 bg-ws-bg border-r border-ws-line transition-all">
-        {/* Toggle Collapse - Expand button */}
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={onToggleCollapse}
           className="flex items-center justify-center w-7 h-7 rounded border border-ws-line text-ws-muted hover:bg-ws-surface-2 hover:text-ws-ink transition-colors"
           title="Expand Navigator"
         >
           <ChevronRight size={14} />
         </button>
-        
+
         <div className="w-4/5 h-px bg-ws-surface" />
-        
-        {/* Search trigger shortcut scoped locally */}
+
         <button
           type="button"
           onClick={handleSearchClick}
@@ -83,8 +81,7 @@ function ProblemNav({
         >
           <Search size={13} />
         </button>
-        
-        {/* Scrollable list of exercise number circles */}
+
         <div className="flex-1 w-full overflow-y-auto flex flex-col items-center gap-3 py-2 scrollbar-none">
           {filtered.map(p => {
             const isActive = p.id === pid;
@@ -106,13 +103,12 @@ function ProblemNav({
     );
   }
 
-  const chaptersWithProblems = store.chapters.filter(ch => 
+  const chaptersWithProblems = store.chapters.filter(ch =>
     filtered.some(p => p.chapter === ch.id)
   );
 
   return (
-    <aside className="flex flex-col h-full p-4 w-[280px]">
-      {/* Header toolbar */}
+    <aside className="flex flex-col h-full p-4 w-[280px] overflow-hidden border-r border-ws-line">
       <div className="flex items-center justify-between mb-3">
         <span className="flex items-center gap-1.5 text-[11px] font-bold text-ws-ink uppercase tracking-widest">
           <Layers size={13} className="text-ws-success" />
@@ -129,13 +125,12 @@ function ProblemNav({
       </div>
 
       <div className="flex flex-col gap-2.5">
-        {/* Scoped Search Input */}
         <label className="relative flex items-center bg-ws-bg border border-ws-line rounded-md px-2.5 h-8">
           <Search size={13} className="text-ws-muted mr-1.5 shrink-0" />
-          <input 
-            value={query} 
-            onChange={e => onQuery(e.target.value)} 
-            placeholder="Search exercises..." 
+          <input
+            value={query}
+            onChange={e => onQuery(e.target.value)}
+            placeholder="Search exercises..."
             className="flex-1 bg-transparent border-none text-ws-ink outline-none text-[11.5px] min-w-0"
           />
           {query && (
@@ -149,11 +144,10 @@ function ProblemNav({
             </button>
           )}
         </label>
-        
-        {/* Styled Chapter Selector */}
-        <div style={{ position: 'relative', display: 'flex', width: '100%' }}>
-          <CustomSelect 
-            value={chapter} 
+
+        <div className="relative flex w-full">
+          <CustomSelect
+            value={chapter}
             onChange={val => onChapter(val)}
             options={[
               { value: 'all', label: 'All chapters' },
@@ -162,15 +156,14 @@ function ProblemNav({
                 label: `${c.id.toUpperCase().replace('CH', 'Ch ')} - ${c.title}`
               }))
             ]}
-            style={{ width: '100%', height: 32, padding: '4px 10px', fontSize: 11.5 }}
+            className="w-full h-8 px-2.5 py-1 text-[11.5px]"
           />
         </div>
-        
-        {/* Toggle Mode selectors with integrated stats */}
+
         <div className="flex bg-ws-bg border border-ws-line rounded-lg p-[3px] gap-[2px] my-2">
-          <button 
-            type="button" 
-            onClick={() => onMode('all')} 
+          <button
+            type="button"
+            onClick={() => onMode('all')}
             className={`flex-1 flex items-center justify-center gap-1.5 border-none rounded-md text-[11px] font-semibold py-1.5 transition-all ${mode === 'all' ? 'bg-ws-surface-2 text-ws-ink shadow-sm' : 'bg-transparent text-ws-muted'}`}
           >
             All
@@ -178,9 +171,9 @@ function ProblemNav({
               {store.problems.length}
             </span>
           </button>
-          <button 
-            type="button" 
-            onClick={() => onMode('judge')} 
+          <button
+            type="button"
+            onClick={() => onMode('judge')}
             className={`flex-1 flex items-center justify-center gap-1.5 border-none rounded-md text-[11px] font-semibold py-1.5 transition-all ${mode === 'judge' ? 'bg-ws-surface-2 text-ws-ink shadow-sm' : 'bg-transparent text-ws-muted'}`}
           >
             Judge
@@ -188,9 +181,9 @@ function ProblemNav({
               {judgeCount}
             </span>
           </button>
-          <button 
-            type="button" 
-            onClick={() => onMode('project')} 
+          <button
+            type="button"
+            onClick={() => onMode('project')}
             className={`flex-1 flex items-center justify-center gap-1.5 border-none rounded-md text-[11px] font-semibold py-1.5 transition-all ${mode === 'project' ? 'bg-ws-surface-2 text-ws-ink shadow-sm' : 'bg-transparent text-ws-muted'}`}
           >
             Project
@@ -199,8 +192,8 @@ function ProblemNav({
             </span>
           </button>
         </div>
-        
-        <CustomSelect 
+
+        <CustomSelect
           className="mobile-problem-select"
           value={pid}
           onChange={val => onSelectById(val)}
@@ -211,8 +204,7 @@ function ProblemNav({
           style={{ display: 'none' }}
         />
       </div>
-      
-      {/* Expanding Accordion catalog */}
+
       <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-0.5 scrollbar">
         {chaptersWithProblems.map((ch, index) => {
           const chProblems = filtered.filter(p => p.chapter === ch.id);
@@ -220,34 +212,30 @@ function ProblemNav({
           const isCollapsed = collapsedChapters[ch.id];
           const hasActiveProblem = chProblems.some(p => p.id === pid);
           const chapterHue = (index * 55) % 360;
-          
+
           return (
             <div key={ch.id} className="flex flex-col gap-1.5">
-              {/* Accordion Chapter Button */}
               <button
                 type="button"
                 onClick={() => toggleChapter(ch.id)}
-                className={`flex items-center gap-2 w-full px-2.5 py-2 text-left border rounded transition-colors ${hasActiveProblem ? 'bg-ws-surface-2 border-ws-line-strong' : 'bg-ws-bg border-zinc-900 hover:bg-ws-surface-2 hover:border-ws-line-strong'}`}
-                style={{ borderLeftColor: `hsl(${chapterHue}, 60%, 48%)`, borderLeftWidth: '3px' }}
+                className={`flex items-center gap-2 w-full px-2.5 py-2 text-left border rounded transition-colors border-l-[3px] ${hasActiveProblem ? 'bg-ws-surface-2 border-ws-line-strong' : 'bg-ws-bg border-zinc-900 hover:bg-ws-surface-2 hover:border-ws-line-strong'}`}
+                style={{ borderLeftColor: `hsl(${chapterHue}, 60%, 48%)` }}
               >
                 <Layers size={11} style={{ color: `hsl(${chapterHue}, 60%, 48%)` }} className="shrink-0" />
                 <span className="text-[11px] font-bold flex-1 whitespace-nowrap overflow-hidden text-ellipsis text-ws-ink">
                   {ch.id.toUpperCase().replace('CH', 'Ch ')} - {ch.title}
                 </span>
-                
-                {/* Completed badge count */}
+
                 <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded border shrink-0 ${chSolvedCount === chProblems.length ? 'text-ws-success bg-ws-success/10 border-ws-success/20' : 'text-ws-muted bg-ws-bg border-ws-line'}`}>
                   {chSolvedCount}/{chProblems.length}
                 </span>
-                
-                {/* Chevron icon indicator */}
-                <ChevronRight 
-                  size={12} 
+
+                <ChevronRight
+                  size={12}
                   className={`text-ws-muted shrink-0 transition-transform duration-150 ${isCollapsed ? '' : 'rotate-90'}`}
                 />
               </button>
 
-              {/* Accordion Exercises catalog */}
               {!isCollapsed && (
                 <div className="flex flex-col gap-1 pl-1.5 border-l border-dashed border-ws-line ml-1.5 mt-0.5 mb-1">
                   {chProblems.map(p => {
@@ -255,24 +243,23 @@ function ProblemNav({
                     const isSolvedProblem = solved.includes(p.id);
                     const diffColor = p.difficulty === 'Easy' ? '#71d99f' : p.difficulty === 'Medium' ? '#ffb74d' : '#ff8a80';
                     return (
-                      <button 
-                        key={p.id} 
-                        type="button" 
-                        onClick={() => onSelect(p)} 
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => onSelect(p)}
                         className={`flex flex-col gap-0.5 w-full text-left px-2 py-1.5 border rounded transition-colors ${isActiveProblem ? 'bg-ws-surface-2 border-ws-line-strong' : 'bg-transparent border-transparent hover:bg-ws-surface-2'}`}
                       >
                         <div className="flex items-center w-full gap-1.5">
-                          {/* Circle bullet representation with dynamic difficulty coloring */}
                           <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: diffColor }} title={`Difficulty: ${p.difficulty}`} />
-                          
+
                           <span className={`text-[11px] font-bold shrink-0 ${isActiveProblem ? 'text-ws-success' : 'text-ws-muted'}`}>
                             {p.number}.
                           </span>
-                          
+
                           <span className={`text-[11.5px] flex-1 overflow-hidden text-ellipsis whitespace-nowrap ${isActiveProblem ? 'font-bold text-ws-ink' : 'font-medium text-ws-muted'}`}>
                             {shortTitle(p)}
                           </span>
-                          
+
                           {isSolvedProblem && (
                             <CheckCircle2 size={12} className="text-ws-success shrink-0" />
                           )}

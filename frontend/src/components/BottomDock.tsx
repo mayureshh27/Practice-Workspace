@@ -105,7 +105,7 @@ function TerminalTab() {
           placeholder="Type a command..."
           autoFocus
         />
-        <button type="button" onClick={handleSubmit} className="bg-transparent border-none cursor-pointer text-ws-accent flex">
+        <button type="button" onClick={handleSubmit} className="press bg-transparent border-none text-ws-accent flex transition-colors">
           <Send size={14} />
         </button>
       </div>
@@ -136,7 +136,7 @@ function SandboxTab() {
         <button
           type="button"
           onClick={toggleSandbox}
-          className={`flex items-center gap-1.5 px-2.5 h-8 rounded border text-[13px] font-semibold cursor-pointer transition-colors ${running ? 'bg-red-500/10 border-red-500 text-red-500 hover:bg-red-500/20' : 'bg-ws-accent/10 border-ws-accent text-ws-accent hover:bg-ws-accent/20'}`}
+          className={`press flex items-center gap-1.5 px-2.5 h-8 rounded border text-[13px] font-semibold transition-colors ${running ? 'bg-red-500/10 border-red-500 text-red-500 hover:bg-red-500/20' : 'bg-ws-accent/10 border-ws-accent text-ws-accent hover:bg-ws-accent/20'}`}
         >
           <Power size={14} /> {running ? 'Stop' : 'Start'}
         </button>
@@ -160,26 +160,26 @@ function BottomDock({outputContent, verdictLabel}: Props) {
   const onClose = () => useUIStore.getState().setBottomOpen(false);
 
   return (
-    <div className={`flex flex-col bg-ws-bg border-t border-ws-line transition-[height] duration-200 ease-out overflow-hidden ${open ? 'h-[300px]' : 'h-0 border-t-0'}`}>
+    <div className={`flex flex-col bg-ws-bg border-t border-ws-line transition-[height] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden ${open ? 'h-[300px]' : 'h-0 border-t-0'}`}>
       <div className="flex items-center gap-1 px-2 border-b border-ws-line bg-ws-bg shrink-0 h-9 overflow-x-auto scrollbar-none">
         {TABS.map(tab => {
           const Icon = tab.icon;
           return (
-            <button
-              key={tab.id}
-              type="button"
-              className={`flex items-center gap-2 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap ${activeTab === tab.id ? 'text-ws-success bg-ws-surface-2/50' : 'text-ws-muted hover:bg-ws-surface-2 hover:text-ws-soft'}`}
-              onClick={() => onTabChange(tab.id)}
-            >
-              <Icon size={14} />
-              {tab.label}
-            </button>
+              <button
+                key={tab.id}
+                type="button"
+                className={`press flex items-center gap-2 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded whitespace-nowrap transition-colors ${activeTab === tab.id ? 'text-ws-success bg-ws-surface-2/50' : 'text-ws-muted hover:bg-ws-surface-2 hover:text-ws-soft'}`}
+                onClick={() => onTabChange(tab.id)}
+              >
+                <Icon size={14} />
+                {tab.label}
+              </button>
           );
         })}
 
         <button
           type="button"
-          className="flex items-center justify-center w-7 h-7 ml-auto text-ws-muted hover:text-red-500 hover:bg-ws-surface-2 rounded transition-colors shrink-0"
+          className="press flex items-center justify-center w-7 h-7 ml-auto text-ws-muted hover:text-red-500 hover:bg-ws-surface-2 rounded transition-colors shrink-0"
           onClick={onClose}
           title="Close dock"
           aria-label="Close dock"

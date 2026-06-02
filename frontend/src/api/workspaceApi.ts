@@ -192,6 +192,102 @@ export const api = {
     return TopicSchema.parse(data);
   },
 
+  // ── Workspace mutations ──────────────────────────────────────────
+
+  addDomain: async (name: string): Promise<DomainDTO> => {
+    const res = await fetch(`${API_BASE}/api/domains/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    if (!res.ok) throw new Error(`Failed to create domain: ${res.status}`);
+    return DomainSchema.parse(await res.json());
+  },
+
+  renameDomain: async (domainId: string, name: string): Promise<DomainDTO> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    if (!res.ok) throw new Error(`Failed to rename domain: ${res.status}`);
+    return DomainSchema.parse(await res.json());
+  },
+
+  togglePinDomain: async (domainId: string, pinned: boolean): Promise<DomainDTO> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pinned }),
+    });
+    if (!res.ok) throw new Error(`Failed to toggle pin: ${res.status}`);
+    return DomainSchema.parse(await res.json());
+  },
+
+  toggleArchiveDomain: async (domainId: string, archived: boolean): Promise<DomainDTO> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ archived }),
+    });
+    if (!res.ok) throw new Error(`Failed to toggle archive: ${res.status}`);
+    return DomainSchema.parse(await res.json());
+  },
+
+  deleteDomain: async (domainId: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error(`Failed to delete domain: ${res.status}`);
+  },
+
+  addSubject: async (domainId: string, name: string, description?: string): Promise<SubjectDTO> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, description }),
+    });
+    if (!res.ok) throw new Error(`Failed to create subject: ${res.status}`);
+    return SubjectSchema.parse(await res.json());
+  },
+
+  renameSubject: async (domainId: string, subjectId: string, name: string): Promise<SubjectDTO> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/${subjectId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    if (!res.ok) throw new Error(`Failed to rename subject: ${res.status}`);
+    return SubjectSchema.parse(await res.json());
+  },
+
+  deleteSubject: async (domainId: string, subjectId: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/${subjectId}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error(`Failed to delete subject: ${res.status}`);
+  },
+
+  addChapter: async (domainId: string, subjectId: string, name: string, description?: string): Promise<ChapterDTO> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, description }),
+    });
+    if (!res.ok) throw new Error(`Failed to create chapter: ${res.status}`);
+    return ChapterSchema.parse(await res.json());
+  },
+
+  addTopic: async (domainId: string, subjectId: string, chapterId: string, name: string): Promise<TopicDTO> => {
+    const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/${chapterId}/topics/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    if (!res.ok) throw new Error(`Failed to create topic: ${res.status}`);
+    return TopicSchema.parse(await res.json());
+  },
+
   // ── Practice events ──────────────────────────────────────────────
 
   submitAttempt: async (attempt: {

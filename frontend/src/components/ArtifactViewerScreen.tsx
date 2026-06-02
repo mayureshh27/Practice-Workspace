@@ -9,6 +9,9 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
+const selectClasses =
+  "bg-ws-bg border border-ws-edge-soft rounded-ws-md text-ws-ink text-[13px] outline-none cursor-pointer transition-colors duration-150 py-1.5 pl-3 pr-8 flex-[1_1_140px] min-w-[120px] max-w-[200px] appearance-auto";
+
 function ArtifactsScreen({artifacts, domains, onDelete}: Props) {
   const [search, setSearch] = useState('');
   const [domainFilter, setDomainFilter] = useState('all');
@@ -40,58 +43,52 @@ function ArtifactsScreen({artifacts, domains, onDelete}: Props) {
   }, [artifacts, domainFilter, subjectFilter, typeFilter, statusFilter, search]);
 
   return (
-    <div style={{padding: 24, maxWidth: 1000, margin: '0 auto', height: '100%', overflow: 'auto'}}>
-      <div style={{marginBottom: 24}}>
-        <h1 style={{fontSize: 20, fontWeight: 700, color: "var(--ws-ink)", margin: '0 0 4px'}}>Artifacts</h1>
-        <p style={{fontSize: 12, color: "var(--ws-muted)", margin: 0}}>{filtered.length} of {artifacts.length} artifacts</p>
+    <div className="screen-container">
+      <div className="screen-header">
+        <h1>Artifacts</h1>
+        <p>{filtered.length} of {artifacts.length} artifacts</p>
       </div>
 
-      {/* Sleek Horizontal Filter Panel */}
-      <div style={{
-        background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-        borderRadius: 'var(--ws-r-lg)', padding: '16px', marginBottom: 24,
-        display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
-      }}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingRight: 8, borderRight: '1px solid var(--ws-edge)'}}>
-          <Filter size={16} style={{color: "var(--ws-accent)"}} />
-          <span style={{fontSize: 13, fontWeight: 700, textTransform: 'uppercase', color: "var(--ws-ink)", letterSpacing: '0.04em'}}>Filters</span>
+      <div className="bg-ws-bg border border-ws-edge-soft rounded-ws-lg p-4 mb-6 flex gap-4 flex-wrap items-center shadow-md">
+        <div className="flex items-center gap-2 shrink-0 pr-2 border-r border-ws-line">
+          <Filter size={16} className="text-ws-accent" />
+          <span className="text-[13px] font-bold uppercase text-ws-ink tracking-[0.04em]">Filters</span>
         </div>
 
-        <div style={{display: 'flex', gap: 10, flexWrap: 'wrap', flex: '1 1 auto', alignItems: 'center'}}>
-          <CustomSelect 
-            value={domainFilter} 
+        <div className="flex gap-2.5 flex-wrap flex-auto items-center">
+          <CustomSelect
+            value={domainFilter}
             onChange={val => { setDomainFilter(val); setSubjectFilter('all'); }}
             options={[
               { value: 'all', label: 'All Domains' },
               ...domains.map(d => ({ value: d.id, label: d.name }))
             ]}
-            style={selectStyle}
+            className={selectClasses}
           />
 
-          <CustomSelect 
-            value={subjectFilter} 
+          <CustomSelect
+            value={subjectFilter}
             onChange={val => setSubjectFilter(val)}
             options={[
               { value: 'all', label: 'All Subjects' },
               ...subjects.map(s => ({ value: s.id, label: s.name }))
             ]}
-            style={{...selectStyle, opacity: (domainFilter === 'all' && subjects.length === 0) ? 0.5 : 1}}
+            className={selectClasses}
             disabled={domainFilter === 'all' && subjects.length === 0}
           />
 
-          <CustomSelect 
-            value={typeFilter} 
+          <CustomSelect
+            value={typeFilter}
             onChange={val => setTypeFilter(val)}
             options={[
               { value: 'all', label: 'All Types' },
               ...types.map(t => ({ value: t, label: t }))
             ]}
-            style={selectStyle}
+            className={selectClasses}
           />
 
-          <CustomSelect 
-            value={statusFilter} 
+          <CustomSelect
+            value={statusFilter}
             onChange={val => setStatusFilter(val)}
             options={[
               { value: 'all', label: 'All Status' },
@@ -99,31 +96,23 @@ function ArtifactsScreen({artifacts, domains, onDelete}: Props) {
               { value: 'reviewed', label: 'Reviewed' },
               { value: 'draft', label: 'Draft' }
             ]}
-            style={selectStyle}
+            className={selectClasses}
           />
         </div>
 
-        <div style={{position: 'relative', flex: '1 1 250px', minWidth: 200, maxWidth: 400}}>
-          <Search size={14} style={{position: 'absolute', left: 12, top: 10, color: "var(--ws-muted)"}} />
+        <div className="relative flex-[1_1_250px] min-w-[200px] max-w-[400px]">
+          <Search size={14} className="absolute left-3 top-[10px] text-ws-muted" />
           <input
             type="text"
             placeholder="Search artifacts..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{
-              padding: '8px 16px 8px 36px', background: "var(--ws-bg)",
-              border: '1px solid var(--ws-edge-soft)', borderRadius: "6px",
-              color: "var(--ws-ink)", outline: 'none', fontSize: 13, width: '100%',
-              transition: 'border-color 150ms ease, box-shadow 150ms ease'
-            }}
-            onFocus={e => { e.currentTarget.style.borderColor = "var(--ws-accent)"; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(16, 185, 129, 0.08)'; }}
-            onBlur={e => { e.currentTarget.style.borderColor = "var(--ws-line)"; e.currentTarget.style.boxShadow = 'none'; }}
+            className="w-full bg-ws-bg border border-ws-edge-soft rounded-ws-md text-ws-ink text-[13px] outline-none py-2 pr-4 pl-9 transition-colors duration-150 focus:border-ws-accent focus:shadow-[0_0_0_2px_rgba(16,185,129,0.08)]"
           />
         </div>
       </div>
 
-      {/* Artifact grid */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12}}>
+      <div className="card-grid">
         {filtered.map(artifact => {
           const domain = domains.find(d => d.id === artifact.domainId);
           const subject = domain?.subjects.find(s => s.id === artifact.subjectId);
@@ -131,51 +120,46 @@ function ArtifactsScreen({artifacts, domains, onDelete}: Props) {
           return (
             <div
               key={artifact.id}
-              style={{
-                background: "var(--ws-bg)", border: `1px solid ${selectedId === artifact.id ? "var(--ws-accent)" : "var(--ws-line)"}`,
-                borderRadius: 'var(--ws-r-lg)', padding: 16, cursor: 'pointer',
-                transition: 'border-color 150ms ease',
-              }}
+              className={`bg-ws-bg border rounded-ws-lg p-4 cursor-pointer transition-colors duration-150 ${selectedId === artifact.id ? 'border-ws-accent' : 'border-ws-line'}`}
               onClick={() => setSelectedId(selectedId === artifact.id ? null : artifact.id)}
             >
-              <div style={{display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8}}>
-                <LayoutGrid size={14} style={{color: "var(--ws-muted)", flexShrink: 0}} />
-                <span style={{fontSize: 14, fontWeight: 600, color: "var(--ws-ink)", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
+              <div className="flex items-center gap-2 mb-2">
+                <LayoutGrid size={14} className="text-ws-muted shrink-0" />
+                <span className="text-sm font-semibold text-ws-ink flex-1 truncate">
                   {artifact.name}
                 </span>
                 <button
                   type="button"
                   onClick={e => { e.stopPropagation(); onDelete(artifact.id); }}
-                  style={{background: 'none', border: 'none', cursor: 'pointer', color: "var(--ws-muted)", display: 'flex', padding: 2}}
+                  className="bg-transparent border-none cursor-pointer text-ws-muted flex p-0.5 h-cl-danger"
                 >
                   <Trash2 size={12} />
                 </button>
               </div>
 
-              <div style={{display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8}}>
-                <span style={{
-                  padding: '2px 6px', fontSize: 10, fontWeight: 700, borderRadius: "4px",
-                  color: artifact.status === 'approved' ? "var(--ws-accent)" : artifact.status === 'reviewed' ? 'var(--ws-info)' : "var(--ws-muted)",
-                  background: artifact.status === 'approved' ? 'rgba(16,185,129,0.1)' : artifact.status === 'reviewed' ? 'rgba(59,130,246,0.1)' : "var(--ws-surface-2)",
-                  border: `1px solid ${artifact.status === 'approved' ? "var(--ws-accent)" : artifact.status === 'reviewed' ? 'var(--ws-info)' : "var(--ws-surface-2)"}`,
-                  textTransform: 'capitalize',
-                }}>
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className={`
+                  px-1.5 py-0.5 text-[10px] font-bold rounded-ws-sm capitalize
+                  ${artifact.status === 'approved'
+                    ? 'text-ws-accent bg-ws-accent/10 border border-ws-accent'
+                    : artifact.status === 'reviewed'
+                      ? 'text-ws-info bg-ws-info/10 border border-ws-info'
+                      : 'text-ws-muted bg-ws-surface-2 border border-ws-surface-2'
+                  }
+                `}>
                   {artifact.status}
                 </span>
-                <span style={{fontSize: 11, color: "var(--ws-muted)"}}>{artifact.type}</span>
-                <span style={{fontSize: 11, color: "var(--ws-muted)", marginLeft: 'auto'}}>{artifact.time}</span>
+                <span className="text-[11px] text-ws-muted">{artifact.type}</span>
+                <span className="text-[11px] text-ws-muted ml-auto">{artifact.time}</span>
               </div>
 
-              <div style={{fontSize: 11, color: "var(--ws-muted)"}}>
+              <div className="text-[11px] text-ws-muted">
                 {domain?.name} {subject ? `› ${subject.name}` : ''}
               </div>
 
               {selectedId === artifact.id && (
-                <div style={{
-                  marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--ws-edge-soft)',
-                  display: 'flex', gap: 8,
-                }}>
-                  <button type="button" style={{...btnStyle, color: "var(--ws-accent)", borderColor: 'rgba(16, 185, 129, 0.25)'}}>
+                <div className="mt-2.5 pt-2.5 border-t border-ws-edge-soft flex gap-2">
+                  <button type="button" className="flex items-center gap-1 px-2.5 py-1 bg-transparent border border-ws-edge-soft rounded-ws-sm text-[11px] font-semibold cursor-pointer text-ws-accent border-[rgba(16,185,129,0.25)] press">
                     <Eye size={12} /> View
                   </button>
                 </div>
@@ -186,25 +170,12 @@ function ArtifactsScreen({artifacts, domains, onDelete}: Props) {
       </div>
 
       {filtered.length === 0 && (
-        <div style={{padding: 60, textAlign: 'center', color: "var(--ws-muted)", fontSize: 13}}>
+        <div className="p-[60px] text-center text-ws-muted text-[13px]">
           No artifacts match your filters
         </div>
       )}
     </div>
   );
 }
-
-const selectStyle: React.CSSProperties = {
-  padding: '6px 32px 6px 12px', background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-  borderRadius: "6px", color: "var(--ws-ink)", fontSize: 13, outline: 'none',
-  cursor: 'pointer', transition: 'all 150ms ease', flex: '1 1 140px', minWidth: 120, maxWidth: 200,
-  appearance: 'auto',
-};
-
-const btnStyle: React.CSSProperties = {
-  display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px',
-  background: 'none', border: '1px solid var(--ws-edge-soft)', borderRadius: "4px",
-  fontSize: 11, fontWeight: 600, cursor: 'pointer',
-};
 
 export default ArtifactsScreen;

@@ -75,6 +75,8 @@ function ResourceManagerScreen() {
     }
   };
 
+  const depthPadding = ['pl-2', 'pl-6', 'pl-10', 'pl-14'] as const;
+
   const renderTree = (nodes: TreeNode[], depth = 0) => {
     return nodes.map(node => {
       const isExpanded = expanded.has(node.id);
@@ -84,8 +86,7 @@ function ResourceManagerScreen() {
       return (
         <div key={node.id} className="flex flex-col">
           <div 
-            className={`flex items-center gap-2 py-1 px-2 hover:bg-ws-bg rounded cursor-pointer ${activeTopic === node.id ? 'bg-ws-bg border-l-2 border-ws-success' : ''}`}
-            style={{paddingLeft: `${depth * 16 + 8}px`}}
+            className={`flex items-center gap-2 py-1 px-2 hover:bg-ws-bg rounded cursor-pointer ${depthPadding[depth] ?? 'pl-14'} ${activeTopic === node.id ? 'bg-ws-bg border-l-2 border-ws-success' : ''}`}
             onClick={() => {
               if (hasChildren) toggleExpand(node.id);
               else setActiveTopic(node.id);

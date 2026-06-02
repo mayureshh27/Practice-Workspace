@@ -22,14 +22,12 @@ function WorkflowEditorScreen({workflows, workflowId, onNavigate, onSaveWorkflow
   const [evalSandbox, setEvalSandbox] = useState(true);
   const [evalSource, setEvalSource] = useState(true);
 
-  // Required Ingestions Checklist
   const [reqPdfs, setReqPdfs] = useState(true);
   const [reqTranscripts, setReqTranscripts] = useState(false);
   const [reqNotes, setReqNotes] = useState(true);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Sync state with selected workflow or defaults
   useEffect(() => {
     if (selectedWf) {
       setName(selectedWf.name);
@@ -61,7 +59,6 @@ Format the output as a Markdown study guide.`);
   const handleSave = () => {
     if (!name.trim()) return;
     
-    // Calculate eval gates count
     let gates = 0;
     if (evalSchema) gates++;
     if (evalSandbox) gates++;
@@ -80,7 +77,6 @@ Format the output as a Markdown study guide.`);
     onNavigate({level: 'workflows'});
   };
 
-  // Cursor variable injection helper
   const handleInjectVariable = (variable: string) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -92,14 +88,12 @@ Format the output as a Markdown study guide.`);
     
     setTemplateStr(newText);
 
-    // Reposition cursor immediately after inserted variable tag
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + variable.length, start + variable.length);
     }, 0);
   };
 
-  // Live preview builder compiling variable placeholders on-the-fly
   const livePreview = () => {
     return templateStr
       .replace(/\{\{subject\}\}/g, 'Modern Robotics')
@@ -110,42 +104,21 @@ Format the output as a Markdown study guide.`);
   };
 
   return (
-    <div style={{
-      display: 'flex', 
-      flexDirection: 'column',
-      width: '100%', 
-      height: '100%', 
-      background: "var(--ws-bg)", 
-      overflow: 'hidden'
-    }}>
+    <div className="flex flex-col w-full h-full bg-ws-bg overflow-hidden">
       
-      {/* 1. Header */}
-      <div style={{
-        padding: '16px 20px', 
-        borderBottom: '1px solid var(--ws-edge-soft)', 
-        background: "var(--ws-bg)", 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between',
-        flexShrink: 0
-      }}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+      <div className="px-5 py-4 border-b border-ws-edge-soft bg-ws-bg flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => onNavigate({level: 'workflows'})}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, borderRadius: "4px",
-              background: 'none', border: '1px solid var(--ws-edge-soft)',
-              color: "var(--ws-soft)", cursor: 'pointer'
-            }}
+            className="flex items-center justify-center size-7 rounded-ws-sm bg-transparent border border-ws-edge-soft text-ws-soft cursor-pointer"
             title="Back to Workflows"
           >
             <ArrowLeft size={14} />
           </button>
-          <div style={{display: 'flex', alignItems: 'center', gap: 8}}>
-            <Settings2 size={16} style={{color: "var(--ws-accent)"}} />
-            <span style={{fontWeight: 700, color: "var(--ws-ink)", fontSize: 13.5}}>
+          <div className="flex items-center gap-2">
+            <Settings2 size={16} className="text-ws-accent" />
+            <span className="font-bold text-ws-ink text-[13.5px]">
               {selectedWf ? `Edit Blueprint: ${selectedWf.name}` : 'Create New Blueprint Template'}
             </span>
           </div>
@@ -154,63 +127,34 @@ Format the output as a Markdown study guide.`);
         <button 
           type="button" 
           onClick={handleSave}
-          style={{
-            background: "var(--ws-accent)", color: "var(--ws-bg)", fontWeight: 700,
-            border: 'none', borderRadius: "6px", padding: '7px 16px',
-            display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, cursor: 'pointer',
-            transition: 'all 120ms ease'
-          }}
-          onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
-          onMouseLeave={e => { e.currentTarget.style.filter = 'none'; }}
+          className="bg-ws-accent text-ws-bg font-bold border-0 rounded-ws-md px-4 py-[7px] flex items-center gap-1.5 text-[11.5px] cursor-pointer transition-[border-color,background-color,color,filter] duration-[120ms] ease-emil-out h-bright"
         >
           <Save size={12} /> Save Template
         </button>
       </div>
 
-      {/* 2. Workspace Body: Left config, Right Prompt editor */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        overflow: 'hidden',
-        width: '100%'
-      }}>
+      <div className="flex-1 flex overflow-hidden w-full">
         
-        {/* LEFT COLUMN: Structural Blueprint configuration */}
-        <div style={{
-          width: 440,
-          borderRight: '1px solid var(--ws-edge-soft)',
-          background: "var(--ws-bg)",
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          overflowY: 'auto',
-          padding: 24,
-          gap: 20,
-          flexShrink: 0
-        }} className="scrollbar">
+        <div className="w-[440px] border-r border-ws-edge-soft bg-ws-bg flex flex-col h-full overflow-y-auto p-6 gap-5 shrink-0 scrollbar">
           
           <div>
-            <div style={{fontSize: 10.5, fontWeight: 700, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12}}>
+            <div className="text-[10.5px] font-bold text-ws-muted uppercase tracking-[0.05em] mb-3">
               Blueprint Metadata
             </div>
             
-            <div style={{display: 'flex', flexDirection: 'column', gap: 14}}>
-              <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
-                <label style={{fontSize: 11.5, fontWeight: 600, color: "var(--ws-soft)"}}>Template Name</label>
+            <div className="flex flex-col gap-3.5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11.5px] font-semibold text-ws-soft">Template Name</label>
                 <input 
                   type="text" 
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  style={{
-                    width: '100%', padding: '9px 12px', background: "var(--ws-bg)",
-                    border: '1px solid var(--ws-edge)', borderRadius: "6px",
-                    color: "var(--ws-ink)", fontSize: 12, outline: 'none'
-                  }}
+                  className="w-full px-3 py-[9px] bg-ws-bg border border-ws-edge rounded-ws-md text-ws-ink text-sm outline-none"
                 />
               </div>
 
-              <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
-                <label style={{fontSize: 11.5, fontWeight: 600, color: "var(--ws-soft)"}}>Target Artifact Type</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11.5px] font-semibold text-ws-soft">Target Artifact Type</label>
                 <CustomSelect 
                   value={targetType}
                   onChange={val => setTargetType(val)}
@@ -221,80 +165,72 @@ Format the output as a Markdown study guide.`);
                     { value: 'Summary', label: 'Summary' },
                     { value: 'Workbook', label: 'Workbook' }
                   ]}
-                  style={{
-                    width: '100%', padding: '8px 12px', fontSize: 12
-                  }}
+                  className="w-full px-3 py-2 text-sm"
                 />
               </div>
 
-              <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
-                <label style={{fontSize: 11.5, fontWeight: 600, color: "var(--ws-soft)"}}>Description</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11.5px] font-semibold text-ws-soft">Description</label>
                 <input 
                   type="text" 
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="Workflow purpose and output style..."
-                  style={{
-                    width: '100%', padding: '9px 12px', background: "var(--ws-bg)",
-                    border: '1px solid var(--ws-edge)', borderRadius: "6px",
-                    color: "var(--ws-ink)", fontSize: 12, outline: 'none'
-                  }}
+                  className="w-full px-3 py-[9px] bg-ws-bg border border-ws-edge rounded-ws-md text-ws-ink text-sm outline-none"
                 />
               </div>
             </div>
           </div>
 
-          {/* Required Ingestion constraints */}
-          <div style={{borderTop: '1px solid var(--ws-edge-soft)', paddingTop: 20}}>
-            <div style={{fontSize: 10.5, fontWeight: 700, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12}}>
+          <div className="border-t border-ws-edge-soft pt-5">
+            <div className="text-[10.5px] font-bold text-ws-muted uppercase tracking-[0.05em] mb-3">
               Source Input Requirements
             </div>
 
-            <div style={{display: 'flex', flexDirection: 'column', gap: 10}}>
-              <label style={{display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer'}}>
-                <input type="checkbox" checked={reqPdfs} onChange={e => setReqPdfs(e.target.checked)} style={{width: 13, height: 13}} className="accent-ws-glow" />
-                <span style={{fontSize: 11.5, color: "var(--ws-soft)"}}>PDF Documents</span>
+            <div className="flex flex-col gap-2.5">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={reqPdfs} onChange={e => setReqPdfs(e.target.checked)} className="size-[13px] accent-ws-glow" />
+                <span className="text-[11.5px] text-ws-soft">PDF Documents</span>
               </label>
-              <label style={{display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer'}}>
-                <input type="checkbox" checked={reqTranscripts} onChange={e => setReqTranscripts(e.target.checked)} style={{width: 13, height: 13}} className="accent-ws-glow" />
-                <span style={{fontSize: 11.5, color: "var(--ws-soft)"}}>Audio/Video Transcripts</span>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={reqTranscripts} onChange={e => setReqTranscripts(e.target.checked)} className="size-[13px] accent-ws-glow" />
+                <span className="text-[11.5px] text-ws-soft">Audio/Video Transcripts</span>
               </label>
-              <label style={{display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer'}}>
-                <input type="checkbox" checked={reqNotes} onChange={e => setReqNotes(e.target.checked)} style={{width: 13, height: 13}} className="accent-ws-glow" />
-                <span style={{fontSize: 11.5, color: "var(--ws-soft)"}}>Markdown & Handwritten Notes</span>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={reqNotes} onChange={e => setReqNotes(e.target.checked)} className="size-[13px] accent-ws-glow" />
+                <span className="text-[11.5px] text-ws-soft">Markdown & Handwritten Notes</span>
               </label>
             </div>
           </div>
 
-          {/* Evaluation Gates checklist */}
-          <div style={{borderTop: '1px solid var(--ws-edge-soft)', paddingTop: 20}}>
-            <div style={{fontSize: 10.5, fontWeight: 700, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6}}>
-              <Shield size={12} style={{color: "var(--ws-accent)"}} />
+          <div className="border-t border-ws-edge-soft pt-5">
+            <div className="text-[10.5px] font-bold text-ws-muted uppercase tracking-[0.05em] mb-3 flex items-center gap-1.5">
+              <Shield size={12} className="text-ws-accent" />
               <span>Compilation Evaluation Gates</span>
             </div>
 
-            <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
-              <label style={{display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer'}}>
-                <input type="checkbox" checked={evalSchema} onChange={e => setEvalSchema(e.target.checked)} style={{marginTop: 3, width: 13, height: 13}} className="accent-ws-glow" />
+            <div className="flex flex-col gap-3">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={evalSchema} onChange={e => setEvalSchema(e.target.checked)} className="mt-[3px] size-[13px] accent-ws-glow" />
                 <div>
-                  <span style={{fontSize: 12, fontWeight: 600, color: "var(--ws-ink)"}}>JSON Schema Validation</span>
-                  <p style={{fontSize: 10, color: "var(--ws-muted)", margin: '2px 0 0', lineHeight: 1.4}}>Ensures compilation strictly conforms to target JSON formatting rules.</p>
+                  <span className="text-sm font-semibold text-ws-ink">JSON Schema Validation</span>
+                  <p className="text-[10px] text-ws-muted mt-0.5 mb-0 leading-[1.4]">Ensures compilation strictly conforms to target JSON formatting rules.</p>
                 </div>
               </label>
 
-              <label style={{display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer'}}>
-                <input type="checkbox" checked={evalSandbox} onChange={e => setEvalSandbox(e.target.checked)} style={{marginTop: 3, width: 13, height: 13}} className="accent-ws-glow" />
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={evalSandbox} onChange={e => setEvalSandbox(e.target.checked)} className="mt-[3px] size-[13px] accent-ws-glow" />
                 <div>
-                  <span style={{fontSize: 12, fontWeight: 600, color: "var(--ws-ink)"}}>Secure Sandbox Execution</span>
-                  <p style={{fontSize: 10, color: "var(--ws-muted)", margin: '2px 0 0', lineHeight: 1.4}}>Executes generated equations or scripts in a isolated terminal to prevent compilation errors.</p>
+                  <span className="text-sm font-semibold text-ws-ink">Secure Sandbox Execution</span>
+                  <p className="text-[10px] text-ws-muted mt-0.5 mb-0 leading-[1.4]">Executes generated equations or scripts in a isolated terminal to prevent compilation errors.</p>
                 </div>
               </label>
 
-              <label style={{display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer'}}>
-                <input type="checkbox" checked={evalSource} onChange={e => setEvalSource(e.target.checked)} style={{marginTop: 3, width: 13, height: 13}} className="accent-ws-glow" />
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={evalSource} onChange={e => setEvalSource(e.target.checked)} className="mt-[3px] size-[13px] accent-ws-glow" />
                 <div>
-                  <span style={{fontSize: 12, fontWeight: 600, color: "var(--ws-ink)"}}>Fact Grounding & Verification</span>
-                  <p style={{fontSize: 10, color: "var(--ws-muted)", margin: '2px 0 0', lineHeight: 1.4}}>Cross-references output coordinates and facts back to linked textbook source segments.</p>
+                  <span className="text-sm font-semibold text-ws-ink">Fact Grounding & Verification</span>
+                  <p className="text-[10px] text-ws-muted mt-0.5 mb-0 leading-[1.4]">Cross-references output coordinates and facts back to linked textbook source segments.</p>
                 </div>
               </label>
             </div>
@@ -302,32 +238,16 @@ Format the output as a Markdown study guide.`);
 
         </div>
 
-        {/* RIGHT COLUMN: Prompt Engineering console */}
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          overflow: 'hidden'
-        }}>
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
           
-          {/* Editor Header & Variable Badges inject options */}
-          <div style={{
-            padding: 16, 
-            borderBottom: '1px solid var(--ws-edge-soft)', 
-            background: "var(--ws-bg)",
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: 10,
-            flexShrink: 0
-          }}>
-            <div style={{display: 'flex', alignItems: 'center', gap: 8}}>
-              <FileCode2 size={14} style={{color: "var(--ws-accent)"}} />
-              <span style={{fontSize: 12.5, fontWeight: 700, color: "var(--ws-ink)"}}>Prompt Instruction Template</span>
+          <div className="p-4 border-b border-ws-edge-soft bg-ws-bg flex flex-col gap-2.5 shrink-0">
+            <div className="flex items-center gap-2">
+              <FileCode2 size={14} className="text-ws-accent" />
+              <span className="text-[12.5px] font-bold text-ws-ink">Prompt Instruction Template</span>
             </div>
             
-            <div style={{display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap'}}>
-              <span style={{fontSize: 10, color: "var(--ws-muted)", marginRight: 4}}>Insert contextual variable:</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] text-ws-muted mr-1">Insert contextual variable:</span>
               {[
                 { tag: '{{subject}}', label: 'Subject Name' },
                 { tag: '{{chapter}}', label: 'Chapter Title' },
@@ -339,31 +259,18 @@ Format the output as a Markdown study guide.`);
                   key={badge.tag}
                   type="button"
                   onClick={() => handleInjectVariable(badge.tag)}
-                  style={{
-                    padding: '3px 8px', background: "var(--ws-bg)", border: '1px solid var(--ws-edge-soft)',
-                    borderRadius: "4px", color: "var(--ws-accent)", fontSize: 9.5, fontWeight: 700,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2, transition: 'all 100ms ease'
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--ws-accent)"; e.currentTarget.style.background = "var(--ws-surface-2)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--ws-line)"; e.currentTarget.style.background = "var(--ws-bg)"; }}
+                  className="px-2 py-[3px] bg-ws-bg border border-ws-edge-soft rounded-ws-sm text-ws-accent text-[9.5px] font-bold cursor-pointer flex items-center gap-0.5 transition-colors duration-100 h-bd-accent h-surface-2"
                 >
                   <span>{badge.tag}</span>
-                  <span style={{fontSize: 8.5, color: "var(--ws-muted)", fontWeight: 400}}>({badge.label})</span>
+                  <span className="text-[8.5px] text-ws-muted font-normal">({badge.label})</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Interactive Textarea Prompt Editor */}
-          <div style={{flex: 1, position: 'relative', display: 'flex', background: "var(--ws-bg)", overflow: 'hidden'}}>
+          <div className="flex-1 relative flex bg-ws-bg overflow-hidden">
             
-            {/* Monospaced Line Number sidebar gutter */}
-            <div style={{
-              width: 44, background: "var(--ws-bg)", borderRight: '1px solid var(--ws-edge-soft)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 16,
-              color: "var(--ws-muted)", fontFamily: 'monospace', fontSize: 11, userSelect: 'none',
-              lineHeight: 1.6, flexShrink: 0
-            }}>
+            <div className="w-11 bg-ws-bg border-r border-ws-edge-soft flex flex-col items-center pt-4 text-ws-muted font-mono text-[11px] select-none leading-[1.6] shrink-0">
               {Array.from({length: 12}).map((_, i) => (
                 <div key={i}>{i + 1}</div>
               ))}
@@ -374,38 +281,20 @@ Format the output as a Markdown study guide.`);
               value={templateStr}
               onChange={e => setTemplateStr(e.target.value)}
               placeholder="Write your prompting template and instructions..."
-              style={{
-                flex: 1, padding: 16, background: 'transparent', border: 'none',
-                color: "var(--ws-ink)", fontFamily: 'var(--font-mono, monospace)', fontSize: 12,
-                lineHeight: 1.6, outline: 'none', resize: 'none', height: '100%', width: '100%'
-              }}
+              className="flex-1 p-4 bg-transparent border-0 text-ws-ink font-mono text-xs leading-[1.6] outline-none resize-none h-full w-full"
             />
           </div>
 
-          {/* 3. Bottom: Real-Time Live Preview Console */}
-          <div style={{
-            height: 200, 
-            borderTop: '1px solid var(--ws-edge-soft)', 
-            background: "var(--ws-bg)",
-            display: 'flex', 
-            flexDirection: 'column',
-            flexShrink: 0
-          }}>
-            <div style={{
-              padding: '8px 16px', background: "var(--ws-bg)", borderBottom: '1px solid var(--ws-edge-soft)',
-              display: 'flex', alignItems: 'center', gap: 6
-            }}>
-              <Sparkles size={11} style={{color: 'hsl(140, 60%, 45%)'}} />
-              <span style={{fontSize: 10, fontWeight: 700, color: "var(--ws-muted)", textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+          <div className="h-[200px] border-t border-ws-edge-soft bg-ws-bg flex flex-col shrink-0">
+            <div className="px-4 py-2 bg-ws-bg border-b border-ws-edge-soft flex items-center gap-1.5">
+              <Sparkles size={11} className="text-[hsl(140,60%,45%)]" />
+              <span className="text-[10px] font-bold text-ws-muted uppercase tracking-[0.05em]">
                 Real-Time AI Ingestion Preview
               </span>
             </div>
             
-            <div style={{flex: 1, overflowY: 'auto', padding: 16}} className="scrollbar">
-              <pre style={{
-                margin: 0, fontSize: 11, fontFamily: 'var(--font-mono, monospace)',
-                color: "var(--ws-muted)", whiteSpace: 'pre-wrap', lineHeight: 1.5, background: 'none'
-              }}>
+            <div className="flex-1 overflow-y-auto p-4 scrollbar">
+              <pre className="m-0 text-[11px] font-mono text-ws-muted whitespace-pre-wrap leading-[1.5] bg-transparent">
                 {livePreview()}
               </pre>
             </div>

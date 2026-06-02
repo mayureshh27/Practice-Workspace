@@ -28,7 +28,7 @@ function RightDockRail() {
           <button
             key={item.id}
             type="button"
-            className={`flex items-center justify-center w-7 h-7 rounded transition-colors ${activePanel === item.id ? 'text-ws-accent bg-ws-surface-2' : 'text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2'}`}
+            className={`press flex items-center justify-center w-7 h-7 rounded transition-colors ${activePanel === item.id ? 'text-ws-accent bg-ws-surface-2' : 'text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2'}`}
             onClick={() => onTogglePanel(activePanel === item.id ? null : item.id)}
             title={item.label}
             aria-label={item.label}
@@ -46,7 +46,7 @@ function RightDockRail() {
           <button
             key={item.id}
             type="button"
-            className={`flex items-center justify-center w-7 h-7 rounded transition-colors ${activePanel === item.id ? 'text-ws-accent bg-ws-surface-2' : 'text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2'}`}
+            className={`press flex items-center justify-center w-7 h-7 rounded transition-colors ${activePanel === item.id ? 'text-ws-accent bg-ws-surface-2' : 'text-ws-muted hover:text-ws-ink hover:bg-ws-surface-2'}`}
             onClick={() => onTogglePanel(activePanel === item.id ? null : item.id)}
             title={item.label}
             aria-label={item.label}

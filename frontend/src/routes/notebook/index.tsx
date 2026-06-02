@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Folder } from 'lucide-react'
+import { Folder, ArrowRight } from 'lucide-react'
 import { useWorkspaceStore } from '../../stores/workspaceStore'
 
 export const Route = createFileRoute('/notebook/')({
@@ -12,7 +12,7 @@ function NotebookIndexRoute() {
 
   return (
     <div className="px-6 py-8 max-w-[1000px] mx-auto h-full overflow-y-auto scrollbar">
-      <div className="mb-7">
+      <div className="mb-8 pl-3 border-l-[3px] border-ws-glow">
         <h1 className="text-2xl font-extrabold text-ws-ink m-0 mb-1.5 tracking-tight">
           Reference Source Notebooks
         </h1>
@@ -21,23 +21,23 @@ function NotebookIndexRoute() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-8">
         {domains.map(d => (
-          <div key={d.id} className="bg-ws-bench border border-ws-edge-soft rounded-lg p-5">
-            <h2 className="text-base font-bold text-ws-ink mt-0 mb-3 flex items-center gap-2">
-              <Folder size={16} className="text-ws-glow" />
-              {d.name}
+          <div key={d.id} className="fade-in">
+            <h2 className="text-base font-bold text-ws-ink mt-0 mb-3 flex items-center gap-2 pl-3">
+              <Folder size={16} className="text-ws-glow shrink-0" />
+              <span>{d.name}</span>
             </h2>
 
             <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
-              {d.subjects.map(s => (
+              {d.subjects.map((s, i) => (
                 <div
                   key={s.id}
                   onClick={() => navigate({
                     to: '/notebook/$domainId/$subjectId',
                     params: { domainId: d.id, subjectId: s.id }
                   })}
-                  className="bg-ws-floor border border-ws-edge-soft rounded-md p-4 cursor-pointer flex flex-col gap-2.5 transition-all hover:border-ws-glow duration-150"
+                  className={`press bg-ws-bench border border-ws-edge-soft rounded-lg p-5 cursor-pointer flex flex-col gap-3 transition-all hover:border-ws-glow hover:bg-ws-surface-2 duration-150 fade-in stagger-${Math.min(i + 1, 8)}`}
                 >
                   <div>
                     <h3 className="text-sm font-semibold text-ws-ink m-0 mb-1">{s.name}</h3>
@@ -47,15 +47,15 @@ function NotebookIndexRoute() {
                       </p>
                     )}
                   </div>
-                  
-                  <div className="flex justify-between items-center text-[10px] text-ws-glow font-semibold border-t border-ws-edge-soft pt-2">
+
+                  <div className="flex justify-between items-center text-[10px] text-ws-glow font-semibold border-t border-ws-edge-soft pt-3">
                     <span>{s.resources?.length || 0} Reference Sources</span>
-                    <span className="uppercase text-[9px] tracking-wider">Launch Notebook ›</span>
+                    <span className="uppercase text-[9px] tracking-wider flex items-center gap-1">Launch Notebook <ArrowRight size={10} /></span>
                   </div>
                 </div>
               ))}
               {d.subjects.length === 0 && (
-                <div className="col-span-full text-xs text-ws-ink-muted italic p-3">
+                <div className="col-span-full text-xs text-ws-ink-muted italic p-4">
                   No subjects inside this domain yet.
                 </div>
               )}
