@@ -22,7 +22,7 @@ import logfire
 from app.config import get_settings
 from app.storage.database import init_db
 from app.seed import build_seed_domains
-from app.storage import workspace_repo
+from app.storage import workspace_repo, workflows_repo
 from app.harness.tool_registry import FileToolRegistry
 from app.harness.context_gate import DefaultContextGate
 from app.harness.eval_gate import SocraticGate
@@ -42,6 +42,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logfire.info(
         "Seeded {domain_count} domains into workspace repository",
         domain_count=len(domains),
+    )
+
+    # ── Seed workflow templates ─────────────────────────────────────
+    from app.seed import build_seed_workflows
+
+    workflows = build_seed_workflows()
+    workflows_repo.set_workflows(workflows)
+    logfire.info(
+        "Seeded {workflow_count} workflow templates",
+        workflow_count=len(workflows),
     )
 
     # ── Model Router ────────────────────────────────────────────────
@@ -129,6 +139,7 @@ def create_app() -> FastAPI:
     from app.api.sources import router as sources_router
     from app.api.artifacts import router as artifacts_router
     from app.api.concepts import router as concepts_router
+    from app.api.workflows import router as workflows_router
 
     app.include_router(health_router)
     app.include_router(workspace_router)
@@ -139,6 +150,7 @@ def create_app() -> FastAPI:
     app.include_router(sources_router)
     app.include_router(artifacts_router)
     app.include_router(concepts_router)
+    app.include_router(workflows_router)
 
     return app
 

@@ -4,6 +4,8 @@ All models emit **camelCase** JSON so the frontend Zod schemas validate
 responses without any transformation layer.
 """
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
@@ -72,6 +74,23 @@ class Domain(_CamelModel):
 # ── Workflow Template ───────────────────────────────────────────────
 
 
+# Where a template lives in the workspace hierarchy. A workflow can be
+# global (reusable everywhere), or scoped to a subject/chapter/topic.
+WorkflowScope = Literal["global", "subject", "chapter", "topic"]
+
+# The granularity at which the practice generator should pull context
+# when this workflow runs. Smaller scope → tighter prompt.
+PracticeScope = Literal["subject", "chapter", "topic"]
+
+
+class PracticeConfig(_CamelModel):
+    """Settings that drive the practice-exercise generator."""
+
+    count: int = 5
+    difficulty: str = "medium"  # 'easy' | 'medium' | 'hard'
+    scope: PracticeScope = "topic"
+
+
 class WorkflowTemplate(_CamelModel):
     id: str
     name: str
@@ -79,6 +98,18 @@ class WorkflowTemplate(_CamelModel):
     description: str
     last_run: str | None = None
     eval_gates: int
+    # Hierarchical scope. When scope != 'global' the matching subject/
+    # chapter/topic ids must be set so the Studio can group templates
+    # next to the location they belong to.
+    scope: WorkflowScope = "global"
+    subject_id: str | None = None
+    chapter_id: str | None = None
+    topic_id: str | None = None
+    # LLM prompt with {{placeholders}} that the practice endpoint
+    # substitutes at run time. Empty string is allowed for templates
+    # that don't generate text (e.g. a 'Practice Solver' is code-only).
+    prompt_template: str = ""
+    practice_config: PracticeConfig | None = None
 
 
 # ── Artifact ────────────────────────────────────────────────────────

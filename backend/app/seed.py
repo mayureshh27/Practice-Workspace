@@ -15,9 +15,11 @@ from app.config import get_settings
 from app.domain.workspace import (
     Chapter,
     Domain,
+    PracticeConfig,
     Resource,
     Subject,
     Topic,
+    WorkflowTemplate,
 )
 from app.storage import workspace_repo
 from app.storage.database import init_db
@@ -190,3 +192,94 @@ def seed() -> None:
 
 if __name__ == "__main__":
     seed()
+
+
+# ── Workflow templates ─────────────────────────────────────────────
+
+
+def build_seed_workflows() -> list[WorkflowTemplate]:
+    """Initial workflow templates that the Studio / Workflow Manager surface.
+
+    Mirrors the four templates previously baked into the frontend's
+    ``mockData.INITIAL_WORKFLOWS`` so a fresh backend has something
+    to show. All are global (reusable everywhere) — the editor's
+    *Customise for this subject* action forks them into a scoped
+    variant per subject.
+    """
+    return [
+        WorkflowTemplate(
+            id="wf-practice",
+            name="Practice Exercises Generator",
+            target_type="Exercise Pack",
+            description=(
+                "Generates structured practice problems and coding tests "
+                "based on textbook chapters and resources."
+            ),
+            eval_gates=3,
+            last_run="2 hours ago",
+            prompt_template=(
+                "You are a practice-exercise generator for {{subject}} → "
+                "{{chapter}} → {{topic}}.\n\n"
+                "Generate {{count}} {{difficulty}} practice problems that "
+                "reinforce the topic's core concepts. Return strict JSON: "
+                '`{"problems":[{"title":"…","prompt":"…","hints":["…"]}]}`.\n\n'
+                "Weak-spot context (from the learner's history):\n{{blindspots}}"
+            ),
+            practice_config=PracticeConfig(
+                count=5, difficulty="medium", scope="topic"
+            ),
+        ),
+        WorkflowTemplate(
+            id="wf-summary",
+            name="Concept Synthesizer",
+            target_type="Summary",
+            description=(
+                "Synthesizes key formulas, coordinate definitions, and "
+                "structural derivations from loaded PDF files."
+            ),
+            eval_gates=2,
+            last_run="1 day ago",
+            prompt_template=(
+                "Synthesise the key concepts, formulas, and structural "
+                "definitions for {{subject}} ({{chapter}} / {{topic}}).\n\n"
+                "Return markdown with sections: Overview, Key Formulas, "
+                "Common Pitfalls, Worked Example."
+            ),
+            practice_config=None,
+        ),
+        WorkflowTemplate(
+            id="wf-quiz",
+            name="Interactive Diagnostic Quiz",
+            target_type="Quiz",
+            description=(
+                "Generates conceptual multiple choice questions to probe "
+                "understanding and highlight weak spots."
+            ),
+            eval_gates=1,
+            last_run="3 days ago",
+            prompt_template=(
+                "Build a {{count}}-question diagnostic quiz for {{subject}} "
+                "({{chapter}} / {{topic}}) at {{difficulty}} difficulty.\n\n"
+                "Each question needs 4 options, one correct answer, and a "
+                "1-sentence explanation. Return JSON: "
+                '`{"questions":[{"q":"…","options":["…","…","…","…"],'
+                '"answer":0,"why":"…"}]}`'
+            ),
+            practice_config=PracticeConfig(
+                count=5, difficulty="medium", scope="chapter"
+            ),
+        ),
+        WorkflowTemplate(
+            id="wf-code-practice",
+            name="Sandbox Code Practice Solver",
+            target_type="Practice Solver",
+            description=(
+                "Executes compiler runs, runs assert unit tests, parses "
+                "diagnostics, and saves local completion records."
+            ),
+            eval_gates=3,
+            last_run="Just now",
+            prompt_template="",  # code-only flow — no LLM prompt
+            practice_config=None,
+        ),
+    ]
