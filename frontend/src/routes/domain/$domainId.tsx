@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { DomainScreen } from '../../components/ExplorerScreens'
 import { useWorkspaceStore } from '../../stores/workspaceStore'
+import { useUIStore } from '../../stores/uiStore'
 
 export const Route = createFileRoute('/domain/$domainId')({
   component: DomainRoute,
@@ -11,6 +12,7 @@ function DomainRoute() {
 
   const domains = useWorkspaceStore(s => s.domains)
   const domain = domains.find(d => d.id === domainId)
+  const setCreationModal = useUIStore(s => s.setCreationModal)
 
   const renameSubject = useWorkspaceStore(s => s.renameSubject)
   const deleteSubject = useWorkspaceStore(s => s.deleteSubject)
@@ -23,7 +25,7 @@ function DomainRoute() {
     <DomainScreen
       domain={domain}
       onNavigate={() => {}}
-      onOpenCreateModal={() => {}}
+      onOpenCreateModal={(type, dId) => setCreationModal({ open: true, type, domainId: dId ?? domain.id })}
       onRenameSubject={renameSubject}
       onDeleteSubject={deleteSubject}
     />

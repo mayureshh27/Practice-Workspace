@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { RootScreen } from '../components/ExplorerScreens'
 import { useWorkspaceStore } from '../stores/workspaceStore'
+import { useUIStore } from '../stores/uiStore'
 
 export const Route = createFileRoute('/')({
   component: IndexScreen,
@@ -12,6 +13,7 @@ function IndexScreen() {
   const deleteDomain = useWorkspaceStore(s => s.deleteDomain);
   const togglePinDomain = useWorkspaceStore(s => s.togglePinDomain);
   const toggleArchiveDomain = useWorkspaceStore(s => s.toggleArchiveDomain);
+  const setCreationModal = useUIStore(s => s.setCreationModal);
   const navigate = useNavigate();
 
   return (
@@ -22,7 +24,7 @@ function IndexScreen() {
           navigate({ to: `/domain/${loc.domainId}` });
         }
       }}
-      onOpenCreateModal={() => {}}
+      onOpenCreateModal={(type) => setCreationModal({ open: true, type })}
       onRenameDomain={renameDomain}
       onDeleteDomain={deleteDomain}
       onTogglePinDomain={togglePinDomain}
