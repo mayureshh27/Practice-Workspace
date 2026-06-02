@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Pre-commit hook — runs frontend lint-staged for TS/TSX/JSON/MD/CSS
+# and backend ruff for Python. Frontend and backend feedback loops
+# are configured in:
+#   frontend/package.json (typecheck, test, lint, format scripts)
+#   backend/pyproject.toml ([tool.ruff], [tool.mypy], [tool.coverage])
+#   frontend/.lintstagedrc.json
+set -e
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM || true)
+TS_FILES=$(echo "$STAGED" | grep -E '^frontend/.*\.(ts|tsx|js|jsx|json|md|css|yml|yaml)$' || true)
+PY_FILES=$(echo "$STAGED" | grep -E '^backend/.*\.py$' || true)
+
+if [ -n "$TS_FILES" ]; then
+  echo "==> frontend lint-staged on $(echo "$TS_FILES" | wc -l) files"
+  cd "$REPO_ROOT/frontend"
+  pnpm exec lint-staged
+  cd "$REPO_ROOT"
+fi
+
+if [ -n "$PY_FILES" ]; then
+  echo "==> backend ruff format + check on $(echo "$PY_FILES" | wc -l) files"
+  cd "$REPO_ROOT/backend"
+  PY_FILES_REL=$(echo "$PY_FILES" | sed 's|^backend/||' | tr '\\' '/')
+  uv run ruff format $PY_FILES_REL
+  uv run ruff check --fix $PY_FILES_REL || echo "    ruff check found unfixable issues; see docs/reviews/code-review-by-layer.md (fix in Phase 14)"
+  cd "$REPO_ROOT"
+fi

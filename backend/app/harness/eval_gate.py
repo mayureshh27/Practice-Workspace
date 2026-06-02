@@ -16,8 +16,7 @@ defines both the Protocol interface and the concrete SocraticGate.
 from __future__ import annotations
 
 import re
-from typing import Protocol
-from typing import Any
+from typing import Any, Protocol
 
 import logfire
 from pydantic import BaseModel
@@ -45,13 +44,13 @@ class EvalGate(Protocol):
 
 # Matches fenced code blocks containing function/method/class bodies
 _CODE_BLOCK_RE = re.compile(
-    r"```\w*\n"                         # opening fence
-    r"(?:.*\n)*?"                        # any lines
+    r"```\w*\n"  # opening fence
+    r"(?:.*\n)*?"  # any lines
     r"(?:"
     r"(?:def|func|function|fn)\s+\w+|"  # function definitions
-    r"class\s+\w+|"                     # class definitions
-    r"(?:for|while|if).*\{|"            # control flow with braces
-    r"return\s+\S+"                     # return statements
+    r"class\s+\w+|"  # class definitions
+    r"(?:for|while|if).*\{|"  # control flow with braces
+    r"return\s+\S+"  # return statements
     r")"
     r"(?:.*\n)*?"
     r"```",
@@ -70,7 +69,9 @@ _DIRECT_ANSWER_PATTERNS = [
     re.compile(r"^(?:the\s+)?answer\s+is\b", re.IGNORECASE),
     re.compile(r"^here(?:'s| is) the (?:solution|answer|code|fix)\b", re.IGNORECASE),
     re.compile(r"^the (?:solution|fix|correct answer) is\b", re.IGNORECASE),
-    re.compile(r"^you (?:should|need to|just need to) (?:use|write|change|replace)\b", re.IGNORECASE),
+    re.compile(
+        r"^you (?:should|need to|just need to) (?:use|write|change|replace)\b", re.IGNORECASE
+    ),
     re.compile(r"^simply (?:use|write|change|replace|add|remove)\b", re.IGNORECASE),
     re.compile(r"^just (?:use|write|change|replace|do)\b", re.IGNORECASE),
 ]
@@ -105,20 +106,14 @@ class SocraticGate:
         has_inline_func = bool(_INLINE_FUNC_RE.search(hint))
         if has_code_block or has_inline_func:
             failures.append("code_leak: Response contains solution code")
-            logfire.warning(
-                "Socratic Gate: code_leak detected in tutor response"
-            )
+            logfire.warning("Socratic Gate: code_leak detected in tutor response")
 
         # ── 2. No direct answer ─────────────────────────────────────
         stripped = hint.strip()
         for pattern in _DIRECT_ANSWER_PATTERNS:
             if pattern.search(stripped):
-                failures.append(
-                    "answer_leak: Response starts with direct answer pattern"
-                )
-                logfire.warning(
-                    "Socratic Gate: answer_leak detected in tutor response"
-                )
+                failures.append("answer_leak: Response starts with direct answer pattern")
+                logfire.warning("Socratic Gate: answer_leak detected in tutor response")
                 break
 
         # Hard failures — block the response
@@ -134,10 +129,10 @@ class SocraticGate:
         amended_text: str | None = None
         if not stripped.rstrip().endswith("?"):
             warnings.append("missing_question: Response does not end with a question")
-            amended_text = hint.rstrip() + "\n\nWhat aspect of this would you like to explore further?"
-            logfire.info(
-                "Socratic Gate: appended guiding question to tutor response"
+            amended_text = (
+                hint.rstrip() + "\n\nWhat aspect of this would you like to explore further?"
             )
+            logfire.info("Socratic Gate: appended guiding question to tutor response")
 
         return EvalResult(
             passed=True,

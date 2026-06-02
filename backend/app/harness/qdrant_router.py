@@ -4,13 +4,17 @@ Uses local-first embedded storage by default if Qdrant Docker container is offli
 """
 
 from __future__ import annotations
+
 import os
 import uuid
 from pathlib import Path
+
 import logfire
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
+
 from app.harness.retrieval_router import ChunkResult
+
 
 class QdrantRetrievalRouter:
     """Concrete implementation of RetrievalRouter using Qdrant client."""
@@ -26,10 +30,14 @@ class QdrantRetrievalRouter:
                 logfire.info("Connected to Qdrant Server at {host}:{port}", host=host, port=port)
             else:
                 self.client = QdrantClient(path=self.location)
-                logfire.info("Initialised embedded Qdrant database at {location}", location=self.location)
+                logfire.info(
+                    "Initialised embedded Qdrant database at {location}", location=self.location
+                )
         except Exception as exc:
             self.client = QdrantClient(location=":memory:")
-            logfire.warning("Failed to initialise Qdrant, falling back to in-memory: {error}", error=str(exc))
+            logfire.warning(
+                "Failed to initialise Qdrant, falling back to in-memory: {error}", error=str(exc)
+            )
 
         self.collection_name = "source_chunks"
         self._ensure_collection()
@@ -38,6 +46,7 @@ class QdrantRetrievalRouter:
     def _is_docker_running(self) -> bool:
         # Simple health check to check if port 6333 is open
         import socket
+
         try:
             with socket.create_connection(("localhost", 6333), timeout=0.5):
                 return True
@@ -50,10 +59,7 @@ class QdrantRetrievalRouter:
                 # Hybrid search: 384 dimensions for all-MiniLM-L6-v2
                 self.client.create_collection(
                     collection_name=self.collection_name,
-                    vectors_config=models.VectorParams(
-                        size=384,
-                        distance=models.Distance.COSINE
-                    )
+                    vectors_config=models.VectorParams(size=384, distance=models.Distance.COSINE),
                 )
                 logfire.info("Created Qdrant collection: {name}", name=self.collection_name)
         except Exception as exc:
@@ -62,11 +68,13 @@ class QdrantRetrievalRouter:
     def _get_embedding(self, text: str) -> list[float]:
         try:
             from sentence_transformers import SentenceTransformer
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+
+            model = SentenceTransformer("all-MiniLM-L6-v2")
             return model.encode(text).tolist()
         except Exception:
             # Deterministic pseudo-embedding fallback when sentence-transformers is loading/absent
             import hashlib
+
             res = []
             for i in range(384):
                 val = int(hashlib.md5(f"{text}-{i}".encode()).hexdigest(), 16)
@@ -191,17 +199,20 @@ class QdrantRetrievalRouter:
             results: list[dict] = []
             for point in scroll_result[0]:
                 payload = point.payload or {}
-                results.append({
-                    "id": str(point.id),
-                    "preview": payload.get("preview", ""),
-                    "chunk_index": payload.get("chunk_index", 0),
-                })
+                results.append(
+                    {
+                        "id": str(point.id),
+                        "preview": payload.get("preview", ""),
+                        "chunk_index": payload.get("chunk_index", 0),
+                    }
+                )
             results.sort(key=lambda r: r["chunk_index"])
             return results
         except Exception as exc:
             logfire.warning(
                 "Failed to scroll chunks for source {source_id}: {error}",
-                source_id=source_id, error=str(exc),
+                source_id=source_id,
+                error=str(exc),
             )
             return []
 
@@ -217,23 +228,21 @@ class QdrantRetrievalRouter:
             raise TypeError("source_ids parameter is mandatory")
 
         vector = self._get_embedding(query)
-        
+
         # Build query filters for source_ids
         should_filters = [
-            models.FieldCondition(
-                key="source_id",
-                match=models.MatchValue(value=sid)
-            ) for sid in source_ids
+            models.FieldCondition(key="source_id", match=models.MatchValue(value=sid))
+            for sid in source_ids
         ]
-        
+
         try:
             search_results = self.client.search(
                 collection_name=self.collection_name,
                 query_vector=vector,
                 query_filter=models.Filter(should=should_filters),
-                limit=10
+                limit=10,
             )
-            
+
             results = []
             for res in search_results:
                 payload = res.payload or {}
@@ -245,7 +254,7 @@ class QdrantRetrievalRouter:
                         page_or_timestamp=payload.get("page_or_timestamp"),
                         preview=payload.get("preview", ""),
                         file_path=payload.get("file_path"),
-                        score=res.score
+                        score=res.score,
                     )
                 )
             return results
@@ -265,27 +274,21 @@ class QdrantRetrievalRouter:
 
         # Fall back to standard search with text filters
         should_filters = [
-            models.FieldCondition(
-                key="source_id",
-                match=models.MatchValue(value=sid)
-            ) for sid in source_ids
+            models.FieldCondition(key="source_id", match=models.MatchValue(value=sid))
+            for sid in source_ids
         ]
-        
+
         try:
             # We use full text keyword matching filter if possible
-            filter_must = [
-                models.Filter(should=should_filters)
-            ]
-            
+            filter_must = [models.Filter(should=should_filters)]
+
             # Simple keyword search
             search_results = self.client.scroll(
                 collection_name=self.collection_name,
-                scroll_filter=models.Filter(
-                    must=filter_must
-                ),
-                limit=10
+                scroll_filter=models.Filter(must=filter_must),
+                limit=10,
             )
-            
+
             results = []
             for point in search_results[0]:
                 payload = point.payload or {}
@@ -299,7 +302,7 @@ class QdrantRetrievalRouter:
                             page_or_timestamp=payload.get("page_or_timestamp"),
                             preview=preview,
                             file_path=payload.get("file_path"),
-                            score=1.0
+                            score=1.0,
                         )
                     )
             return results

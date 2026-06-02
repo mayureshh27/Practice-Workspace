@@ -5,15 +5,16 @@ and Graphiti/Memgraph temporal logs for mastery progression.
 """
 
 from __future__ import annotations
+
 import os
 import uuid
 from collections.abc import Sequence
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
-import logfire
 import kuzu
-from rapidfuzz import process, fuzz
+import logfire
+from rapidfuzz import fuzz, process
 
 from app.domain.graph import ConceptCandidate, ConceptContext, ConceptNode
 from app.harness.graph_layer import GraphLayer
@@ -31,9 +32,9 @@ def _default_mastery_store(mastery_db_path: str) -> TemporalMasteryStore:
 
         store = GraphitiMasteryStore(db_path=mastery_db_path)
         # Quick smoke test: append and read
-        from datetime import datetime, timezone
+        from datetime import datetime
 
-        store.append_mastery_edge("_init_check", 0.0, "_init", datetime.now(timezone.utc))
+        store.append_mastery_edge("_init_check", 0.0, "_init", datetime.now(UTC))
         store.get_current_score("_init_check")
         logfire.info("GraphitiMasteryStore initialised (graphiti-core Kuzu backend)")
         return store
@@ -45,7 +46,9 @@ def _default_mastery_store(mastery_db_path: str) -> TemporalMasteryStore:
         return TemporalMasteryStore(db_path=mastery_db_path)
 
 
-def _execute(c: kuzu.Connection, query: str, params: dict[str, Any] | None = None) -> kuzu.QueryResult:
+def _execute(
+    c: kuzu.Connection, query: str, params: dict[str, Any] | None = None
+) -> kuzu.QueryResult:
     return c.execute(query, params)
 
 
@@ -77,9 +80,13 @@ class KuzuGraphLayer(GraphLayer):
 
     def _ensure_schema(self) -> None:
         try:
-            self.conn.execute("CREATE NODE TABLE Concept(concept_id STRING, canonical_name STRING, aliases STRING[], PRIMARY KEY (concept_id))")
+            self.conn.execute(
+                "CREATE NODE TABLE Concept(concept_id STRING, canonical_name STRING, aliases STRING[], PRIMARY KEY (concept_id))"
+            )
             self.conn.execute("CREATE NODE TABLE Source(source_id STRING, PRIMARY KEY (source_id))")
-            self.conn.execute("CREATE NODE TABLE Exercise(exercise_id STRING, PRIMARY KEY (exercise_id))")
+            self.conn.execute(
+                "CREATE NODE TABLE Exercise(exercise_id STRING, PRIMARY KEY (exercise_id))"
+            )
             self.conn.execute("CREATE REL TABLE PREREQUISITE_OF(FROM Concept TO Concept)")
             self.conn.execute("CREATE REL TABLE APPEARS_IN(FROM Concept TO Source)")
             self.conn.execute("CREATE REL TABLE TARGETS_CONCEPT(FROM Exercise TO Concept)")
@@ -89,7 +96,9 @@ class KuzuGraphLayer(GraphLayer):
 
     def _fuzzy_match_concept(self, name: str) -> str | None:
         try:
-            results = self.conn.execute("MATCH (c:Concept) RETURN c.concept_id, c.canonical_name, c.aliases")
+            results = self.conn.execute(
+                "MATCH (c:Concept) RETURN c.concept_id, c.canonical_name, c.aliases"
+            )
             candidates: list[tuple[str, str]] = []
             id_map: dict[str, str] = {}
 
@@ -114,7 +123,12 @@ class KuzuGraphLayer(GraphLayer):
             if match is not None and match[1] >= 85.0:
                 matched_text = match[0]
                 matched_id = id_map[matched_text]
-                logfire.info("Fuzzy match resolved '{name}' to Concept '{matched_text}' ({id})", name=name, matched_text=matched_text, id=matched_id)
+                logfire.info(
+                    "Fuzzy match resolved '{name}' to Concept '{matched_text}' ({id})",
+                    name=name,
+                    matched_text=matched_text,
+                    id=matched_id,
+                )
                 return matched_id
         except Exception as exc:
             logfire.warning("Fuzzy alias resolution failed: {error}", error=str(exc))
@@ -133,20 +147,25 @@ class KuzuGraphLayer(GraphLayer):
 
             if concept_id:
                 new_aliases = list(set(candidate.aliases + [candidate.name]))
-                _execute(self.conn,
+                _execute(
+                    self.conn,
                     "MATCH (c:Concept WHERE c.concept_id = $id) SET c.aliases = $aliases",
                     {"id": concept_id, "aliases": new_aliases},
                 )
             else:
                 concept_id = str(uuid.uuid4())
                 all_aliases = list(set(candidate.aliases + [candidate.name]))
-                _execute(self.conn,
+                _execute(
+                    self.conn,
                     "CREATE (c:Concept {concept_id: $id, canonical_name: $name, aliases: $aliases})",
                     {"id": concept_id, "name": candidate.name, "aliases": all_aliases},
                 )
-                logfire.info("Created new Concept node: {name} ({id})", name=candidate.name, id=concept_id)
+                logfire.info(
+                    "Created new Concept node: {name} ({id})", name=candidate.name, id=concept_id
+                )
 
-            _execute(self.conn,
+            _execute(
+                self.conn,
                 "MATCH (c:Concept WHERE c.concept_id = $cid), (s:Source WHERE s.source_id = $sid) MERGE (c)-[:APPEARS_IN]->(s)",
                 {"cid": concept_id, "sid": source_id},
             )
@@ -154,12 +173,14 @@ class KuzuGraphLayer(GraphLayer):
             for prereq_name in candidate.prerequisite_names:
                 prereq_id = self._fuzzy_match_concept(prereq_name)
                 if prereq_id:
-                    _execute(self.conn,
+                    _execute(
+                        self.conn,
                         "MATCH (target:Concept WHERE target.concept_id = $tid), (prereq:Concept WHERE prereq.concept_id = $pid) MERGE (target)-[:PREREQUISITE_OF]->(prereq)",
                         {"tid": concept_id, "pid": prereq_id},
                     )
 
-            prereq_res = _execute(self.conn,
+            prereq_res = _execute(
+                self.conn,
                 "MATCH (c:Concept WHERE c.concept_id = $id)-[:PREREQUISITE_OF]->(p:Concept) RETURN p.concept_id",
                 {"id": concept_id},
             )
@@ -198,7 +219,11 @@ class KuzuGraphLayer(GraphLayer):
             trigger_event_id=trigger_event_id,
             timestamp=timestamp,
         )
-        logfire.info("Temporal mastery edge appended for concept {concept_id}: {score}", concept_id=concept_id, score=new_score)
+        logfire.info(
+            "Temporal mastery edge appended for concept {concept_id}: {score}",
+            concept_id=concept_id,
+            score=new_score,
+        )
 
     def get_concept_context(
         self,
@@ -209,7 +234,8 @@ class KuzuGraphLayer(GraphLayer):
         gap_concepts: list[ConceptNode] = []
 
         for cid in concept_ids:
-            c_res = _execute(self.conn,
+            c_res = _execute(
+                self.conn,
                 "MATCH (c:Concept WHERE c.concept_id = $id) RETURN c.canonical_name, c.aliases",
                 {"id": cid},
             )
@@ -218,7 +244,8 @@ class KuzuGraphLayer(GraphLayer):
                 c_name: str = row[0]
                 c_aliases: Sequence[str] = row[1]
 
-                p_res = _execute(self.conn,
+                p_res = _execute(
+                    self.conn,
                     "MATCH (c:Concept WHERE c.concept_id = $id)-[:PREREQUISITE_OF]->(p:Concept) RETURN p.concept_id",
                     {"id": cid},
                 )
@@ -236,7 +263,8 @@ class KuzuGraphLayer(GraphLayer):
                 )
                 concepts.append(node)
 
-                chain_res = _execute(self.conn,
+                chain_res = _execute(
+                    self.conn,
                     "MATCH (root:Concept WHERE root.concept_id = $id)-[:PREREQUISITE_OF*1..8]->(p:Concept) RETURN p.concept_id, p.canonical_name, p.aliases",
                     {"id": cid},
                 )
@@ -246,7 +274,8 @@ class KuzuGraphLayer(GraphLayer):
                     pname: str = prow[1]
                     paliases: Sequence[str] = prow[2]
 
-                    pp_res = _execute(self.conn,
+                    pp_res = _execute(
+                        self.conn,
                         "MATCH (c:Concept WHERE c.concept_id = $id)-[:PREREQUISITE_OF]->(p:Concept) RETURN p.concept_id",
                         {"id": pid},
                     )
@@ -279,12 +308,14 @@ class KuzuGraphLayer(GraphLayer):
         exercise_id: str,
         concept_ids: list[str],
     ) -> None:
-        _execute(self.conn,
+        _execute(
+            self.conn,
             "MERGE (e:Exercise {exercise_id: $id})",
             {"id": exercise_id},
         )
         for cid in concept_ids:
-            _execute(self.conn,
+            _execute(
+                self.conn,
                 "MATCH (e:Exercise WHERE e.exercise_id = $eid), (c:Concept WHERE c.concept_id = $cid) MERGE (e)-[:TARGETS_CONCEPT]->(c)",
                 {"eid": exercise_id, "cid": cid},
             )
@@ -328,12 +359,14 @@ class KuzuGraphLayer(GraphLayer):
             while p_res.has_next():
                 prereq_ids.append(str(p_res.get_next()[0]))
 
-            results.append({
-                "concept_id": cid,
-                "canonical_name": cname,
-                "mastery_score": self._get_current_mastery(cid),
-                "prerequisite_ids": prereq_ids,
-            })
+            results.append(
+                {
+                    "concept_id": cid,
+                    "canonical_name": cname,
+                    "mastery_score": self._get_current_mastery(cid),
+                    "prerequisite_ids": prereq_ids,
+                }
+            )
         return results
 
     def detect_prerequisite_gaps(

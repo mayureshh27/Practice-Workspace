@@ -14,19 +14,18 @@ Startup sequence:
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+import logfire
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-import logfire
-
 from app.config import get_settings
-from app.storage.database import init_db
-from app.seed import build_seed_domains
-from app.storage import workspace_repo, workflows_repo
-from app.harness.tool_registry import FileToolRegistry
 from app.harness.context_gate import DefaultContextGate
 from app.harness.eval_gate import SocraticGate
 from app.harness.model_router import DefaultModelRouter
+from app.harness.tool_registry import FileToolRegistry
+from app.seed import build_seed_domains
+from app.storage import workflows_repo, workspace_repo
+from app.storage.database import init_db
 
 
 @asynccontextmanager
@@ -61,8 +60,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # ── Concrete Graph & Retrieval Layers ──────────────────────────
     try:
-        from app.harness.qdrant_router import QdrantRetrievalRouter
         from app.harness.kuzu_graph_layer import KuzuGraphLayer
+        from app.harness.qdrant_router import QdrantRetrievalRouter
 
         retrieval_router = QdrantRetrievalRouter()
         graph_layer = KuzuGraphLayer(use_graphiti=True)
@@ -130,17 +129,17 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    from app.api.health import router as health_router
-    from app.api.workspace import router as workspace_router
-    from app.api.problems import router as problems_router
-    from app.api.events import router as events_router
-    from app.api.chat import router as chat_router
-    from app.api.mastery import router as mastery_router
-    from app.api.sources import router as sources_router
     from app.api.artifacts import router as artifacts_router
+    from app.api.chat import router as chat_router
     from app.api.concepts import router as concepts_router
-    from app.api.workflows import router as workflows_router
+    from app.api.events import router as events_router
+    from app.api.health import router as health_router
+    from app.api.mastery import router as mastery_router
     from app.api.practice_exercises import router as practice_router
+    from app.api.problems import router as problems_router
+    from app.api.sources import router as sources_router
+    from app.api.workflows import router as workflows_router
+    from app.api.workspace import router as workspace_router
 
     app.include_router(health_router)
     app.include_router(workspace_router)

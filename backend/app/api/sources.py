@@ -7,7 +7,6 @@ GET /api/sources/{id}/chunks — list chunk previews for a source
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
-
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/sources", tags=["sources"])
@@ -43,14 +42,16 @@ def list_sources(request: Request) -> list[SourceDTO]:
     result: list[SourceDTO] = []
     for src in sources:
         chunks = retrieval.list_chunk_previews(src["id"])
-        result.append(SourceDTO(
-            id=src["id"],
-            title=src["title"],
-            type=src.get("type", "PDF"),
-            chunk_count=len(chunks),
-            in_context=True,
-            chunks=[ChunkPreview(id=c["id"], text=c["preview"]) for c in chunks],
-        ))
+        result.append(
+            SourceDTO(
+                id=src["id"],
+                title=src["title"],
+                type=src.get("type", "PDF"),
+                chunk_count=len(chunks),
+                in_context=True,
+                chunks=[ChunkPreview(id=c["id"], text=c["preview"]) for c in chunks],
+            )
+        )
     return result
 
 

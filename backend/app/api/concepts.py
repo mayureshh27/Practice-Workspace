@@ -5,8 +5,7 @@ GET /api/concepts/graph — all concept nodes with prerequisite edges and master
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Request
-
+from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/concepts", tags=["concepts"])
@@ -64,8 +63,6 @@ def get_concept_graph(request: Request) -> ConceptGraphDTO:
         )
 
         for prereq_id in node.get("prerequisite_ids", []):
-            result_edges.append(
-                ConceptEdgeDTO(from_id=prereq_id, to_id=node["concept_id"])
-            )
+            result_edges.append(ConceptEdgeDTO(from_id=prereq_id, to_id=node["concept_id"]))
 
     return ConceptGraphDTO(nodes=result_nodes, edges=result_edges)

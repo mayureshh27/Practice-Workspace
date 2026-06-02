@@ -13,7 +13,8 @@ Per CONTEXT.md and ADR-0014:
   * cleared (resolved_at set) if mastery score >= 0.70.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 import logfire
 from sqlmodel import Session
 
@@ -79,7 +80,7 @@ def _process_practice_attempt(session: Session, attempt: PracticeAttempted) -> N
         active_spots = event_store.get_blind_spots(session, resolved=False)
         for bs in active_spots:
             if bs.concept_id == concept_id:
-                bs.resolved_at = datetime.now(timezone.utc)
+                bs.resolved_at = datetime.now(UTC)
                 session.add(bs)
                 session.commit()
                 logfire.info(
@@ -98,8 +99,7 @@ def _process_practice_attempt(session: Session, attempt: PracticeAttempted) -> N
                 # Check if hint counts are monotonically non-decreasing
                 hint_counts = [att.hint_count for att in all_attempts]
                 is_non_decreasing = all(
-                    hint_counts[i] <= hint_counts[i + 1]
-                    for i in range(len(hint_counts) - 1)
+                    hint_counts[i] <= hint_counts[i + 1] for i in range(len(hint_counts) - 1)
                 )
 
                 if is_non_decreasing:

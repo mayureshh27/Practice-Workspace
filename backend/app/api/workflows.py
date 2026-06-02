@@ -16,7 +16,7 @@ surface the alert+Retry flow on the client.
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, ConfigDict, Field
@@ -24,7 +24,6 @@ from pydantic.alias_generators import to_camel
 
 from app.domain.workspace import (
     PracticeConfig,
-    PracticeScope,
     WorkflowScope,
     WorkflowTemplate,
 )

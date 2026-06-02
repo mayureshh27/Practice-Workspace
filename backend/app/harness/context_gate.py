@@ -16,9 +16,8 @@ Deep-source mode (ADR-0007):
 
 from __future__ import annotations
 
-from typing import Protocol
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 import logfire
 from pydantic import BaseModel, ConfigDict
@@ -65,7 +64,7 @@ class ContextGate(Protocol):
 # ── Slot budgets (token counts, approximated by word count) ─────────
 
 _DEFAULT_BUDGETS = {
-    "system_slot": 800,       # hard budget
+    "system_slot": 800,  # hard budget
     "task_intent": 200,
     "workflow_template": 400,
     "tool_names": 200,
@@ -169,7 +168,9 @@ class DefaultContextGate:
                 context = self._graph_layer.get_concept_context(source_ids)
                 parts = []
                 for c in context.concepts:
-                    score = f"{c.mastery_score:.2f}" if c.mastery_score is not None else "not practiced"
+                    score = (
+                        f"{c.mastery_score:.2f}" if c.mastery_score is not None else "not practiced"
+                    )
                     parts.append(f"- {c.canonical_name}: mastery {score}")
                 if context.prereq_chain:
                     parts.append("\nPrerequisite chain:")
@@ -202,7 +203,8 @@ class DefaultContextGate:
         )
 
         total_tokens = sum(
-            _count_tokens(s) for s in [
+            _count_tokens(s)
+            for s in [
                 ctx.system_slot,
                 ctx.task_intent,
                 ctx.workflow_template or "",

@@ -12,6 +12,7 @@ Per CONTEXT.md and ADR-0005:
 """
 
 from pathlib import Path
+
 from sqlmodel import Session, select
 
 from app.domain.events import ConceptMasteryUpdated
@@ -24,9 +25,7 @@ def materialise_learner_state(session: Session, memories_dir: Path) -> None:
 
     # 1. mastery.md
     mastery_file = memories_dir / "mastery.md"
-    statement = select(ConceptMasteryUpdated).order_by(
-        ConceptMasteryUpdated.timestamp.desc()
-    )
+    statement = select(ConceptMasteryUpdated).order_by(ConceptMasteryUpdated.timestamp.desc())
     all_updates = session.exec(statement).all()
     seen_concepts = set()
     mastery_lines = [
