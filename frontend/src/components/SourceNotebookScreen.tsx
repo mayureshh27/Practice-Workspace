@@ -74,6 +74,11 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddResource}: Prop
   const [isTyping, setIsTyping] = useState(false);
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
+  // The id of the last workflow that failed — preserved across the
+  // isGenerating reset so the Retry button can re-run it. isGenerating
+  // is nulled in runStudioWorkflow's finally block, so we can't
+  // recover the failed workflow from it.
+  const [lastFailedId, setLastFailedId] = useState<string | null>(null);
   const [notes, setNotes] = useState<string[]>([]);
   const [showNotesForm, setShowNotesForm] = useState(false);
   const [newNoteText, setNewNoteText] = useState('');
@@ -143,6 +148,7 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddResource}: Prop
   const runStudioWorkflow = async (wf: WorkflowTemplate) => {
     setIsGenerating(wf.id);
     setRunError(null);
+    setLastFailedId(null);
     try {
       const artifact = await runWorkflow(wf, {
         domainId: domain.id,
@@ -170,6 +176,7 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddResource}: Prop
       ]);
     } catch (err) {
       setRunError(err instanceof Error ? err.message : 'Workflow run failed.');
+      setLastFailedId(wf.id);
     } finally {
       setIsGenerating(null);
     }
@@ -640,9 +647,11 @@ function SourceNotebookScreen({domain, subject, onNavigate, onAddResource}: Prop
                     type="button"
                     onClick={() => {
                       setRunError(null);
-                      // Retry the last attempted workflow if we can
-                      // recover it from the still-loading state.
-                      const last = studioWorkflows.find(w => w.id === isGenerating);
+                      // Retry the last failed workflow. We track
+                      // its id separately because isGenerating is
+                      // nulled in the runStudioWorkflow finally
+                      // block, so it can't be recovered from there.
+                      const last = studioWorkflows.find(w => w.id === lastFailedId);
                       if (last) runStudioWorkflow(last);
                     }}
                     className="press bg-red-500/20 border border-red-500/40 text-red-500 text-[10px] font-bold cursor-pointer px-2 py-1 rounded flex items-center gap-1"

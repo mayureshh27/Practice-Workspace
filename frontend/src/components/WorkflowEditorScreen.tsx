@@ -1,5 +1,6 @@
 import {Save, FileCode2, Settings2, ArrowLeft, Shield, Sparkles, GitBranch, AlertCircle} from 'lucide-react';
 import {useState, useEffect, useRef} from 'react';
+import {useNavigate} from '@tanstack/react-router';
 import type {WorkflowTemplate, NavLocation, WorkflowScope, PracticeScope, PracticeConfig} from '../workspaceTypes';
 import { CustomSelect } from './ui/CustomSelect';
 
@@ -24,6 +25,7 @@ type Props = {
 };
 
 function WorkflowEditorScreen({workflows, workflowId, forkContext, onCustomize, onNavigate, onSaveWorkflow}: Props) {
+  const navigate = useNavigate();
   const selectedWf = workflowId ? workflows.find(w => w.id === workflowId) : null;
 
   const [name, setName] = useState('');
@@ -147,8 +149,11 @@ function WorkflowEditorScreen({workflows, workflowId, forkContext, onCustomize, 
         topicId: forkContext.topicId,
       });
       if (fork) {
-        // Navigate to the freshly-forked scoped workflow.
-        onNavigate({level: 'workflows'});
+        // Navigate to the freshly-forked scoped workflow so the
+        // user can keep editing it. Update the route search so
+        // the URL reflects the new id (and the banner doesn't
+        // reappear for the now-scoped fork).
+        navigate({ to: '/workflow-editor', search: { id: fork.id } });
       } else {
         setForkError('Fork failed — backend did not return a new workflow.');
       }

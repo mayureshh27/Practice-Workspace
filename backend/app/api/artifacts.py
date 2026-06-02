@@ -7,6 +7,7 @@ POST /api/artifacts       — create an artifact (e.g. from a workflow run)
 from __future__ import annotations
 
 import time
+import uuid
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
@@ -72,7 +73,9 @@ def create_artifact(request: Request, body: CreateArtifactBody) -> ArtifactDTO:
     """
     artifacts = getattr(request.app.state, "artifacts", [])
     now = time.time()
-    artifact_id = f"art-{int(now * 1000)}"
+    # Timestamp + short uuid suffix prevents collisions on concurrent
+    # POSTs landing in the same millisecond.
+    artifact_id = f"art-{int(now * 1000)}-{uuid.uuid4().hex[:8]}"
     # Dump by name (snake_case) so the keys match ArtifactDTO's fields.
     record = body.model_dump(by_alias=False, exclude_none=True)
     record["id"] = artifact_id

@@ -19,6 +19,7 @@ malformed workflow, etc.).
 from __future__ import annotations
 
 import time
+import uuid
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -105,7 +106,10 @@ async def run_practice_exercises(request: Request, body: RunPracticeBody) -> Art
         prompt, requested_count=count
     )
 
-    artifact_id = f"art-{int(time.time() * 1000)}"
+    # The timestamp-only id collided when two practice runs landed in
+    # the same millisecond (verified during diagnose). Append a short
+    # uuid suffix so concurrent runs always get distinct ids.
+    artifact_id = f"art-{int(time.time() * 1000)}-{uuid.uuid4().hex[:8]}"
     now = time.time()
     record = {
         "id": artifact_id,
