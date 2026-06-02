@@ -1,10 +1,15 @@
-"""Seed data — mirrors frontend/src/stores/mockData.ts.
+"""Seed data — loads real problem data from JSON files and builds matching domain hierarchy.
 
-Run with: ``uv run python -m app.seed``
+The chapter IDs in the domain hierarchy must match the chapter field
+in each problem so the frontend can filter problems by subject.
 
-Idempotent: safe to run multiple times. Seeds the in-memory workspace
-repository and initialises the SQLite event tables.
+Data files (relative to backend/):
+  ../data/problems.json           — 135 Go problems, 13 chapters (ch1–ch13)
+  ../data/problems_robotics.json  — 3 Robotics problems, 3 chapters (ch2, ch4, ch9)
 """
+
+import json
+from pathlib import Path
 
 from app.config import get_settings
 from app.domain.workspace import (
@@ -18,8 +23,63 @@ from app.storage import workspace_repo
 from app.storage.database import init_db
 
 
+def _load_problems_json(rel_path: str) -> dict:
+    """Load a problems JSON file, searching relative to this file's dir and CWD."""
+    candidates = [
+        Path(__file__).resolve().parent.parent / rel_path,
+        Path.cwd() / rel_path,
+    ]
+    for path in candidates:
+        if path.exists():
+            with open(path) as f:
+                return json.load(f)
+    raise FileNotFoundError(
+        f"Cannot find {rel_path} — tried: {[str(p) for p in candidates]}"
+    )
+
+
 def build_seed_domains() -> list[Domain]:
-    """Construct the same domain hierarchy as mockData.ts."""
+    go_data = _load_problems_json("../data/problems.json")
+    robot_data = _load_problems_json("../data/problems_robotics.json")
+
+    go_chapters_raw = go_data.get("chapters", [])
+    robot_chapters_raw = robot_data.get("chapters", [])
+
+    go_chapters = [
+        Chapter(
+            id=ch["id"],
+            name=ch["title"],
+            description=ch.get("description", ""),
+            topics=[Topic(id=f"{ch['id']}-intro", name="Getting Started")],
+        )
+        for ch in go_chapters_raw
+    ]
+
+    robot_chapters = [
+        Chapter(
+            id=ch["id"],
+            name=ch["title"],
+            description=ch.get("description", ""),
+            topics=[Topic(id=f"{ch['id']}-intro", name="Getting Started")],
+        )
+        for ch in robot_chapters_raw
+    ]
+
+    robot_chapters.append(
+        Chapter(
+            id="c2",
+            name="Chapter 2: Configuration Space",
+            description="Degrees of freedom, Grubler's formula, configuration space topology, task space vs C-space.",
+            instructions="Check planar vs spatial degrees of freedom factors and C-space dimensional topology.",
+            memory="Focus on screw coordinate systems and spatial tree joints.",
+            topics=[
+                Topic(id="deg-freedom", name="Degrees of Freedom", last_message="Completed 1 hour ago", pinned=True),
+                Topic(id="grubler-formula", name="Grubler's Formula", last_message="Needs practice"),
+                Topic(id="cspace-topology", name="Configuration Space Topology", last_message="Solved 2 days ago"),
+            ],
+        ),
+    )
+
     return [
         Domain(
             id="robotics",
@@ -31,33 +91,9 @@ def build_seed_domains() -> list[Domain]:
                     name="Modern Robotics",
                     description="Master kinematics, rigid body motions, dynamics, and planning of robotic manipulators.",
                     instructions="Emphasize screw theory, exponential coordinate representations, and homogeneous transformations.",
-                    memory="Mayuresh is a Computer Science student in India (AI and Data Science specialization, 8/10 GPA, graduating 2027). Transitioning to a robotics/ML engineer. Aiming for top-10 MS programs.",
+                    memory="CS AI/Data Science student learning robotics — screw theory, kinematics, and trajectory planning.",
                     pinned=True,
-                    chapters=[
-                        Chapter(
-                            id="c2",
-                            name="Chapter 2: Configuration Space",
-                            description="Degrees of freedom, Grubler's formula, configuration space topology, task space vs C-space.",
-                            instructions="Check planar vs spatial degrees of freedom factors and C-space dimensional topology.",
-                            memory="Focus on screw coordinate systems and spatial tree joints.",
-                            topics=[
-                                Topic(id="deg-freedom", name="Degrees of Freedom", last_message="Completed 1 hour ago", pinned=True),
-                                Topic(id="grubler-formula", name="Grubler's Formula", last_message="Needs practice"),
-                                Topic(id="cspace-topology", name="Configuration Space Topology", last_message="Solved 2 days ago"),
-                            ],
-                        ),
-                        Chapter(
-                            id="c3",
-                            name="Chapter 3: Rigid-Body Motions",
-                            description="Rotation matrices, SO(3), exponential coordinates of rotation, skew-symmetric matrices, Rodrigues' formula.",
-                            instructions="Focus on Rodrigues' formula and 3D coordinate transformations.",
-                            memory="Rigid body rotations and SO(3) coordinate frames.",
-                            topics=[
-                                Topic(id="rot-matrices", name="Rotation Matrices", last_message="Not started"),
-                                Topic(id="hom-transforms", name="Homogeneous Transformations", last_message="Not started"),
-                            ],
-                        ),
-                    ],
+                    chapters=robot_chapters,
                     resources=[
                         Resource(id="res-pdf", name="Modern_Robotics_Kinematics.pdf", lines=14500, file_type="PDF"),
                         Resource(id="res-deriv", name="Screw_Theory_Derivations.md", lines=320, file_type="MD"),
@@ -129,19 +165,7 @@ def build_seed_domains() -> list[Domain]:
                     instructions="Focus on pointers, array slice internals, maps, goroutines, and channels.",
                     memory="CS AI/Data Science student learning systems programming and concurrency in Go.",
                     pinned=True,
-                    chapters=[
-                        Chapter(
-                            id="go-basics",
-                            name="Chapter 1: Basics & Functions",
-                            description="Go syntax, basic types, variable declarations, loop constructs, and simple functions.",
-                            instructions="Declare functions with explicit types and explore value vs pointer parameters.",
-                            memory="Learn clean, idiomatic variable declaration blocks in Go.",
-                            topics=[
-                                Topic(id="hello-world", name="Hello World", last_message="Draft ready", pinned=True),
-                                Topic(id="fizzbuzz", name="FizzBuzz Game", last_message="Not started"),
-                            ],
-                        ),
-                    ],
+                    chapters=go_chapters,
                     resources=[
                         Resource(id="go-quickstart", name="Go_Basics_Quickstart.md", lines=180, file_type="MD"),
                         Resource(id="go-spec", name="Go_Language_Specification.pdf", lines=8400, file_type="PDF"),
@@ -159,6 +183,8 @@ def seed() -> None:
     domains = build_seed_domains()
     workspace_repo.set_domains(domains)
     print(f"Seeded {len(domains)} domains into workspace repository.")
+    print(f"  Go Programming: 13 chapters (ch1-ch13)")
+    print(f"  Robotics: {len([d for d in domains if d.id=='robotics'][0].subjects[0].chapters)} chapters")
     print(f"SQLite event tables created at: {settings.db_path}")
 
 

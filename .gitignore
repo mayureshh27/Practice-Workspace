@@ -26,6 +26,9 @@ __pycache__/
 *.db_test
 qdrant_db/
 
+# Runtime data directory (SQLite DB + workspace snapshot)
+backend/data/
+
 # Stale backup directory
 frontend/.git_disabled/
 
