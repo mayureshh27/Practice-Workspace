@@ -14,7 +14,8 @@ duplicated in two call sites (``artifacts.py`` and
 ``practice_exercises.py``) with the same id-stamping, time-formatting,
 and state-mutation code (chat review §2.3).
 
-Refs: chat review §2.3 (single source of truth for artifact construction).
+Refs: chat review §2.3 (single source of truth for artifact construction),
+layered review H-H1 (``prompt_template_sha`` widens the dedup key).
 """
 
 from __future__ import annotations
@@ -36,6 +37,7 @@ def make_artifact(
     chapter_id: str | None,
     topic_id: str | None,
     payload: dict[str, Any] | None,
+    prompt_template_sha: str | None = None,
 ) -> dict[str, Any]:
     """Build an artifact record with canonical id + ISO timestamp.
 
@@ -61,6 +63,10 @@ def make_artifact(
         The discriminated union (kind="practice" | "quiz" |
         "summary") produced by the practice agent, serialised to a
         dict. May be ``None`` for stub artifacts.
+    prompt_template_sha
+        SHA-256 of the workflow's ``prompt_template``. Stored on the
+        record so the artifact gate's dedup check can compare against
+        it without re-fetching the workflow (layered review H-H1).
 
     Returns
     -------
@@ -79,6 +85,7 @@ def make_artifact(
         "chapter_id": chapter_id,
         "topic_id": topic_id,
         "payload": payload,
+        "prompt_template_sha": prompt_template_sha,
     }
 
 
