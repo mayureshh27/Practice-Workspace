@@ -1,7 +1,9 @@
 import { Search, Settings, Moon, Sun, ChevronLeft, ChevronRight, PanelBottom } from 'lucide-react';
 import { Link, useRouter, useMatches } from '@tanstack/react-router';
 import { useUIStore } from '../stores/uiStore';
-import { useWorkspaceStore } from '../stores/workspaceStore';
+
+import { useQuery } from '@tanstack/react-query';
+import { domainQueries } from '../api/queries';
 import { Button } from '@/components/ui/button';
 import {
   Breadcrumb,
@@ -14,19 +16,20 @@ import {
 import { cn } from '@/lib/utils';
 
 function WorkspaceTopBar() {
-  const theme = useUIStore(s => s.theme);
-  const toggleTheme = useUIStore(s => s.toggleTheme);
-  const setSearchModalOpen = useUIStore(s => s.setSearchModalOpen);
-  const toggleSettings = useUIStore(s => s.toggleSettings);
-  const bottomOpen = useUIStore(s => s.bottomOpen);
+  const theme = useUIStore((s) => s.theme);
+  const toggleTheme = useUIStore((s) => s.toggleTheme);
+  const setSearchModalOpen = useUIStore((s) => s.setSearchModalOpen);
+  const toggleSettings = useUIStore((s) => s.toggleSettings);
+  const bottomOpen = useUIStore((s) => s.bottomOpen);
   const toggleBottom = () => useUIStore.getState().setBottomOpen(!bottomOpen);
-  const domains = useWorkspaceStore(s => s.domains);
+
+  const { data: domains = [] } = useQuery(domainQueries.list());
 
   const router = useRouter();
   const matches = useMatches();
 
   const params: any = {};
-  matches.forEach(m => {
+  matches.forEach((m) => {
     if (m.params) {
       Object.assign(params, m.params);
     }
@@ -36,50 +39,52 @@ function WorkspaceTopBar() {
   const { domainId, subjectId, chapterId, topicId } = params;
 
   if (domainId) {
-    const domain = domains.find(d => d.id === domainId);
+    const domain = domains.find((d) => d.id === domainId);
     crumbs.push({
       label: domain?.name ?? domainId,
-      to: `/domain/${domainId}`
+      to: `/domain/${domainId}`,
     });
 
     if (subjectId) {
-      const subject = domain?.subjects.find(s => s.id === subjectId);
-      const isNotebook = matches.some(m => m.pathname.includes('/notebook/'));
+      const subject = domain?.subjects.find((s) => s.id === subjectId);
+      const isNotebook = matches.some((m) => m.pathname.includes('/notebook/'));
 
       if (isNotebook) {
         crumbs.push({
           label: subject?.name ?? subjectId,
-          to: `/subject/${domainId}/${subjectId}`
+          to: `/subject/${domainId}/${subjectId}`,
         });
         crumbs.push({
           label: 'Notebooks',
-          to: `/notebook/${domainId}/${subjectId}`
+          to: `/notebook/${domainId}/${subjectId}`,
         });
       } else {
         crumbs.push({
           label: subject?.name ?? subjectId,
-          to: `/subject/${domainId}/${subjectId}`
+          to: `/subject/${domainId}/${subjectId}`,
         });
 
         if (chapterId) {
-          const chapter = subject?.chapters.find(c => c.id === chapterId);
+          const chapter = subject?.chapters.find((c) => c.id === chapterId);
           crumbs.push({
             label: chapter?.name ?? chapterId,
-            to: `/chapter/${domainId}/${subjectId}/${chapterId}`
+            to: `/chapter/${domainId}/${subjectId}/${chapterId}`,
           });
 
           if (topicId) {
-            const topic = chapter?.topics.find(t => t.id === topicId);
+            const topic = chapter?.topics.find((t) => t.id === topicId);
             crumbs.push({
               label: topic?.name ?? topicId,
-              to: `/topic/${domainId}/${subjectId}/${chapterId}/${topicId}`
+              to: `/topic/${domainId}/${subjectId}/${chapterId}/${topicId}`,
             });
           }
         }
       }
     }
   } else {
-    const activeMatch = matches.find(match => match.routeId !== '__root__' && match.routeId !== '/');
+    const activeMatch = matches.find(
+      (match) => match.routeId !== '__root__' && match.routeId !== '/',
+    );
     if (activeMatch) {
       const rId = activeMatch.routeId;
       let label = '';
@@ -105,7 +110,6 @@ function WorkspaceTopBar() {
 
   return (
     <header className="flex items-center justify-between gap-4 h-11 px-4 bg-background border-b border-border z-30 min-w-0 shrink-0">
-
       {/* Breadcrumb navigation */}
       <Breadcrumb className="flex-1 min-w-0 overflow-x-auto pr-4 scrollbar-none [mask-image:linear-gradient(to_right,black_85%,transparent_100%)]">
         <BreadcrumbList className="flex-nowrap gap-1">
@@ -123,13 +127,15 @@ function WorkspaceTopBar() {
                       <Link
                         to={crumb.to}
                         className={cn(
-                          "press text-[13px] font-medium text-muted-foreground hover:bg-accent hover:text-foreground px-1.5 py-0.5 rounded transition-colors"
+                          'press text-[13px] font-medium text-muted-foreground hover:bg-accent hover:text-foreground px-1.5 py-0.5 rounded transition-colors',
                         )}
                       >
                         {crumb.label}
                       </Link>
                     </BreadcrumbLink>
-                    <BreadcrumbSeparator className="text-muted-foreground text-[13px]">›</BreadcrumbSeparator>
+                    <BreadcrumbSeparator className="text-muted-foreground text-[13px]">
+                      ›
+                    </BreadcrumbSeparator>
                   </>
                 )}
               </BreadcrumbItem>

@@ -77,24 +77,24 @@ class Domain(_CamelModel):
 # Where a template lives in the workspace hierarchy. A workflow can be
 # global (reusable everywhere), or scoped to a subject/chapter/topic.
 WorkflowScope = Literal["global", "subject", "chapter", "topic"]
-
-# The granularity at which the practice generator should pull context
-# when this workflow runs. Smaller scope → tighter prompt.
 PracticeScope = Literal["subject", "chapter", "topic"]
+DifficultyLevel = Literal["easy", "medium", "hard"]
+TargetType = Literal["Exercise Pack", "Lesson", "Quiz", "Summary", "Practice Solver"]
+ArtifactStatus = Literal["approved", "draft", "reviewed"]
 
 
 class PracticeConfig(_CamelModel):
     """Settings that drive the practice-exercise generator."""
 
     count: int = 5
-    difficulty: str = "medium"  # 'easy' | 'medium' | 'hard'
+    difficulty: DifficultyLevel = "medium"
     scope: PracticeScope = "topic"
 
 
 class WorkflowTemplate(_CamelModel):
     id: str
     name: str
-    target_type: str  # 'Exercise Pack' | 'Lesson' | 'Quiz' | 'Summary' etc.
+    target_type: TargetType
     description: str
     last_run: str | None = None
     eval_gates: int
@@ -119,7 +119,7 @@ class Artifact(_CamelModel):
     id: str
     name: str
     type: str
-    status: str  # 'approved' | 'draft' | 'reviewed'
+    status: ArtifactStatus
     domain_id: str
     subject_id: str
     chapter_id: str | None = None

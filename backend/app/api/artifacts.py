@@ -11,6 +11,8 @@ duplicated between this router and the practice-exercises router
 
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
@@ -32,8 +34,8 @@ class ArtifactDTO(BaseModel):
     # Discriminated union payload — ``payload["kind"]`` is one of
     # ``"practice"``, ``"quiz"``, ``"summary"`` (see
     # :mod:`app.domain.artifact`). The frontend narrows on the
-    # discriminator; the server preserves it end-to-end.
-    payload: dict | None = None
+    # discriminator; the server preserves it end-to-end.  # type: ignore
+    payload: dict[str, Any] | None = None
 
 
 class CreateArtifactBody(BaseModel):
@@ -44,12 +46,12 @@ class CreateArtifactBody(BaseModel):
     subject_id: str | None = Field(default=None, alias="subjectId")
     chapter_id: str | None = Field(default=None, alias="chapterId")
     topic_id: str | None = Field(default=None, alias="topicId")
-    payload: dict | None = None
+    payload: dict[str, Any] | None = None
 
     model_config = {"populate_by_name": True}
 
 
-@router.get("/", response_model=list[ArtifactDTO])
+@router.get("", response_model=list[ArtifactDTO])
 def list_artifacts(request: Request) -> list[ArtifactDTO]:
     """Return all generated artifacts, newest first.
 
@@ -66,7 +68,7 @@ def list_artifacts(request: Request) -> list[ArtifactDTO]:
     return [ArtifactDTO(**a) for a in sorted_items]
 
 
-@router.post("/", response_model=ArtifactDTO, status_code=201)
+@router.post("", response_model=ArtifactDTO, status_code=201)
 def create_artifact(request: Request, body: CreateArtifactBody) -> ArtifactDTO:
     """Append a new artifact to the in-memory store and return it.
 

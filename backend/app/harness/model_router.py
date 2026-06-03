@@ -24,6 +24,17 @@ class ModelRouteRequest(BaseModel):
     workflow_id: str | None = None
     scope: str | None = None
 
+from pydantic import BaseModel
+
+
+class ModelRouteRequest(BaseModel):
+    """Request object to resolve model routing."""
+
+    task_type: str
+    template_id: str | None = None
+    workflow_id: str | None = None
+    scope: str | None = None
+
 
 class ModelConfig:
     """Resolved model configuration for a single call."""

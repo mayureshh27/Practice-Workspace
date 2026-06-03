@@ -39,7 +39,7 @@ from app.domain.artifact import (
     PracticeProblem,
     QuizQuestion,
 )
-from app.harness.model_router import DefaultModelRouter, ModelRouter, ModelRouteRequest, ModelConfig
+from app.harness.model_router import DefaultModelRouter, ModelConfig, ModelRouter, ModelRouteRequest
 
 # TypeAdapter used to surface a clean discriminated-union error when
 # the LLM emits an unrecognised shape. The parsing logic below builds
@@ -67,7 +67,7 @@ _SYSTEM_PROMPT = (
 def _build_agent(model_config: ModelConfig, system_prompt: str) -> Agent[None, str]:
     """Build a request-scoped Agent with the given config and system prompt."""
     return Agent(  # type: ignore[call-overload]
-        cast(Any, model_config.pydantic_ai_model()),
+        cast("Any", model_config.pydantic_ai_model()),
         deps_type=None,
         output_type=str,
         instructions=system_prompt,
@@ -81,7 +81,6 @@ practice_agent: Agent[None, str] = _build_agent(
     _router.route("workflow"),
     _SYSTEM_PROMPT,
 )
-
 
 
 # ── Public surface ──────────────────────────────────────────────────
@@ -103,7 +102,7 @@ def _extract_json(text: str) -> dict[str, Any] | None:
         return None
     # Direct parse first.
     try:
-        return json.loads(text)
+        return json.loads(text)  # type: ignore
     except json.JSONDecodeError:
         pass
     # Strip code fences if present.
@@ -112,7 +111,7 @@ def _extract_json(text: str) -> dict[str, Any] | None:
         stripped = re.sub(r"^```(?:json)?\s*", "", stripped, count=1)
         stripped = re.sub(r"\s*```\s*$", "", stripped, count=1)
     try:
-        return json.loads(stripped)
+        return json.loads(stripped)  # type: ignore
     except json.JSONDecodeError:
         pass
     # Last resort: pull the outermost {...} block.
@@ -120,7 +119,7 @@ def _extract_json(text: str) -> dict[str, Any] | None:
     if not match:
         return None
     try:
-        return json.loads(match.group(0))
+        return json.loads(match.group(0))  # type: ignore
     except json.JSONDecodeError:
         return None
 
@@ -197,7 +196,6 @@ def parse_practice_payload(
                 difficulty="medium",  # overridden by caller via metadata
             )
 
-
     if _QUESTIONS_KEY in raw:
         questions_raw = raw[_QUESTIONS_KEY]
         if isinstance(questions_raw, list):
@@ -206,7 +204,6 @@ def parse_practice_payload(
                 questions=questions,
                 requested_count=requested_count,
             )
-
 
     if _SUMMARY_KEY in raw and isinstance(raw[_SUMMARY_KEY], str):
         return PracticePayloadSummary(text=raw[_SUMMARY_KEY])
@@ -275,7 +272,7 @@ async def generate_practice(
                 workflow_name=workflow_name or None,
             )
             system_prompt = seed_ctx.system_slot
-            
+
             context_blocks = []
             if seed_ctx.workflow_template:
                 context_blocks.append(f"Workflow Template:\n{seed_ctx.workflow_template}")
@@ -289,11 +286,12 @@ async def generate_practice(
                 context_blocks.append("History:\n" + "\n".join(seed_ctx.history))
             if seed_ctx.examples:
                 context_blocks.append("Examples:\n" + "\n".join(seed_ctx.examples))
-                
+
             if context_blocks:
                 prompt_with_context = "\n\n".join(context_blocks) + "\n\nTask Intent:\n" + prompt
         except Exception as exc:
             import logfire
+
             logfire.warning("Failed to build seed context: {exc}", exc=str(exc))
 
     agent = _build_agent(model_config, system_prompt)
@@ -318,7 +316,6 @@ async def generate_practice(
             workflow_id=workflow_id or None,
             workflow_name=workflow_name or None,
         )
-
 
     raw_text: str = result.output if isinstance(result.output, str) else str(result.output)
     raw_payload = _extract_json(raw_text) or {}

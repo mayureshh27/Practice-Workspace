@@ -62,7 +62,7 @@ def test_list_workflows_surfaces_model_configured(client: TestClient):
     In test mode (no real API key) the field is False; the Studio
     disables the Run button when it sees False.
     """
-    r = client.get("/api/workflows/")
+    r = client.get("/api/workflows")
     assert r.status_code == 200
     body = r.json()
     assert "modelConfigured" in body
@@ -72,6 +72,7 @@ def test_list_workflows_surfaces_model_configured(client: TestClient):
 def test_model_router_route_with_request(monkeypatch):
     """Verify route can accept a ModelRouteRequest and resolves configurations with cost/latency."""
     from app.harness.model_router import ModelRouteRequest
+
     monkeypatch.setenv("GOOGLE_API_KEY", "fake-key")
     monkeypatch.delenv("PRACDA_OVERRIDE_MODEL", raising=False)
 
@@ -82,5 +83,3 @@ def test_model_router_route_with_request(monkeypatch):
     assert cfg.latency > 0
     assert cfg.cost > 0
     assert fresh.is_configured(req) is True
-
-

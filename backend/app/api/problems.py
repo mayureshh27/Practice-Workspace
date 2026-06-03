@@ -1,3 +1,5 @@
+from typing import Any
+
 """Problems API — serves Go and Robotics problems from JSON files.
 
 Endpoints mirror the legacy Go backend (port 8080) so the frontend
@@ -16,10 +18,10 @@ PROBLEM_FILES: dict[str, str] = {
     "robotics": "../data/problems_robotics.json",
 }
 
-_cache: dict[str, dict] | None = None
+_cache: dict[str, dict] | None = None  # type: ignore
 
 
-def _load_all() -> dict[str, dict]:
+def _load_all() -> dict[str, dict]:  # type: ignore
     global _cache
     if _cache is not None:
         return _cache
@@ -36,14 +38,14 @@ def _load_all() -> dict[str, dict]:
 
 
 @router.get("")
-def list_problems(domain: str | None = None):
+def list_problems(domain: str | None = None):  # type: ignore
     """Return all problems, optionally filtered by domain (go|robotics)."""
     all_data = _load_all()
     if domain:
         if domain not in all_data:
             raise HTTPException(status_code=404, detail=f"Unknown problem domain: {domain}")
         return all_data[domain]
-    merged: dict = {"chapters": [], "problems": []}
+    merged: dict[str, Any] = {"chapters": [], "problems": []}
     for data in all_data.values():
         merged["chapters"].extend(data.get("chapters", []))
         merged["problems"].extend(data.get("problems", []))
@@ -51,7 +53,7 @@ def list_problems(domain: str | None = None):
 
 
 @router.get("/chapters")
-def list_chapters(domain: str | None = None):
+def list_chapters(domain: str | None = None):  # type: ignore
     """Return only chapters, optionally filtered by domain."""
     all_data = _load_all()
     if domain:

@@ -69,7 +69,15 @@ export type RecentItem = {
 };
 
 /** Identifiers for right-dock panel slots. Only one can be open at a time. */
-export type RightDockPanel = 'sources' | 'tutor' | 'artifacts' | 'memory' | 'graph' | 'context' | 'inspector' | null;
+export type RightDockPanel =
+  | 'sources'
+  | 'tutor'
+  | 'artifacts'
+  | 'memory'
+  | 'graph'
+  | 'context'
+  | 'inspector'
+  | null;
 
 /** Identifiers for bottom-dock tab slots. */
 export type BottomDockTab = 'output' | 'tests' | 'terminal' | 'sandbox' | 'evals' | 'logs';
@@ -87,19 +95,33 @@ export type PracticeConfig = {
   scope: PracticeScope;
 };
 
+/**
+ * Bitmask enum for evaluating workflow artifacts.
+ */
+export enum EvalGate {
+  None = 0,
+  Structure = 1 << 0, // 1
+  Style = 1 << 1, // 2
+  Compiles = 1 << 2, // 4
+  PassesTests = 1 << 3, // 8
+}
+
 export type WorkflowTemplate = {
   id: string;
   name: string;
   targetType: string; // 'Exercise Pack' | 'Lesson' | 'Quiz' | 'Summary' etc.
   description: string;
-  lastRun?: string;
+  lastRun?: string | null;
+  /**
+   * Bitmask of EvalGate enum values
+   */
   evalGates: number;
   scope: WorkflowScope;
-  subjectId?: string;
-  chapterId?: string;
-  topicId?: string;
+  subjectId?: string | null;
+  chapterId?: string | null;
+  topicId?: string | null;
   promptTemplate: string;
-  practiceConfig?: PracticeConfig;
+  practiceConfig?: PracticeConfig | null;
 };
 
 /* ── Artifact ────────────────────────────────────────────────────── */
@@ -108,10 +130,11 @@ export type Artifact = {
   id: string;
   name: string;
   type: string;
-  status: 'approved' | 'draft' | 'reviewed';
-  domainId: string;
-  subjectId: string;
-  chapterId?: string;
-  topicId?: string;
+  status: string;
+  domainId?: string | null;
+  subjectId?: string | null;
+  chapterId?: string | null;
+  topicId?: string | null;
   time: string;
+  payload?: Record<string, any> | null;
 };

@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 import uuid
 from pathlib import Path
+from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -51,8 +52,8 @@ class QdrantRetrievalRouter:
             )
 
         self.collection_name = "source_chunks"
-        self._ensure_collection()
-        self._sources: dict[str, dict] = {}  # source_id -> metadata
+        self._ensure_collection()  # type: ignore
+        self._sources: dict[str, dict] = {}  # source_id -> metadata  # type: ignore
 
     def _qdrant_healthz_probe(self, host: str, port: int, timeout: float = 0.5) -> bool:
         """Phase 2 (M-B3) — probe Qdrant's ``/healthz`` HTTP endpoint.
@@ -80,7 +81,7 @@ class QdrantRetrievalRouter:
         port = int(os.environ.get("QDRANT_PORT", "6333"))
         return self._qdrant_healthz_probe(host, port)
 
-    def _ensure_collection(self):
+    def _ensure_collection(self):  # type: ignore
         try:
             if not self.client.collection_exists(self.collection_name):
                 # Hybrid search: 384 dimensions for the default
@@ -106,7 +107,7 @@ class QdrantRetrievalRouter:
 
         try:
             model = SentenceTransformer(self.embedding_model, revision=self.embedding_revision)
-            return model.encode(text).tolist()
+            return model.encode(text).tolist()  # type: ignore
         except Exception as exc:
             raise RuntimeError(
                 f"Embedding model {self.embedding_model!r} (revision="
@@ -117,8 +118,8 @@ class QdrantRetrievalRouter:
 
     def index_chunks(
         self,
-        chunks: list[dict],
-        source_metadata: dict[str, dict] | None = None,
+        chunks: list[dict[str, Any]],
+        source_metadata: dict[str, dict] | None = None,  # type: ignore
     ) -> list[str]:
         """Index source chunks into the Qdrant collection.
 
@@ -177,8 +178,11 @@ class QdrantRetrievalRouter:
 
             vector = self._get_embedding(text)
 
+            meta = source_metadata.get(source_id, {}) if source_metadata else {}
             payload = {
                 "source_id": source_id,
+                "title": meta.get("title"),
+                "type": meta.get("type"),
                 "chunk_index": chunk_index,
                 "page_or_timestamp": page_or_ts,
                 "preview": preview,
@@ -212,11 +216,31 @@ class QdrantRetrievalRouter:
 
         return chunk_ids
 
-    def list_sources(self) -> list[dict]:
-        """Return metadata for all registered sources."""
-        return list(self._sources.values())
+    def list_sources(self) -> list[dict[str, Any]]:
+        """Return metadata for all registered sources by querying the collection."""
+        try:
+            scroll_result = self.client.scroll(
+                collection_name=self.collection_name,
+                limit=10000,
+                with_payload=["source_id", "title", "type"],
+                with_vectors=False,
+            )
+            sources = {}
+            for point in scroll_result[0]:
+                payload = point.payload or {}
+                sid = payload.get("source_id")
+                if sid and sid not in sources:
+                    sources[sid] = {
+                        "id": sid,
+                        "title": payload.get("title", sid),
+                        "type": payload.get("type", "unknown")
+                    }
+            return list(sources.values())
+        except Exception as exc:
+            logfire.warning("Failed to list sources: {error}", error=str(exc))
+            return []
 
-    def list_chunk_previews(self, source_id: str) -> list[dict]:
+    def list_chunk_previews(self, source_id: str) -> list[dict[str, Any]]:
         """Return chunk previews for a source by scrolling the collection."""
         try:
             filter_cond = models.Filter(
@@ -234,7 +258,7 @@ class QdrantRetrievalRouter:
                 with_payload=True,
                 with_vectors=False,
             )
-            results: list[dict] = []
+            results: list[dict[str, Any]] = []
             for point in scroll_result[0]:
                 payload = point.payload or {}
                 results.append(

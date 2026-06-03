@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 import logfire
@@ -59,7 +60,7 @@ def _ensure_raw_history_db(session_id: str) -> None:
     logfire.debug("Raw session history database created: {path}", path=str(db_path))
 
 
-def push_raw_event(session_id: str, event_type: str, payload: dict) -> None:
+def push_raw_event(session_id: str, event_type: str, payload: dict[str, Any]) -> None:
     """Push a raw event to the session's history database.
 
     Called by the harness before any compaction operation.

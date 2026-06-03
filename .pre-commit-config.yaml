@@ -1,6 +1,21 @@
 repos:
-  - repo: https://github.com/facebook/pyrefly-pre-commit
-    rev: v1.0.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
     hooks:
-      - id: pyrefly-check
+      - id: ruff
+        args: [ --fix ]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: uv run mypy backend/
+        language: system
         pass_filenames: false
+        always_run: true
+      - id: pytest
+        name: pytest
+        entry: uv run pytest backend/tests/ -x -q --no-header
+        language: system
+        pass_filenames: false
+        always_run: true

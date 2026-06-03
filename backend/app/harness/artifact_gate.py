@@ -81,7 +81,7 @@ def _check_source_grounding(
 
 def _check_duplicate(
     artifact: Any,
-    existing_artifacts: list[dict] | None,
+    existing_artifacts: list[dict[str, Any]] | None,
     *,
     prompt_template_sha: str | None = None,
 ) -> list[str]:
@@ -163,7 +163,7 @@ async def validate_artifact(
     *,
     checker: ChunkExistenceChecker | None = None,
     sandbox: SandboxRunner | None = None,
-    existing_artifacts: list[dict] | None = None,
+    existing_artifacts: list[dict[str, Any]] | None = None,
     prompt_template_sha: str | None = None,
 ) -> ArtifactGateResult:
     """Run all four Artifact Gate checks on a generated artifact.

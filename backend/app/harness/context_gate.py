@@ -39,6 +39,7 @@ import tiktoken
 from pydantic import BaseModel, ConfigDict
 
 if TYPE_CHECKING:
+    from app.harness.graph_layer import GraphLayer
     from app.harness.tool_registry import ToolRegistry
 
 
@@ -149,7 +150,7 @@ class DefaultContextGate:
         memories_dir: Path | None = None,
         system_prompt: str = "",
         deep_source: bool = False,
-        graph_layer: Any | None = None,
+        graph_layer: GraphLayer | None = None,
     ) -> None:
         self._tool_registry = tool_registry
         self._memories_dir = memories_dir or Path("memories")
@@ -337,24 +338,23 @@ class DefaultContextGate:
             examples=examples_list,
         )
 
-        total_tokens = sum(
-            _count_tokens(s)
-            for s in [
-                ctx.system_slot,
-                ctx.task_intent,
-                ctx.workflow_template or "",
-                " ".join(ctx.tool_names),
-                ctx.memory_seed or "",
-                ctx.graph_seed or "",
-                " ".join(ctx.retrieved_chunks),
-                " ".join(ctx.history),
-                " ".join(ctx.examples),
-            ]
-        )
+        system_t = _count_tokens(ctx.system_slot)
+        intent_t = _count_tokens(ctx.task_intent)
+        workflow_t = _count_tokens(ctx.workflow_template or "")
+        tools_t = _count_tokens(" ".join(ctx.tool_names))
+        mem_t = _count_tokens(ctx.memory_seed or "")
+        graph_t = _count_tokens(ctx.graph_seed or "")
+        chunks_t = _count_tokens(" ".join(ctx.retrieved_chunks))
+        hist_t = _count_tokens(" ".join(ctx.history))
+        examples_t = _count_tokens(" ".join(ctx.examples))
+        total_tokens = sum([system_t, intent_t, workflow_t, tools_t, mem_t, graph_t, chunks_t, hist_t, examples_t])
         logfire.info(
-            "Context Gate assembled {total} tokens (deep_source={deep})",
-            total=total_tokens,
-            deep=effective_deep,
+            "Context Gate assembled {total} tokens (deep_source={deep}). "
+            "Slots: sys={sys}, intent={intent}, wf={wf}, tools={tools}, mem={mem}, "
+            "graph={graph}, chunks={chunks}, hist={hist}, ex={ex}",
+            total=total_tokens, deep=effective_deep,
+            sys=system_t, intent=intent_t, wf=workflow_t, tools=tools_t,
+            mem=mem_t, graph=graph_t, chunks=chunks_t, hist=hist_t, ex=examples_t
         )
         return ctx
 

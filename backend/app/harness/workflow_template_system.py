@@ -13,12 +13,57 @@ Per PRD-harness-layer.md §175-183:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import logfire
 
 
 class WorkflowNotFoundError(KeyError):
     """Raised when a workflow template is not found."""
+
+
+class CompositeWorkflowTemplate:
+    """A workflow template composed of multiple sub-templates.
+
+    Allows inserting templates into one another using {{template:name}} tags.
+    """
+
+    def __init__(self, system: WorkflowTemplateSystem, root_name: str) -> None:
+        self.system = system
+        self.root_name = root_name
+
+    def render(self, **kwargs: str) -> str:
+        """Render the composite template, recursively resolving {{template:name}} tags.
+        Then replaces standard {{var}} tags with kwargs."""
+        import re
+
+        def _resolve(name: str, seen: set[str]) -> str:
+            if name in seen:
+                raise ValueError(f"Circular dependency detected in templates: {name}")
+            seen.add(name)
+            content = self.system.lookup(name)
+            # Remove YAML front matter
+            parts = content.split("---", 2)
+            if len(parts) >= 3:
+                content = parts[2].strip()
+            elif len(parts) == 2:
+                content = parts[1].strip()
+
+            # Resolve sub-templates  # type: ignore
+            def replacer(match: re.Match) -> str:  # type: ignore
+                subname = match.group(1).strip()
+                return _resolve(subname, seen.copy())
+
+            content = re.sub(r"\{\{template:([^}]+)\}\}", replacer, content)
+            return content
+
+        text = _resolve(self.root_name, set())
+
+        # Replace standard variables
+        for k, v in kwargs.items():
+            text = text.replace(f"{{{{{k}}}}}", str(v))
+
+        return text
 
 
 class WorkflowTemplateSystem:
@@ -42,9 +87,7 @@ class WorkflowTemplateSystem:
         """Return all available workflow template names."""
         if not self._templates_dir.is_dir():
             return []
-        return sorted(
-            path.stem for path in self._templates_dir.glob("*.md")
-        )
+        return sorted(path.stem for path in self._templates_dir.glob("*.md"))
 
     def lookup(self, name: str) -> str:
         """Return the full template content for a workflow.
@@ -63,10 +106,12 @@ class WorkflowTemplateSystem:
 
         content = path.read_text(encoding="utf-8")
         self._cache[name] = content
-        logfire.debug("Loaded workflow template '{name}' ({size} chars)", name=name, size=len(content))
+        logfire.debug(
+            "Loaded workflow template '{name}' ({size} chars)", name=name, size=len(content)
+        )
         return content
 
-    def get_header(self, name: str) -> dict:
+    def get_header(self, name: str) -> dict:  # type: ignore
         """Parse and return the YAML-like front matter header.
 
         Returns a dict with keys: name, description, input_source_types,
@@ -79,7 +124,7 @@ class WorkflowTemplateSystem:
             return {}
 
         header_lines = parts[1].strip().split("\n")
-        header: dict = {}
+        header: dict[str, Any] = {}
         for line in header_lines:
             if ":" in line:
                 key, _, value = line.partition(":")

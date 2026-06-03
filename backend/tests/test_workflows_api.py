@@ -15,7 +15,7 @@ def client():
 
 
 def test_list_workflows_seeds_four_templates(client):
-    r = client.get("/api/workflows/")
+    r = client.get("/api/workflows")
     assert r.status_code == 200
     body = r.json()
     assert len(body["items"]) == 4
@@ -26,7 +26,7 @@ def test_list_workflows_seeds_four_templates(client):
 
 
 def test_seeded_templates_carry_extended_fields(client):
-    r = client.get("/api/workflows/")
+    r = client.get("/api/workflows")
     practice = next(w for w in r.json()["items"] if w["id"] == "wf-practice")
     assert practice["scope"] == "global"
     assert practice["subjectId"] is None
@@ -36,7 +36,7 @@ def test_seeded_templates_carry_extended_fields(client):
 
 
 def test_filter_by_scope_global(client):
-    r = client.get("/api/workflows/?scope=global")
+    r = client.get("/api/workflows?scope=global")
     assert r.status_code == 200
     for w in r.json()["items"]:
         assert w["scope"] == "global"
@@ -53,7 +53,7 @@ def test_create_patch_get_delete(client):
         "practiceConfig": {"count": 3, "difficulty": "hard", "scope": "topic"},
         "evalGates": 2,
     }
-    r = client.post("/api/workflows/", json=payload)
+    r = client.post("/api/workflows", json=payload)
     assert r.status_code == 201
     new_id = r.json()["id"]
     assert r.json()["scope"] == "subject"
@@ -137,7 +137,7 @@ def test_list_filter_pulls_global_with_subject_context(client):
             "subjectId": "subject-1",
         },
     )
-    r = client.get("/api/workflows/?subjectId=subject-1")
+    r = client.get("/api/workflows?subjectId=subject-1")
     names = {w["name"] for w in r.json()["items"]}
     assert "Per-subject pack" in names
     # global templates bubble up too
@@ -174,7 +174,7 @@ def test_run_workflow_400_on_global_workflow(client):
 
 def test_run_workflow_uses_workflow_scope_not_body(client):
     """The workflow's saved subjectId wins over a missing body value (X-2)."""
-    domains = client.get("/api/domains/").json()
+    domains = client.get("/api/domains").json()
     dom = next(d for d in domains if d["subjects"])
     subj = dom["subjects"][0]
 
@@ -207,7 +207,7 @@ def test_run_workflow_writes_eval_runs_succeeded_row(client, test_engine):
 
     from app.storage import eval_runs_repo
 
-    domains = client.get("/api/domains/").json()
+    domains = client.get("/api/domains").json()
     dom = next(d for d in domains if d["subjects"])
     subj = dom["subjects"][0]
 

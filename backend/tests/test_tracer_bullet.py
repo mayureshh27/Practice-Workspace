@@ -10,18 +10,18 @@ Per PRD-harness-layer.md §308-314:
   ``HintRequested`` event written with correct foreign keys.
 """
 
-import json
+from datetime import UTC
 from pathlib import Path
 
 import pytest
 
-from app.domain.events import PracticeAttempted, ConceptMasteryUpdated
-from app.harness.event_emitter import emit_event
+from app.domain.events import PracticeAttempted
+from app.harness.compaction_config import CompactionConfig
 from app.harness.context_gate import DefaultContextGate
 from app.harness.eval_gate import SocraticGate
-from app.harness.tool_registry import FileToolRegistry
+from app.harness.event_emitter import emit_event
 from app.harness.model_router import DefaultModelRouter
-from app.harness.compaction_config import CompactionConfig
+from app.harness.tool_registry import FileToolRegistry
 from app.storage import event_store
 
 
@@ -208,11 +208,11 @@ def test_named_harness_configs(db_session):
     Per ADR-0018.
     """
     from app.harness.named_configs import (
-        TUTOR_HARNESS_CONFIG,
-        INGESTION_HARNESS_CONFIG,
-        WORKFLOW_HARNESS_CONFIG,
-        SESSION_SUMMARY_HARNESS_CONFIG,
         EVAL_HARNESS_CONFIG,
+        INGESTION_HARNESS_CONFIG,
+        SESSION_SUMMARY_HARNESS_CONFIG,
+        TUTOR_HARNESS_CONFIG,
+        WORKFLOW_HARNESS_CONFIG,
     )
 
     # Tutor: no deep source, Socratic gate active
@@ -242,7 +242,7 @@ def test_named_harness_configs(db_session):
 
 def test_ingestion_agent_created(db_session):
     """Verify the IngestionAgent can be created with correct config."""
-    from app.agents.ingestion_agent import ingestion_agent, IngestionDeps
+    from app.agents.ingestion_agent import IngestionDeps, ingestion_agent
     assert ingestion_agent is not None
     # Verify it uses ingestion model routing
     deps = IngestionDeps(source_id="test", source_type="pdf")
@@ -251,7 +251,7 @@ def test_ingestion_agent_created(db_session):
 
 def test_workflow_agent_created(db_session):
     """Verify the WorkflowAgent can be created with correct config."""
-    from app.agents.workflow_agent import workflow_agent, WorkflowDeps
+    from app.agents.workflow_agent import WorkflowDeps, workflow_agent
     assert workflow_agent is not None
     deps = WorkflowDeps(
         session_id="test", workflow_name="create_exercise", source_ids=["s1"]
@@ -261,7 +261,7 @@ def test_workflow_agent_created(db_session):
 
 def test_eval_agent_created(db_session):
     """Verify the EvalAgent can be created with correct config."""
-    from app.agents.eval_agent import eval_agent, EvalDeps
+    from app.agents.eval_agent import EvalDeps, eval_agent
     assert eval_agent is not None
     deps = EvalDeps(eval_run_id="test", target_behavior="no_code_leak")
     assert deps.target_behavior == "no_code_leak"
@@ -274,17 +274,18 @@ def test_temporal_mastery_store_point_in_time(tmp_path):
     append-only edges. Point-in-time queries return the score at a
     specific prior timestamp.
     """
+    from datetime import datetime, timedelta
+
     from app.harness.temporal_mastery_store import TemporalMasteryStore
-    from datetime import datetime, timedelta, timezone
 
     db_path = tmp_path / "test_mastery.db"
     store = TemporalMasteryStore(db_path)
 
     concept = "concept-point-in-time"
 
-    t0 = datetime.now(timezone.utc) - timedelta(hours=2)
-    t1 = datetime.now(timezone.utc) - timedelta(hours=1)
-    t2 = datetime.now(timezone.utc)
+    t0 = datetime.now(UTC) - timedelta(hours=2)
+    t1 = datetime.now(UTC) - timedelta(hours=1)
+    t2 = datetime.now(UTC)
 
     store.append_mastery_edge(concept, 0.10, "event-1", t0)
     store.append_mastery_edge(concept, 0.20, "event-2", t1)
@@ -318,8 +319,9 @@ def test_temporal_mastery_store_point_in_time(tmp_path):
 
 def test_temporal_mastery_store_persists(tmp_path):
     """Verify TemporalMasteryStore persists across instances."""
+    from datetime import datetime
+
     from app.harness.temporal_mastery_store import TemporalMasteryStore
-    from datetime import datetime, timezone
 
     db_path = tmp_path / "test_persist.db"
     concept = "concept-persist"
@@ -327,7 +329,7 @@ def test_temporal_mastery_store_persists(tmp_path):
     # Write in one instance
     store1 = TemporalMasteryStore(db_path)
     store1.append_mastery_edge(
-        concept, 0.50, "event-1", datetime.now(timezone.utc),
+        concept, 0.50, "event-1", datetime.now(UTC),
     )
 
     # Read from a new instance
@@ -338,19 +340,20 @@ def test_temporal_mastery_store_persists(tmp_path):
 
 def test_temporal_mastery_store_caps_score(tmp_path):
     """Verify score bounds are enforced."""
+    from datetime import datetime
+
     from app.harness.temporal_mastery_store import TemporalMasteryStore
-    from datetime import datetime, timezone
 
     store = TemporalMasteryStore(tmp_path / "test_bounds.db")
 
     with pytest.raises(ValueError):
         store.append_mastery_edge(
-            "c1", 1.5, "e1", datetime.now(timezone.utc),
+            "c1", 1.5, "e1", datetime.now(UTC),
         )
 
     with pytest.raises(ValueError):
         store.append_mastery_edge(
-            "c1", -0.1, "e1", datetime.now(timezone.utc),
+            "c1", -0.1, "e1", datetime.now(UTC),
         )
 
 
@@ -361,9 +364,9 @@ def test_graphiti_mastery_store_basic(tmp_path):
     and point-in-time queryable. Graphiti should implement the same
     interface as TemporalMasteryStore.
     """
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timedelta
 
-    from app.harness.graphiti_mastery_store import GraphitiMasteryStore, _HAS_GRAPHITI
+    from app.harness.graphiti_mastery_store import _HAS_GRAPHITI, GraphitiMasteryStore
 
     if not _HAS_GRAPHITI:
         pytest.skip("graphiti-core not installed")
@@ -373,9 +376,9 @@ def test_graphiti_mastery_store_basic(tmp_path):
 
     concept = "graphiti-test-concept"
 
-    t0 = datetime.now(timezone.utc) - timedelta(hours=2)
-    t1 = datetime.now(timezone.utc) - timedelta(hours=1)
-    t2 = datetime.now(timezone.utc)
+    t0 = datetime.now(UTC) - timedelta(hours=2)
+    t1 = datetime.now(UTC) - timedelta(hours=1)
+    t2 = datetime.now(UTC)
 
     store.append_mastery_edge(concept, 0.10, "event-1", t0)
     store.append_mastery_edge(concept, 0.20, "event-2", t1)
@@ -410,6 +413,7 @@ def test_workflow_template_system(db_session):
     Per PRD-harness-layer.md §175-183 and ADR-0008.
     """
     from pathlib import Path
+
     from app.harness.workflow_template_system import WorkflowTemplateSystem
 
     # Templates are at the project root, not the backend directory

@@ -10,9 +10,9 @@ Write operations persist to SQLite event store so mutations survive restarts.
 
 from pathlib import Path
 import json
+from typing import Any
 
-from sqlmodel import Session, select
-
+from app.api.ids import new_id
 from app.config import get_settings
 from app.domain.workspace import (
     Chapter,
@@ -109,13 +109,13 @@ def get_topic(
 
 
 def add_domain(name: str) -> Domain:
-    domain = Domain(id=f"domain-{hash(name) % (2**31)}", name=name, subjects=[])
+    domain = Domain(id=new_id("domain"), name=name, subjects=[])
     _domains.append(domain)
     _persist()
     return domain
 
 
-def update_domain(domain_id: str, fields: dict) -> Domain | None:
+def update_domain(domain_id: str, fields: dict[str, Any]) -> Domain | None:
     domain = get_domain(domain_id)
     if domain is None:
         return None
@@ -140,10 +140,10 @@ def add_subject(domain_id: str, name: str, description: str | None = None) -> Su
     if domain is None:
         return None
     subject = Subject(
-        id=f"subject-{hash(name) % (2**31)}",
+        id=new_id("subject"),
         name=name,
         description=description,
-        chapters=[Chapter(id=f"c-init-{hash(name) % (2**31)}", name="Chapter 1: Foundations", topics=[])],
+        chapters=[Chapter(id=new_id("c-init"), name="Chapter 1: Foundations", topics=[])],
         resources=[],
     )
     domain.subjects.append(subject)
@@ -151,7 +151,7 @@ def add_subject(domain_id: str, name: str, description: str | None = None) -> Su
     return subject
 
 
-def update_subject(domain_id: str, subject_id: str, fields: dict) -> Subject | None:
+def update_subject(domain_id: str, subject_id: str, fields: dict[str, Any]) -> Subject | None:
     domain = get_domain(domain_id)
     if domain is None:
         return None
@@ -180,7 +180,7 @@ def add_chapter(domain_id: str, subject_id: str, name: str, description: str | N
     if subject is None:
         return None
     chapter = Chapter(
-        id=f"chapter-{hash(name) % (2**31)}",
+        id=new_id("chapter"),
         name=name,
         description=description or f"Learning modules for {name}.",
         topics=[],
@@ -190,7 +190,7 @@ def add_chapter(domain_id: str, subject_id: str, name: str, description: str | N
     return chapter
 
 
-def update_chapter(domain_id: str, subject_id: str, chapter_id: str, fields: dict) -> Chapter | None:
+def update_chapter(domain_id: str, subject_id: str, chapter_id: str, fields: dict[str, Any]) -> Chapter | None:
     chapter = get_chapter(domain_id, subject_id, chapter_id)
     if chapter is None:
         return None
@@ -209,7 +209,7 @@ def add_topic(domain_id: str, subject_id: str, chapter_id: str, name: str) -> To
     chapter = get_chapter(domain_id, subject_id, chapter_id)
     if chapter is None:
         return None
-    topic = Topic(id=f"topic-{hash(name) % (2**31)}", name=name, last_message="Not started")
+    topic = Topic(id=new_id("topic"), name=name, last_message="Not started")
     chapter.topics.append(topic)
     _persist()
     return topic

@@ -36,7 +36,9 @@ def init_db(settings: Settings) -> None:
     SQLModel.metadata.create_all(_engine)
 
 
-def get_engine():
+from typing import Any
+
+def get_engine() -> Any:
     """Return the initialised engine (for use in tests or manual scripts)."""
     if _engine is None:
         raise RuntimeError("Database not initialised. Call init_db() first.")

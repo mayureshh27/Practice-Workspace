@@ -50,6 +50,9 @@ def client(test_db_path):
     os.environ["PRACDA_DB_PATH"] = str(test_db_path)
 
     # Must import after setting env vars so Settings picks them up.
+    from app.config import get_settings
+    get_settings.cache_clear()
+
     from app.main import app
 
     with TestClient(app) as c:

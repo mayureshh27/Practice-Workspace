@@ -20,6 +20,8 @@ def client():
     return TestClient(create_app())
 
 
+
+
 def test_render_prompt_substitutes_placeholders():
     out = render_prompt(
         "Quiz on {{subject}} ({{chapter}}/{{topic}}) at {{difficulty}}, count={{count}}",
@@ -61,7 +63,7 @@ def test_extract_json_handles_fences_and_prose():
 
 def test_run_practice_404_on_unknown_workflow(client):
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-nope",
             "domainId": "go-programming",
@@ -74,7 +76,7 @@ def test_run_practice_404_on_unknown_workflow(client):
 def test_run_practice_400_on_empty_prompt_template(client):
     """wf-code-practice has an empty promptTemplate — should 400."""
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-code-practice",
             "domainId": "go-programming",
@@ -86,13 +88,13 @@ def test_run_practice_400_on_empty_prompt_template(client):
 
 
 def test_run_practice_returns_artifact(client):
-    domains = client.get("/api/domains/").json()
+    domains = client.get("/api/domains").json()
     dom = next(d for d in domains if d["subjects"])
     subj = dom["subjects"][0]
     chap = subj["chapters"][0]
 
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-practice",
             "domainId": dom["id"],
@@ -120,12 +122,12 @@ def test_run_practice_returns_artifact(client):
 
 def test_run_practice_pads_to_count_even_when_model_returns_short(client):
     """If the LLM returns 1 problem, we pad to 3 placeholders."""
-    domains = client.get("/api/domains/").json()
+    domains = client.get("/api/domains").json()
     dom = next(d for d in domains if d["subjects"])
     subj = dom["subjects"][0]
 
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-quiz",
             "domainId": dom["id"],
@@ -140,15 +142,15 @@ def test_run_practice_pads_to_count_even_when_model_returns_short(client):
 
 
 def test_run_practice_artifact_appears_in_artifacts_list(client):
-    domains = client.get("/api/domains/").json()
+    domains = client.get("/api/domains").json()
     dom = next(d for d in domains if d["subjects"])
     subj = dom["subjects"][0]
 
-    pre = client.get("/api/artifacts/").json()
+    pre = client.get("/api/artifacts").json()
     pre_count = len(pre)
 
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-summary",
             "domainId": dom["id"],
@@ -158,7 +160,7 @@ def test_run_practice_artifact_appears_in_artifacts_list(client):
     assert r.status_code == 201
     new_id = r.json()["id"]
 
-    after = client.get("/api/artifacts/").json()
+    after = client.get("/api/artifacts").json()
     assert len(after) == pre_count + 1
     assert after[0]["id"] == new_id
     assert after[0]["type"] == "Summary"
@@ -166,13 +168,13 @@ def test_run_practice_artifact_appears_in_artifacts_list(client):
 
 def test_run_practice_uses_workflow_practice_config_defaults(client):
     """When count/difficulty not in body, fall back to practiceConfig."""
-    domains = client.get("/api/domains/").json()
+    domains = client.get("/api/domains").json()
     dom = next(d for d in domains if d["subjects"])
     subj = dom["subjects"][0]
 
     # wf-practice has practiceConfig.count=5, difficulty=medium
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-practice",
             "domainId": dom["id"],
@@ -198,15 +200,16 @@ def test_run_practice_writes_eval_runs_succeeded_row(client, test_engine):
 
     from app.storage import eval_runs_repo
 
-    domains = client.get("/api/domains/").json()
+    domains = client.get("/api/domains").json()
     dom = next(d for d in domains if d["subjects"])
     subj = dom["subjects"][0]
 
-    pre = eval_runs_repo.list_runs(Session(test_engine), workflow_id="wf-practice")
-    pre_count = len(pre)
+    with Session(test_engine) as session:
+        pre = eval_runs_repo.list_runs(session, workflow_id="wf-practice")
+        pre_count = len(pre)
 
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-practice",
             "domainId": dom["id"],
@@ -248,11 +251,12 @@ def test_run_practice_no_eval_runs_row_on_unknown_workflow(client, test_engine):
 
     from app.storage import eval_runs_repo
 
-    pre = eval_runs_repo.list_runs(Session(test_engine), workflow_id="wf-nope")
-    pre_count = len(pre)
+    with Session(test_engine) as session:
+        pre = eval_runs_repo.list_runs(session, workflow_id="wf-nope")
+        pre_count = len(pre)
 
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-nope",
             "domainId": "go-programming",
@@ -271,11 +275,12 @@ def test_run_practice_no_eval_runs_row_on_empty_prompt(client, test_engine):
 
     from app.storage import eval_runs_repo
 
-    pre = eval_runs_repo.list_runs(Session(test_engine), workflow_id="wf-code-practice")
-    pre_count = len(pre)
+    with Session(test_engine) as session:
+        pre = eval_runs_repo.list_runs(session, workflow_id="wf-code-practice")
+        pre_count = len(pre)
 
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-code-practice",
             "domainId": "go-programming",
@@ -294,12 +299,12 @@ def test_run_practice_eval_runs_status_filter_sees_succeeded(client, test_engine
 
     from app.storage import eval_runs_repo
 
-    domains = client.get("/api/domains/").json()
+    domains = client.get("/api/domains").json()
     dom = next(d for d in domains if d["subjects"])
     subj = dom["subjects"][0]
 
     r = client.post(
-        "/api/practice-exercises/",
+        "/api/practice-exercises",
         json={
             "workflowId": "wf-quiz",
             "domainId": dom["id"],

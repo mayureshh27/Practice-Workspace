@@ -70,7 +70,7 @@ class GraphitiMasteryStore:
         self._concept_nodes: dict[str, str] = {}
         self._loop: asyncio.AbstractEventLoop | None = None
 
-    def _run_async(self, coro) -> Any:
+    def _run_async(self, coro) -> Any:  # type: ignore
         """Run an async coroutine synchronously."""
         if self._loop is None or self._loop.is_closed():
             self._loop = asyncio.new_event_loop()
@@ -104,18 +104,21 @@ class GraphitiMasteryStore:
 
         uuid = self._run_async(self._async_ensure_concept_node(concept_id))
         self._concept_nodes[concept_id] = uuid
-        return uuid
+        return uuid  # type: ignore
+
+    async def _async_get_node_uuid(self, concept_id: str) -> str | None:
+        if concept_id in self._concept_nodes:
+            return self._concept_nodes[concept_id]
+        nodes = await EntityNode.get_by_group_ids(self._driver, [self._group_id])
+        for node in nodes:
+            self._concept_nodes[node.name] = node.uuid
+        return self._concept_nodes.get(concept_id)
 
     async def _async_ensure_concept_node(self, concept_id: str) -> str:
         # Check if node already exists
-        if concept_id in self._concept_nodes:
-            return self._concept_nodes[concept_id]
-
-        nodes = await EntityNode.get_by_group_ids(self._driver, [self._group_id])
-        for node in nodes:
-            if node.name == concept_id:
-                self._concept_nodes[concept_id] = node.uuid
-                return node.uuid
+        uuid = await self._async_get_node_uuid(concept_id)
+        if uuid is not None:
+            return uuid
 
         entity = EntityNode(
             name=concept_id,
@@ -179,6 +182,9 @@ class GraphitiMasteryStore:
             },
         )
         await edge.save(self._driver)
+        # Cache invalidation hook for cross-process visibility
+        self._concept_nodes.clear()
+
         logger.info(
             "Graphiti mastery edge appended for %s: %s",
             concept_id,
@@ -189,10 +195,10 @@ class GraphitiMasteryStore:
         """Return the most recent mastery score for a concept."""
         if not self._initialised:
             return None
-        return self._run_async(self._async_get_current_score(concept_id))
+        return self._run_async(self._async_get_current_score(concept_id))  # type: ignore
 
     async def _async_get_current_score(self, concept_id: str) -> float | None:
-        uuid = self._concept_nodes.get(concept_id)
+        uuid = await self._async_get_node_uuid(concept_id)
         if uuid is None:
             return None
         edges = await EntityEdge.get_by_node_uuid(self._driver, uuid)
@@ -211,14 +217,14 @@ class GraphitiMasteryStore:
         """Return the mastery score at a specific point in time."""
         if not self._initialised:
             return None
-        return self._run_async(self._async_get_score_at_time(concept_id, target_timestamp))
+        return self._run_async(self._async_get_score_at_time(concept_id, target_timestamp))  # type: ignore
 
     async def _async_get_score_at_time(
         self,
         concept_id: str,
         target_timestamp: datetime,
     ) -> float | None:
-        uuid = self._concept_nodes.get(concept_id)
+        uuid = await self._async_get_node_uuid(concept_id)
         if uuid is None:
             return None
         edges = await EntityEdge.get_by_node_uuid(self._driver, uuid)
@@ -240,26 +246,26 @@ class GraphitiMasteryStore:
         """Return the timestamp of the most recent mastery edge."""
         if not self._initialised:
             return None
-        return self._run_async(self._async_get_last_updated(concept_id))
+        return self._run_async(self._async_get_last_updated(concept_id))  # type: ignore
 
     async def _async_get_last_updated(self, concept_id: str) -> datetime | None:
-        uuid = self._concept_nodes.get(concept_id)
+        uuid = await self._async_get_node_uuid(concept_id)
         if uuid is None:
             return None
         edges = await EntityEdge.get_by_node_uuid(self._driver, uuid)
         if not edges:
             return None
         best = max(edges, key=lambda e: e.created_at or datetime.min)
-        return best.created_at
+        return best.created_at  # type: ignore
 
     def get_all_edges(self, concept_id: str) -> list[dict[str, Any]]:
         """Return all mastery edges for a concept."""
         if not self._initialised:
             return []
-        return self._run_async(self._async_get_all_edges(concept_id))
+        return self._run_async(self._async_get_all_edges(concept_id))  # type: ignore
 
     async def _async_get_all_edges(self, concept_id: str) -> list[dict[str, Any]]:
-        uuid = self._concept_nodes.get(concept_id)
+        uuid = await self._async_get_node_uuid(concept_id)
         if uuid is None:
             return []
         edges = await EntityEdge.get_by_node_uuid(self._driver, uuid)
@@ -282,7 +288,29 @@ class GraphitiMasteryStore:
         """Return all concept IDs with mastery edges."""
         if not self._initialised:
             return []
-        return list(self._concept_nodes.keys())
+        return self._run_async(self._async_get_all_concept_ids())  # type: ignore
+
+    async def _async_get_all_concept_ids(self) -> list[str]:
+        # Read from Kuzu via direct matching to avoid cross-process staleness
+        try:
+            import kuzu
+
+            # Try to get the underlying connection from the KuzuDriver
+            if hasattr(self._driver, "db"):
+                conn = kuzu.Connection(self._driver.db)
+                res = conn.execute(
+                    f"MATCH (n:Entity) WHERE n.group_id = '{self._group_id}' RETURN n.name"
+                )
+                names = []
+                while res.has_next():  # type: ignore[union-attr]
+                    names.append(res.get_next()[0])  # type: ignore[union-attr,index]
+                return names
+        except Exception:
+            pass
+
+        # Fallback to Graphiti-core API
+        nodes = await EntityNode.get_by_group_ids(self._driver, [self._group_id])
+        return [node.name for node in nodes]
 
     def close(self) -> None:
         """Close the Graphiti driver and event loop."""

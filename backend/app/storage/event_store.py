@@ -7,10 +7,10 @@ Per ADR-0020, memory events are stored in SQLite and retrieved via SQL
 joins — never via vector similarity search in Qdrant.
 """
 
-
 from sqlmodel import Session, col, select
 
 from app.domain.events import (
+    ArtifactGenerated,
     BlindSpotDetected,
     ConceptMasteryUpdated,
     EventBase,
@@ -18,7 +18,6 @@ from app.domain.events import (
     PracticeAttempted,
     SessionSummaryCreated,
     SourceIngested,
-    ArtifactGenerated,
 )
 
 # All concrete event types for polymorphic reads.
@@ -46,9 +45,7 @@ def append_event(session: Session, event: EventBase) -> None:
 # ── Read paths (Context Gate, agents, UI) ───────────────────────────
 
 
-def get_events_by_session(
-    session: Session, session_id: str
-) -> list[EventBase]:
+def get_events_by_session(session: Session, session_id: str) -> list[EventBase]:
     """Return all events for a session, ordered by timestamp."""
     results: list[EventBase] = []
     for event_cls in EVENT_TYPES:
@@ -62,9 +59,7 @@ def get_events_by_session(
     return results
 
 
-def get_practice_events_for_concept(
-    session: Session, concept_id: str
-) -> list[PracticeAttempted]:
+def get_practice_events_for_concept(session: Session, concept_id: str) -> list[PracticeAttempted]:
     """Return practice attempts for a concept, ordered by timestamp."""
     statement = (
         select(PracticeAttempted)
@@ -74,13 +69,9 @@ def get_practice_events_for_concept(
     return list(session.exec(statement).all())
 
 
-def get_blind_spots(
-    session: Session, *, resolved: bool = False
-) -> list[BlindSpotDetected]:
+def get_blind_spots(session: Session, *, resolved: bool = False) -> list[BlindSpotDetected]:
     """Return active (or resolved) Blind Spots."""
-    statement = select(BlindSpotDetected).order_by(
-        col(BlindSpotDetected.timestamp).desc()
-    )
+    statement = select(BlindSpotDetected).order_by(col(BlindSpotDetected.timestamp).desc())
     if resolved:
         statement = statement.where(col(BlindSpotDetected.resolved_at).is_not(None))
     else:
@@ -88,9 +79,7 @@ def get_blind_spots(
     return list(session.exec(statement).all())
 
 
-def get_mastery_for_concept(
-    session: Session, concept_id: str
-) -> ConceptMasteryUpdated | None:
+def get_mastery_for_concept(session: Session, concept_id: str) -> ConceptMasteryUpdated | None:
     """Return the latest mastery event for a concept."""
     statement = (
         select(ConceptMasteryUpdated)
@@ -100,11 +89,7 @@ def get_mastery_for_concept(
     return session.exec(statement).first()
 
 
-def get_session_summary(
-    session: Session, session_id: str
-) -> SessionSummaryCreated | None:
+def get_session_summary(session: Session, session_id: str) -> SessionSummaryCreated | None:
     """Return the session summary for a given session."""
-    statement = select(SessionSummaryCreated).where(
-        SessionSummaryCreated.session_id == session_id
-    )
+    statement = select(SessionSummaryCreated).where(SessionSummaryCreated.session_id == session_id)
     return session.exec(statement).first()

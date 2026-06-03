@@ -22,12 +22,11 @@ if [ -n "$TS_FILES" ]; then
 fi
 
 if [ -n "$PY_FILES" ]; then
-  echo "==> backend ruff format + check on $(echo "$PY_FILES" | wc -l) files"
+  echo "==> backend strict checks (ruff, mypy, pytest)"
   cd "$REPO_ROOT/backend"
-  PY_FILES_REL=$(echo "$PY_FILES" | sed 's|^backend/||' | tr '\\' '/')
-  uv run ruff format $PY_FILES_REL
-  uv run ruff check --fix $PY_FILES_REL || echo "    ruff check found unfixable issues; see docs/reviews/code-review-by-layer.md (fix in Phase 14)"
-  echo "==> backend pyrefly check"
-  uvx pyrefly check --summarize-errors
+  uv run ruff check app/ tests/
+  uv run ruff format --check app/ tests/
+  uv run mypy app/
+  uv run pytest tests/ -x -q --no-header
   cd "$REPO_ROOT"
 fi

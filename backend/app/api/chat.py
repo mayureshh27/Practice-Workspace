@@ -8,13 +8,16 @@ POST /api/chat/sessions/{id}/end — end session and trigger summary
 from __future__ import annotations
 
 import asyncio
+from collections.abc import AsyncGenerator
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Path, Request
+from fastapi import APIRouter, HTTPException, Path
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from app.agents import session_service, tutor_service
+from app.dependencies import AppStateDep
+from app.exceptions import ChatTurnError, SessionEndError
 from app.storage.database import DatabaseDep
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
@@ -68,7 +71,7 @@ def create_chat_session() -> SessionCreateResponse:
 async def send_message(
     body: ChatMessageRequest,
     db_session: DatabaseDep,
-    request: Request,
+    app_state: AppStateDep,
 ) -> ChatMessageResponse:
     """Send a message to the Socratic tutor and receive a response.
 
@@ -82,14 +85,14 @@ async def send_message(
             user_message=body.message,
             concept_ids=body.concept_ids,
             source_ids=body.source_ids,
-            retrieval_router=getattr(request.app.state, "retrieval_router", None),
-            graph_layer=getattr(request.app.state, "graph_layer", None),
+            retrieval_router=app_state.retrieval_router,
+            graph_layer=app_state.graph_layer,
         )
         return ChatMessageResponse(
             session_id=body.session_id,
             response=response_text,
         )
-    except Exception as e:
+    except ChatTurnError as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
@@ -97,7 +100,7 @@ async def send_message(
 async def send_message_stream(
     body: ChatMessageRequest,
     db_session: DatabaseDep,
-    request: Request,
+    app_state: AppStateDep,
 ) -> StreamingResponse:
     """Send a message and receive the response as an SSE stream.
 
@@ -105,7 +108,7 @@ async def send_message_stream(
     The final event is ``data: [DONE]\\n\\n``.
     """
 
-    async def event_stream():
+    async def event_stream() -> AsyncGenerator[str, None]:
         try:
             response_text = await tutor_service.handle_chat_turn(
                 db_session=db_session,
@@ -113,8 +116,8 @@ async def send_message_stream(
                 user_message=body.message,
                 concept_ids=body.concept_ids,
                 source_ids=body.source_ids,
-                retrieval_router=getattr(request.app.state, "retrieval_router", None),
-                graph_layer=getattr(request.app.state, "graph_layer", None),
+                retrieval_router=app_state.retrieval_router,
+                graph_layer=app_state.graph_layer,
             )
 
             # Simulate streaming by sending word-by-word
@@ -129,7 +132,7 @@ async def send_message_stream(
 
             yield "data: [DONE]\n\n"
 
-        except Exception as e:
+        except ChatTurnError as e:
             yield f"data: Error: {e}\n\n"
             yield "data: [DONE]\n\n"
 
@@ -161,5 +164,5 @@ async def end_chat_session(
             summary_text=summary.summary_text if summary else None,
             event_count=summary.event_count if summary else 0,
         )
-    except Exception as e:
+    except SessionEndError as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

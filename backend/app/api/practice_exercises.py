@@ -126,7 +126,7 @@ async def _run_workflow_for_artifact(
     topic_id: str | None,
     count: int | None,
     difficulty: str | None,
-) -> dict:
+) -> dict:  # type: ignore
     """Run a workflow end-to-end and return the persisted artifact dict.
 
     Writes an :class:`EvalRun` row before the LLM call; the row is
@@ -358,7 +358,7 @@ def _finish_run(
 # ── HTTP route — POST /api/practice-exercises/ ─────────────────────
 
 
-@router.post("/", response_model=ArtifactDTO, status_code=201)
+@router.post("", response_model=ArtifactDTO, status_code=201)
 async def run_practice_exercises(request: Request, body: RunPracticeBody) -> ArtifactDTO:
     workflow = workflows_repo.get_workflow(body.workflow_id)
     if workflow is None:

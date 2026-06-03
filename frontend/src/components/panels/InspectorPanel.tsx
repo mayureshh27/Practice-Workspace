@@ -1,5 +1,5 @@
-import {RefreshCw, ChevronDown, ChevronRight, Clock} from 'lucide-react';
-import {useState} from 'react';
+import { RefreshCw, ChevronDown, ChevronRight, Clock } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -26,16 +26,28 @@ const INITIAL_RUN: WorkflowRun = {
   latency: '4.2s',
   timestamp: new Date().toLocaleTimeString(),
   checks: [
-    {id: 'e1', name: 'Schema Validation', status: 'pass', latency: '0.3s', log: '✓ Output matches PracticeArtifact schema\n✓ All required fields present\n✓ 5 exercises generated\n✓ difficulty field valid'},
-    {id: 'e2', name: 'Sandbox Execution', status: 'pass', latency: '1.8s', log: '✓ Exercise 1: code compiles and runs\n✓ Exercise 2: code compiles and runs\n✓ Exercise 3: code compiles and runs\n✓ Exercise 4: expected output matches\n✓ Exercise 5: expected output matches'},
-    {id: 'e3', name: 'Source Grounding', status: 'warn', latency: '2.1s', log: '✓ Exercise 1: grounded in chunk c1\n✓ Exercise 2: grounded in chunk c3\n⚠ Exercise 3: no direct source match found\n✓ Exercise 4: grounded in chunk c2\n✓ Exercise 5: grounded in chunk c1'},
+    {
+      id: 'e1',
+      name: 'Schema Validation',
+      status: 'pass',
+      latency: '0.3s',
+      log: '✓ Output matches PracticeArtifact schema\n✓ All required fields present\n✓ 5 exercises generated\n✓ difficulty field valid',
+    },
+    {
+      id: 'e2',
+      name: 'Sandbox Execution',
+      status: 'pass',
+      latency: '1.8s',
+      log: '✓ Exercise 1: code compiles and runs\n✓ Exercise 2: code compiles and runs\n✓ Exercise 3: code compiles and runs\n✓ Exercise 4: expected output matches\n✓ Exercise 5: expected output matches',
+    },
+    {
+      id: 'e3',
+      name: 'Source Grounding',
+      status: 'warn',
+      latency: '2.1s',
+      log: '✓ Exercise 1: grounded in chunk c1\n✓ Exercise 2: grounded in chunk c3\n⚠ Exercise 3: no direct source match found\n✓ Exercise 4: grounded in chunk c2\n✓ Exercise 5: grounded in chunk c1',
+    },
   ],
-};
-
-const STATUS_COLOR: Record<EvalCheck['status'], string> = {
-  pass: 'text-primary',
-  warn: 'text-[#f59e0b]',
-  fail: 'text-destructive',
 };
 
 function InspectorPanel() {
@@ -46,22 +58,23 @@ function InspectorPanel() {
   const handleRerun = () => {
     setRerunning(true);
     setTimeout(() => {
-      setRun(prev => ({
+      setRun((prev) => ({
         ...prev,
         id: 'wf_' + Math.random().toString(36).slice(2, 8),
         timestamp: new Date().toLocaleTimeString(),
         latency: (3 + Math.random() * 3).toFixed(1) + 's',
-        checks: prev.checks.map(c => ({
+        checks: prev.checks.map((c) => ({
           ...c,
           latency: (Math.random() * 3).toFixed(1) + 's',
-          status: Math.random() > 0.15 ? 'pass' : 'warn' as 'pass' | 'warn' | 'fail',
+          status: Math.random() > 0.15 ? 'pass' : ('warn' as 'pass' | 'warn' | 'fail'),
         })),
       }));
       setRerunning(false);
     }, 2000);
   };
 
-  const statusBorderColor = (s: string) => s === 'pass' ? "hsl(var(--primary))" : s === 'warn' ? "#f59e0b" : "hsl(var(--destructive))";
+  const statusBorderColor = (s: string) =>
+    s === 'pass' ? 'hsl(var(--primary))' : s === 'warn' ? '#f59e0b' : 'hsl(var(--destructive))';
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
@@ -73,7 +86,7 @@ function InspectorPanel() {
           size="sm"
           onClick={handleRerun}
           disabled={rerunning}
-          className={cn("h-7 text-xs", rerunning ? 'text-muted-foreground' : 'text-primary')}
+          className={cn('h-7 text-xs', rerunning ? 'text-muted-foreground' : 'text-primary')}
         >
           <RefreshCw size={10} className={rerunning ? 'animate-spin' : ''} />
           {rerunning ? 'Running...' : 'Re-run Evals'}
@@ -104,7 +117,7 @@ function InspectorPanel() {
 
       <div className="bg-card border border-border rounded-md p-3 flex flex-col gap-2">
         <div className="text-foreground font-medium">Eval Checks</div>
-        {run.checks.map(check => (
+        {run.checks.map((check) => (
           <div key={check.id}>
             <button
               type="button"
@@ -112,12 +125,25 @@ function InspectorPanel() {
               className="flex items-center justify-between w-full py-1.5 bg-transparent border-0 border-b border-border cursor-pointer text-muted-foreground"
             >
               <span className="flex items-center gap-1.5">
-                {expandedCheck === check.id ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                {expandedCheck === check.id ? (
+                  <ChevronDown size={12} />
+                ) : (
+                  <ChevronRight size={12} />
+                )}
                 <span className="text-[11px]">{check.name}</span>
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="text-xs text-muted-foreground">{check.latency}</span>
-                <Badge variant={check.status === 'pass' ? 'default' : check.status === 'warn' ? 'secondary' : 'destructive'} className="text-[10px] font-bold uppercase tracking-wider">
+                <Badge
+                  variant={
+                    check.status === 'pass'
+                      ? 'default'
+                      : check.status === 'warn'
+                        ? 'secondary'
+                        : 'destructive'
+                  }
+                  className="text-[10px] font-bold uppercase tracking-wider"
+                >
                   {check.status}
                 </Badge>
               </span>

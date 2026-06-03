@@ -26,7 +26,7 @@ class IngestionGateResult(BaseModel):
     warnings: list[str] = []
 
 
-def _check_chunk_citations(chunks: list[dict]) -> list[str]:
+def _check_chunk_citations(chunks: list[dict[str, Any]]) -> list[str]:
     """Every chunk carries mandatory citation metadata.
 
     Required fields: source_id, chunk_index, page_or_timestamp.
@@ -47,7 +47,7 @@ def _check_chunk_citations(chunks: list[dict]) -> list[str]:
 
 
 def _check_concept_candidates(
-    candidates: list[dict],
+    candidates: list[dict[str, Any]],
     min_alias_count: int = 1,
 ) -> list[str]:
     """Concept candidates meet minimum alias resolution requirements."""
@@ -74,14 +74,14 @@ def _check_graph_facts(graph_facts: list[Any]) -> list[str]:
             except ValidationError as exc:
                 failures.append(f"graph_fact[{i}]: validation error — {exc}")
         elif isinstance(fact, dict) and ("source" not in fact or "target" not in fact):
-            failures.append(f"graph_fact[{i}]: dict missing required 'source' or 'target' key")
+            failures.append(f"graph_fact[{i}]: dict[str, Any] missing required 'source' or 'target' key")
     return failures
 
 
 def validate_ingestion_stage(
     *,
-    chunks: list[dict] | None = None,
-    concept_candidates: list[dict] | None = None,
+    chunks: list[dict[str, Any]] | None = None,
+    concept_candidates: list[dict[str, Any]] | None = None,
     graph_facts: list[Any] | None = None,
 ) -> IngestionGateResult:
     """Run all three Ingestion Gate checks on an ingestion stage output.

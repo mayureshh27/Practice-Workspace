@@ -1,16 +1,19 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import WorkflowManagerScreen from '../components/WorkflowManagerScreen'
-import { useWorkspaceStore } from '../stores/workspaceStore'
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import WorkflowManagerScreen from '../components/WorkflowManagerScreen';
+import { workflowQueries } from '../api/queries';
+import { useDeleteWorkflowMutation, useDuplicateWorkflowMutation } from '../api/mutations';
 
 export const Route = createFileRoute('/workflows')({
   component: WorkflowsRoute,
-})
+});
 
 function WorkflowsRoute() {
-  const workflows = useWorkspaceStore(s => s.workflows)
-  const deleteWorkflow = useWorkspaceStore(s => s.deleteWorkflow)
-  const duplicateWorkflow = useWorkspaceStore(s => s.duplicateWorkflow)
-  const navigate = useNavigate()
+  const { data: workflowsResp } = useQuery(workflowQueries.list());
+  const workflows = workflowsResp?.items || [];
+  const { mutate: deleteWorkflow } = useDeleteWorkflowMutation();
+  const { mutate: duplicateWorkflow } = useDuplicateWorkflowMutation();
+  const navigate = useNavigate();
 
   return (
     <WorkflowManagerScreen
@@ -19,12 +22,12 @@ function WorkflowsRoute() {
         if (loc.level === 'workflow-editor') {
           navigate({
             to: '/workflow-editor',
-            search: { id: loc.workflowId }
-          })
+            search: { id: loc.workflowId },
+          });
         }
       }}
       onDelete={deleteWorkflow}
       onDuplicate={duplicateWorkflow}
     />
-  )
+  );
 }

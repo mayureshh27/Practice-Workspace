@@ -21,7 +21,6 @@ from app.harness.context_gate import (
     _truncate,
 )
 
-
 # ── 1. Tiktoken budget enforcement (C-H1) ───────────────────────────
 
 

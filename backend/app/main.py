@@ -24,6 +24,7 @@ from app.harness.eval_gate import SocraticGate
 from app.harness.model_router import DefaultModelRouter
 from app.harness.tool_registry import FileToolRegistry
 from app.seed import build_seed_domains
+from app.state import AppState
 from app.storage import workflows_repo, workspace_repo
 from app.storage.database import init_db
 
@@ -86,22 +87,25 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     )
     socratic_gate = SocraticGate()
 
-    # ── Artifacts store (populated by workflow agents) ──────────────
-    app.state.artifacts = []
+    # ── AppState container (typed state) ────────────────────────────
+    app.state.custom = AppState(
+        model_router=model_router,
+        context_gate=context_gate,
+        socratic_gate=socratic_gate,
+        retrieval_router=retrieval_router,
+        graph_layer=graph_layer,
+        artifacts=[],
+    )
 
-
-    # Store on app.state so route handlers can access them
+    # We keep tool_registry here for backwards compatibility if needed
     app.state.tool_registry = tool_registry
-    app.state.context_gate = context_gate
-    app.state.socratic_gate = socratic_gate
-    app.state.retrieval_router = retrieval_router
-    app.state.graph_layer = graph_layer
 
     # ── Periodic Compaction Task (H-H7) ─────────────────────────────
     import asyncio
+
     from app.harness.compaction_config import compact_history
 
-    async def run_compaction_loop():
+    async def run_compaction_loop() -> None:
         logfire.info("Lifespan task: periodic history compaction loop started")
         try:
             while True:
@@ -115,11 +119,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     yield
 
     compaction_task.cancel()
-    try:
+    import contextlib
+    with contextlib.suppress(asyncio.CancelledError):
         await compaction_task
-    except asyncio.CancelledError:
-        pass
-
 
 
 def create_app() -> FastAPI:
@@ -146,6 +148,21 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    from typing import Any
+
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from starlette.requests import Request as StarletteRequest
+    from starlette.responses import RedirectResponse
+
+    class TrailingSlashRedirect(BaseHTTPMiddleware):
+        async def dispatch(self, request: StarletteRequest, call_next: Any) -> Any:
+            if request.url.path != "/" and request.url.path.endswith("/"):
+                url = str(request.url).rstrip("/")
+                return RedirectResponse(url=url, status_code=307)
+            return await call_next(request)
+
+    app.add_middleware(TrailingSlashRedirect)
 
     from app.api.artifacts import router as artifacts_router
     from app.api.chat import router as chat_router

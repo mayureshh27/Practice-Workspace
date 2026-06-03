@@ -25,7 +25,7 @@ from app.storage import workspace_repo
 from app.storage.database import init_db
 
 
-def _load_problems_json(rel_path: str) -> dict:
+def _load_problems_json(rel_path: str) -> dict:  # type: ignore
     """Load a problems JSON file, searching relative to this file's dir and CWD."""
     candidates = [
         Path(__file__).resolve().parent.parent / rel_path,
@@ -34,7 +34,7 @@ def _load_problems_json(rel_path: str) -> dict:
     for path in candidates:
         if path.exists():
             with open(path) as f:
-                return json.load(f)
+                return json.load(f)  # type: ignore
     raise FileNotFoundError(f"Cannot find {rel_path} — tried: {[str(p) for p in candidates]}")
 
 

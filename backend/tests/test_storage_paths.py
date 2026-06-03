@@ -35,7 +35,7 @@ def test_data_path_is_cwd_invariant(tmp_path) -> None:
         # contract is "the first import wins"; the chdir below
         # confirms that subsequent cwd changes don't move the
         # root.
-        from app.storage import data_path as fresh_data_path  # noqa: PLC0415
+        from app.storage import data_path as fresh_data_path
 
         p = fresh_data_path("cwd_invariance_check.db")
         assert p.is_absolute()

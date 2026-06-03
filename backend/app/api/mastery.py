@@ -23,8 +23,10 @@ router = APIRouter(prefix="/api/mastery", tags=["mastery"])
 
 # ── Response models ─────────────────────────────────────────────────
 
+
 class ConceptMastery(BaseModel):
     """Current mastery state for a single concept."""
+
     concept_id: str
     mastery_score: float
     previous_mastery: float
@@ -34,12 +36,14 @@ class ConceptMastery(BaseModel):
 
 class MasteryHistory(BaseModel):
     """Full mastery history for a concept."""
+
     concept_id: str
     history: list[ConceptMastery]
 
 
 class BlindSpot(BaseModel):
     """An active blind spot."""
+
     concept_id: str
     attempt_count: int
     session_count: int
@@ -48,6 +52,7 @@ class BlindSpot(BaseModel):
 
 class SessionSummary(BaseModel):
     """A session summary."""
+
     session_id: str
     summary_text: str
     concepts_covered: list[str] = []
@@ -57,13 +62,11 @@ class SessionSummary(BaseModel):
 
 # ── Endpoints ───────────────────────────────────────────────────────
 
+
 @router.get("/concepts")
 def list_concept_mastery(db_session: DatabaseDep) -> list[ConceptMastery]:
     """Return the latest mastery score for all practiced concepts."""
-    statement = (
-        select(ConceptMasteryUpdated)
-        .order_by(col(ConceptMasteryUpdated.timestamp).desc())
-    )
+    statement = select(ConceptMasteryUpdated).order_by(col(ConceptMasteryUpdated.timestamp).desc())
     all_updates = db_session.exec(statement).all()
 
     # Deduplicate: keep only the latest per concept
@@ -72,13 +75,15 @@ def list_concept_mastery(db_session: DatabaseDep) -> list[ConceptMastery]:
     for update in all_updates:
         if update.concept_id not in seen:
             seen.add(update.concept_id)
-            results.append(ConceptMastery(
-                concept_id=update.concept_id,
-                mastery_score=update.new_mastery,
-                previous_mastery=update.previous_mastery,
-                trigger_event_id=update.trigger_event_id,
-                updated_at=update.timestamp.isoformat() if update.timestamp else None,
-            ))
+            results.append(
+                ConceptMastery(
+                    concept_id=update.concept_id,
+                    mastery_score=update.new_mastery,
+                    previous_mastery=update.previous_mastery,
+                    trigger_event_id=update.trigger_event_id,
+                    updated_at=update.timestamp.isoformat() if update.timestamp else None,
+                )
+            )
 
     return results
 
