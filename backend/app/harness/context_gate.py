@@ -122,7 +122,14 @@ def _truncate(text: str, budget: int) -> tuple[str, int]:
     tokens = enc.encode(text)
     if len(tokens) <= budget:
         return text, observed
-    head = enc.decode(tokens[:budget])
+
+    marker = " [truncated]"
+    marker_tokens = _count_tokens(marker)
+    eff_budget = budget - marker_tokens
+    if eff_budget <= 0:
+        return marker, marker_tokens
+
+    head = enc.decode(tokens[:eff_budget])
     last_boundary = -1
     for i in range(len(head) - 1, 0, -1):
         ch = head[i]
@@ -131,7 +138,7 @@ def _truncate(text: str, budget: int) -> tuple[str, int]:
             break
     if last_boundary > 0:
         head = head[:last_boundary].rstrip()
-    truncated = head + " [truncated]"
+    truncated = head + marker
     return truncated, _count_tokens(truncated)
 
 
@@ -294,6 +301,10 @@ class DefaultContextGate:
                     budget=budgets["history"],
                 )
                 history_list = truncated.split("\n")
+                if history_list and history_list[-1].endswith(" [truncated]"):
+                    history_list.pop()
+                    if history_list:
+                        history_list[-1] = history_list[-1] + " [truncated]"
 
         examples_list = list(examples or [])
         if examples_list:
@@ -306,6 +317,10 @@ class DefaultContextGate:
                     budget=budgets["examples"],
                 )
                 examples_list = truncated.split("\n")
+                if examples_list and examples_list[-1].endswith(" [truncated]"):
+                    examples_list.pop()
+                    if examples_list:
+                        examples_list[-1] = examples_list[-1] + " [truncated]"
 
         workflow_text: str | None = workflow_name
         if workflow_text:
