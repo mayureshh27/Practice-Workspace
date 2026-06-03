@@ -159,7 +159,15 @@ EVAL_HARNESS_CONFIG = HarnessConfig(
     compaction_enabled=False,
     system_prompt=(
         "You are an Eval Agent for the Adaptive Practice Workspace. "
-        "Generate adversarial test cases to validate the platform's "
-        "pedagogical safety and content quality."
+        "Guide and evaluate safety/correctness."
     ),
 )
+
+
+NAMED_CONFIGS: dict[str, HarnessConfig] = {
+    "tutor": TUTOR_HARNESS_CONFIG,
+    "ingestion": INGESTION_HARNESS_CONFIG,
+    "workflow": WORKFLOW_HARNESS_CONFIG,
+    "session_summary": SESSION_SUMMARY_HARNESS_CONFIG,
+    "eval": EVAL_HARNESS_CONFIG,
+}

@@ -6,10 +6,92 @@ GET /api/sources/{id}/chunks — list chunk previews for a source
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Request, BackgroundTasks
+from pydantic import BaseModel, Field
+from typing import Any
 
 router = APIRouter(prefix="/api/sources", tags=["sources"])
+
+
+class IngestSourceBody(BaseModel):
+    source_id: str = Field(alias="sourceId")
+    source_type: str = Field(alias="sourceType")
+    source_name: str = Field(alias="sourceName")
+    chunks: list[dict] | None = None
+    concept_candidates: list[dict] | None = Field(alias="conceptCandidates", default=None)
+    graph_facts: list[Any] | None = Field(alias="graphFacts", default=None)
+
+    model_config = {"populate_by_name": True}
+
+
+def run_ingestion_in_background(
+    source_id: str,
+    source_type: str,
+    source_name: str,
+    chunks: list[dict] | None,
+    concept_candidates: list[dict] | None,
+    graph_facts: list[Any] | None,
+) -> None:
+    from app.harness.ingestion_gate import validate_ingestion_stage
+    from app.harness.event_emitter import emit_event
+    from app.domain.events import SourceIngested
+    from app.storage.database import get_engine
+    from sqlmodel import Session
+    import logfire
+
+    gate_result = validate_ingestion_stage(
+        chunks=chunks,
+        concept_candidates=concept_candidates,
+        graph_facts=graph_facts,
+    )
+    if not gate_result.passed:
+        logfire.warning(
+            "Ingestion Gate failed for source {source_id}: {failures}",
+            source_id=source_id,
+            failures="; ".join(gate_result.failures),
+        )
+        return
+
+    try:
+        with Session(get_engine()) as session:
+            emit_event(
+                session,
+                SourceIngested(
+                    source_id=source_id,
+                    source_type=source_type,
+                    source_name=source_name,
+                    chunk_count=len(chunks) if chunks else 0,
+                ),
+            )
+    except Exception as exc:
+        logfire.error(
+            "Failed to emit SourceIngested event for source {source_id}: {error}",
+            source_id=source_id,
+            error=str(exc),
+        )
+
+
+@router.post("/ingest", status_code=202)
+def ingest_source(
+    body: IngestSourceBody,
+    background_tasks: BackgroundTasks,
+) -> dict[str, str]:
+    """Ingest a learning source asynchronously.
+
+    Runs validation via the Ingestion Gate first, and if passed,
+    emits the SourceIngested event.
+    """
+    background_tasks.add_task(
+        run_ingestion_in_background,
+        source_id=body.source_id,
+        source_type=body.source_type,
+        source_name=body.source_name,
+        chunks=body.chunks,
+        concept_candidates=body.concept_candidates,
+        graph_facts=body.graph_facts,
+    )
+    return {"status": "accepted"}
+
 
 
 class ChunkPreview(BaseModel):

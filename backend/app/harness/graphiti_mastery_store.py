@@ -34,8 +34,8 @@ try:
 
     _HAS_GRAPHITI = True
 except ImportError:
-    EntityEdge = None  # type: ignore[assignment]
-    EntityNode = None  # type: ignore[assignment]
+    EntityEdge: Any = None  # type: ignore[no-redef]
+    EntityNode: Any = None  # type: ignore[no-redef]
 
 
 def _naive(dt: datetime | None) -> datetime | None:

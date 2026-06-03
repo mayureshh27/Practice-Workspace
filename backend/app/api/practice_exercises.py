@@ -195,6 +195,17 @@ async def _run_workflow_for_artifact(
             err=str(exc),
         )
 
+    # Resolve active source IDs from the subject's resources
+    source_ids: list[str] = []
+    try:
+        domain = workspace_repo.get_domain(domain_id)
+        if domain:
+            subject = next((s for s in domain.subjects if s.id == subject_id), None)
+            if subject:
+                source_ids = [r.id for r in subject.resources]
+    except Exception as exc:  # pragma: no cover
+        logfire.warning("Failed to resolve source_ids for context routing: {err}", err=str(exc))
+
     try:
         typed_payload = await practice_agent.generate_practice(
             prompt,
@@ -202,7 +213,10 @@ async def _run_workflow_for_artifact(
             difficulty=resolved_difficulty,
             workflow_id=workflow.id,
             workflow_name=workflow.name,
+            context_gate=getattr(request.app.state, "context_gate", None),
+            source_ids=source_ids,
         )
+
     except ValidationError as exc:
         _finish_run(
             run_id,

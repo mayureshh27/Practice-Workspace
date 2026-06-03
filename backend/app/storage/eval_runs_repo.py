@@ -20,7 +20,7 @@ import json
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from sqlmodel import Field, Session, SQLModel, select
+from sqlmodel import Field, Session, SQLModel, col, select
 
 
 def _utcnow() -> datetime:
@@ -172,7 +172,7 @@ def list_runs(
     limit: int = 50,
 ) -> list[EvalRun]:
     """Return runs filtered by workflow / artifact / status, newest first."""
-    statement = select(EvalRun).order_by(EvalRun.started_at.desc()).limit(limit)
+    statement = select(EvalRun).order_by(col(EvalRun.started_at).desc()).limit(limit)
     if workflow_id is not None:
         statement = statement.where(EvalRun.workflow_id == workflow_id)
     if artifact_id is not None:

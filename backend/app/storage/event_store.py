@@ -8,7 +8,7 @@ joins — never via vector similarity search in Qdrant.
 """
 
 
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from app.domain.events import (
     BlindSpotDetected,
@@ -55,7 +55,7 @@ def get_events_by_session(
         statement = (
             select(event_cls)
             .where(event_cls.session_id == session_id)
-            .order_by(event_cls.timestamp)
+            .order_by(col(event_cls.timestamp))
         )
         results.extend(session.exec(statement).all())
     results.sort(key=lambda e: e.timestamp)
@@ -69,7 +69,7 @@ def get_practice_events_for_concept(
     statement = (
         select(PracticeAttempted)
         .where(PracticeAttempted.concept_id == concept_id)
-        .order_by(PracticeAttempted.timestamp)
+        .order_by(col(PracticeAttempted.timestamp))
     )
     return list(session.exec(statement).all())
 
@@ -79,12 +79,12 @@ def get_blind_spots(
 ) -> list[BlindSpotDetected]:
     """Return active (or resolved) Blind Spots."""
     statement = select(BlindSpotDetected).order_by(
-        BlindSpotDetected.timestamp.desc()
+        col(BlindSpotDetected.timestamp).desc()
     )
     if resolved:
-        statement = statement.where(BlindSpotDetected.resolved_at.is_not(None))
+        statement = statement.where(col(BlindSpotDetected.resolved_at).is_not(None))
     else:
-        statement = statement.where(BlindSpotDetected.resolved_at.is_(None))
+        statement = statement.where(col(BlindSpotDetected.resolved_at).is_(None))
     return list(session.exec(statement).all())
 
 
@@ -95,7 +95,7 @@ def get_mastery_for_concept(
     statement = (
         select(ConceptMasteryUpdated)
         .where(ConceptMasteryUpdated.concept_id == concept_id)
-        .order_by(ConceptMasteryUpdated.timestamp.desc())
+        .order_by(col(ConceptMasteryUpdated.timestamp).desc())
     )
     return session.exec(statement).first()
 

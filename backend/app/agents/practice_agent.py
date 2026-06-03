@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any
+from typing import Any, cast
 
 from pydantic import TypeAdapter, ValidationError
 from pydantic_ai import Agent
@@ -39,7 +39,7 @@ from app.domain.artifact import (
     PracticeProblem,
     QuizQuestion,
 )
-from app.harness.model_router import DefaultModelRouter, ModelRouter
+from app.harness.model_router import DefaultModelRouter, ModelRouter, ModelRouteRequest, ModelConfig
 
 # TypeAdapter used to surface a clean discriminated-union error when
 # the LLM emits an unrecognised shape. The parsing logic below builds
@@ -48,11 +48,6 @@ from app.harness.model_router import DefaultModelRouter, ModelRouter
 _payload_adapter: TypeAdapter[PracticePayload] = TypeAdapter(PracticePayload)
 
 _router: ModelRouter = DefaultModelRouter()
-
-
-def _resolve_model() -> str:
-    cfg = _router.route("workflow")
-    return cfg.pydantic_ai_model()
 
 
 _SYSTEM_PROMPT = (
@@ -69,15 +64,24 @@ _SYSTEM_PROMPT = (
 )
 
 
+def _build_agent(model_config: ModelConfig, system_prompt: str) -> Agent[None, str]:
+    """Build a request-scoped Agent with the given config and system prompt."""
+    return Agent(  # type: ignore[call-overload]
+        cast(Any, model_config.pydantic_ai_model()),
+        deps_type=None,
+        output_type=str,
+        instructions=system_prompt,
+    )
+
+
 # Built once at import time using the router's default; if the
 # operator changes the model via PRACDA_OVERRIDE_MODEL the next
 # process restart will pick it up.
-practice_agent: Agent[None, str] = Agent(
-    _resolve_model(),
-    deps_type=None,
-    output_type=str,
-    instructions=_SYSTEM_PROMPT,
+practice_agent: Agent[None, str] = _build_agent(
+    _router.route("workflow"),
+    _SYSTEM_PROMPT,
 )
+
 
 
 # ── Public surface ──────────────────────────────────────────────────
@@ -172,7 +176,7 @@ def parse_practice_payload(
                     "type": "model_type",
                     "loc": ("raw",),
                     "input": raw,
-                    "expected": "dict",
+                    "ctx": {"expected": "dict"},
                 }
             ],
         )
@@ -249,21 +253,53 @@ async def generate_practice(
     difficulty: str = "medium",
     workflow_id: str = "",
     workflow_name: str = "",
+    context_gate: Any | None = None,
+    source_ids: list[str] | None = None,
 ) -> PracticePayload:
-    """Call the LLM and return a typed :class:`PracticePayload`.
+    """Call the LLM and return a typed :class:`PracticePayload`."""
+    model_config = _router.route(
+        ModelRouteRequest(
+            task_type="workflow",
+            workflow_id=workflow_id or None,
+        )
+    )
 
-    Returns a non-empty payload in all paths:
+    system_prompt = _SYSTEM_PROMPT
+    prompt_with_context = prompt
 
-    * **LLM call succeeded** + parseable shape — the typed payload.
-    * **LLM call succeeded** + unparseable shape — re-raises
-      :class:`ValidationError` (the API layer surfaces it as 502;
-      chat review §5.1: bad shapes surface as errors).
-    * **LLM call failed** (network / API key) — a stub
-      ``PracticePayloadPractice`` whose ``problems`` are all
-      ``kind="placeholder"`` so the UI shows "Rerun" affordances.
-    """
+    if context_gate is not None:
+        try:
+            seed_ctx = context_gate.build_seed_context(
+                task_intent=prompt,
+                source_ids=source_ids or [],
+                workflow_name=workflow_name or None,
+            )
+            system_prompt = seed_ctx.system_slot
+            
+            context_blocks = []
+            if seed_ctx.workflow_template:
+                context_blocks.append(f"Workflow Template:\n{seed_ctx.workflow_template}")
+            if seed_ctx.memory_seed:
+                context_blocks.append(f"Learner Memory:\n{seed_ctx.memory_seed}")
+            if seed_ctx.graph_seed:
+                context_blocks.append(f"Concept Graph:\n{seed_ctx.graph_seed}")
+            if seed_ctx.retrieved_chunks:
+                context_blocks.append("Source Context:\n" + "\n".join(seed_ctx.retrieved_chunks))
+            if seed_ctx.history:
+                context_blocks.append("History:\n" + "\n".join(seed_ctx.history))
+            if seed_ctx.examples:
+                context_blocks.append("Examples:\n" + "\n".join(seed_ctx.examples))
+                
+            if context_blocks:
+                prompt_with_context = "\n\n".join(context_blocks) + "\n\nTask Intent:\n" + prompt
+        except Exception as exc:
+            import logfire
+            logfire.warning("Failed to build seed context: {exc}", exc=str(exc))
+
+    agent = _build_agent(model_config, system_prompt)
+
     try:
-        result = await practice_agent.run(prompt)
+        result = await agent.run(prompt_with_context)
     except Exception as exc:
         # LLM infra failure — return a stub so the artifact has
         # *something* to show. The UI's "Rerun" affordance
@@ -282,6 +318,7 @@ async def generate_practice(
             workflow_id=workflow_id or None,
             workflow_name=workflow_name or None,
         )
+
 
     raw_text: str = result.output if isinstance(result.output, str) else str(result.output)
     raw_payload = _extract_json(raw_text) or {}
