@@ -69,6 +69,24 @@ class FileToolRegistry:
         """Return all registered tool names."""
         return list(self._schemas.keys())
 
+    def list_tools_with_descriptions(self) -> list[str]:
+        """Return all tools as ``"{name}: {description}"`` strings.
+
+        Phase 6 — the Context Gate renders this into the
+        ``tool_names`` slot so the LLM sees what each tool does
+        without needing a separate ``tool_lookup`` call. Falls
+        back to the bare name when a schema is missing the
+        ``description`` key (legacy / hand-written schemas).
+        """
+        out: list[str] = []
+        for name, schema in self._schemas.items():
+            description = (schema.get("description") or "").strip()
+            if description:
+                out.append(f"{name}: {description}")
+            else:
+                out.append(name)
+        return out
+
     def get_tool_schema(self, name: str) -> dict:
         """Return the full JSON schema for a tool.
 
