@@ -274,7 +274,7 @@ class QdrantRetrievalRouter:
         ]
 
         try:
-            search_results = self.client.search(
+            search_results = self.client.search(  # type: ignore[attr-defined]
                 collection_name=self.collection_name,
                 query_vector=vector,
                 query_filter=models.Filter(should=should_filters),

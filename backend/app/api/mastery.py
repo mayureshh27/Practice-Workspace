@@ -12,7 +12,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Path
 from pydantic import BaseModel
-from sqlmodel import select
+from sqlmodel import col, select
 
 from app.domain.events import ConceptMasteryUpdated
 from app.storage import event_store
@@ -62,7 +62,7 @@ def list_concept_mastery(db_session: DatabaseDep) -> list[ConceptMastery]:
     """Return the latest mastery score for all practiced concepts."""
     statement = (
         select(ConceptMasteryUpdated)
-        .order_by(ConceptMasteryUpdated.timestamp.desc())
+        .order_by(col(ConceptMasteryUpdated.timestamp).desc())
     )
     all_updates = db_session.exec(statement).all()
 
@@ -92,7 +92,7 @@ def get_concept_mastery_history(
     statement = (
         select(ConceptMasteryUpdated)
         .where(ConceptMasteryUpdated.concept_id == concept_id)
-        .order_by(ConceptMasteryUpdated.timestamp)
+        .order_by(col(ConceptMasteryUpdated.timestamp))
     )
     updates = db_session.exec(statement).all()
 

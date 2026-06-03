@@ -127,7 +127,7 @@ def list_workflows(
     )
     return WorkflowListResponse(
         items=items,
-        model_configured=_is_model_configured(request),
+        modelConfigured=_is_model_configured(request),
     )
 
 

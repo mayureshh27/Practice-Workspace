@@ -68,3 +68,19 @@ def test_list_workflows_surfaces_model_configured(client: TestClient):
     assert "modelConfigured" in body
     assert isinstance(body["modelConfigured"], bool)
 
+
+def test_model_router_route_with_request(monkeypatch):
+    """Verify route can accept a ModelRouteRequest and resolves configurations with cost/latency."""
+    from app.harness.model_router import ModelRouteRequest
+    monkeypatch.setenv("GOOGLE_API_KEY", "fake-key")
+    monkeypatch.delenv("PRACDA_OVERRIDE_MODEL", raising=False)
+
+    fresh = DefaultModelRouter()
+    req = ModelRouteRequest(task_type="workflow", workflow_id="wf-123")
+    cfg = fresh.route(req)
+    assert cfg.provider == "google"
+    assert cfg.latency > 0
+    assert cfg.cost > 0
+    assert fresh.is_configured(req) is True
+
+

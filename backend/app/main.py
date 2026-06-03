@@ -87,7 +87,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     socratic_gate = SocraticGate()
 
     # ── Artifacts store (populated by workflow agents) ──────────────
-    app.state.artifacts: list[dict] = []
+    app.state.artifacts = []
+
 
     # Store on app.state so route handlers can access them
     app.state.tool_registry = tool_registry
@@ -96,12 +97,29 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     app.state.retrieval_router = retrieval_router
     app.state.graph_layer = graph_layer
 
-    logfire.info(
-        "Harness primitives initialised: {tools} tools loaded",
-        tools=len(tool_registry.list_tool_names()),
-    )
+    # ── Periodic Compaction Task (H-H7) ─────────────────────────────
+    import asyncio
+    from app.harness.compaction_config import compact_history
+
+    async def run_compaction_loop():
+        logfire.info("Lifespan task: periodic history compaction loop started")
+        try:
+            while True:
+                await asyncio.sleep(60)
+                compact_history()
+        except asyncio.CancelledError:
+            logfire.info("Lifespan task: periodic history compaction loop stopped")
+
+    compaction_task = asyncio.create_task(run_compaction_loop())
 
     yield
+
+    compaction_task.cancel()
+    try:
+        await compaction_task
+    except asyncio.CancelledError:
+        pass
+
 
 
 def create_app() -> FastAPI:

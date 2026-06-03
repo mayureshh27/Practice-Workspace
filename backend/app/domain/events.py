@@ -53,7 +53,7 @@ def event_as_dict(event: EventBase) -> dict:
 class SourceIngested(EventBase, table=True):
     """A Learning Source was successfully ingested."""
 
-    __tablename__ = "event_source_ingested"
+    __tablename__ = "event_source_ingested"  # type: ignore
 
     source_id: str
     source_type: str  # 'PDF' | 'video' | 'repo' | 'web' | 'notes'
@@ -64,7 +64,7 @@ class SourceIngested(EventBase, table=True):
 class ArtifactGenerated(EventBase, table=True):
     """An Ingestion Artifact was produced from a workflow."""
 
-    __tablename__ = "event_artifact_generated"
+    __tablename__ = "event_artifact_generated"  # type: ignore
 
     artifact_id: str
     artifact_type: str  # 'Exercise Pack' | 'Lesson' | 'Quiz' | 'Summary'
@@ -76,7 +76,7 @@ class ArtifactGenerated(EventBase, table=True):
 class PracticeAttempted(EventBase, table=True):
     """The learner submitted a practice attempt."""
 
-    __tablename__ = "event_practice_attempted"
+    __tablename__ = "event_practice_attempted"  # type: ignore
 
     artifact_id: str | None = None
     concept_id: str | None = Field(default=None, index=True)
@@ -88,7 +88,7 @@ class PracticeAttempted(EventBase, table=True):
 class HintRequested(EventBase, table=True):
     """The learner requested a hint during practice."""
 
-    __tablename__ = "event_hint_requested"
+    __tablename__ = "event_hint_requested"  # type: ignore
 
     concept_id: str | None = Field(default=None, index=True)
     artifact_id: str | None = None
@@ -103,7 +103,7 @@ class BlindSpotDetected(EventBase, table=True):
     is not decreasing. Resolved when mastery crosses 0.70.
     """
 
-    __tablename__ = "event_blind_spot_detected"
+    __tablename__ = "event_blind_spot_detected"  # type: ignore
 
     concept_id: str = Field(index=True)
     attempt_count: int = 0
@@ -126,7 +126,7 @@ class ConceptMasteryUpdated(EventBase, table=True):
     recomputation from raw events if the algorithm changes (ADR-0026).
     """
 
-    __tablename__ = "event_concept_mastery_updated"
+    __tablename__ = "event_concept_mastery_updated"  # type: ignore
 
     concept_id: str = Field(index=True)
     previous_mastery: float = 0.0
@@ -142,7 +142,7 @@ class SessionSummaryCreated(EventBase, table=True):
     validates and writes it (ADR-0022).
     """
 
-    __tablename__ = "event_session_summary_created"
+    __tablename__ = "event_session_summary_created"  # type: ignore
 
     summary_text: str = ""
     concepts_covered: str | None = None  # comma-separated

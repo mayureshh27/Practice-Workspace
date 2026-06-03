@@ -1,0 +1,6 @@
+repos:
+  - repo: https://github.com/facebook/pyrefly-pre-commit
+    rev: v1.0.0
+    hooks:
+      - id: pyrefly-check
+        pass_filenames: false

@@ -9,10 +9,20 @@ not depend on any single provider or require a gateway service in local BYOK mod
 """
 
 from __future__ import annotations
-
 import os
 from dataclasses import dataclass
 from typing import Protocol
+from pydantic import BaseModel
+
+
+
+class ModelRouteRequest(BaseModel):
+    """Request object to resolve model routing."""
+
+    task_type: str
+    template_id: str | None = None
+    workflow_id: str | None = None
+    scope: str | None = None
 
 
 class ModelConfig:
@@ -25,12 +35,16 @@ class ModelConfig:
         max_tokens: int = 8192,
         temperature: float = 0.0,
         adapter: str | None = None,
+        latency: float = 0.5,
+        cost: float = 0.0015,
     ) -> None:
         self.provider = provider
         self.model_name = model_name
         self.max_tokens = max_tokens
         self.temperature = temperature
         self.adapter = adapter
+        self.latency = latency
+        self.cost = cost
 
     def pydantic_ai_model(self) -> str:
         """Return the Pydantic AI model string for this config."""
@@ -39,7 +53,7 @@ class ModelConfig:
         return f"{self.provider}:{self.model_name}"
 
     def __repr__(self) -> str:
-        return f"ModelConfig({self.provider}:{self.model_name})"
+        return f"ModelConfig({self.provider}:{self.model_name}, latency={self.latency}, cost={self.cost})"
 
 
 class ModelRouter(Protocol):
@@ -47,22 +61,16 @@ class ModelRouter(Protocol):
 
     def route(
         self,
-        task_type: str,
+        request: str | ModelRouteRequest,
         *,
         task_budget: int | None = None,
         privacy_mode: bool = False,
     ) -> ModelConfig: ...
 
-    def is_configured(self, task_type: str) -> bool:
-        """True when ``route`` for ``task_type`` resolves to a real provider.
-
-        The ``test`` fallback (Pydantic AI's :class:`TestModel` for local dev
-        when no API key is set) is treated as unconfigured: the caller should
-        not be allowed to run a live workflow against it. This keeps the
-        "configured?" check inside the router (chat review §2.5,
-        R-2.5) — consumers no longer inspect ``cfg.provider`` themselves.
-        """
+    def is_configured(self, task_type: str | ModelRouteRequest) -> bool:
+        """True when ``route`` for ``task_type`` resolves to a real provider."""
         ...
+
 
 
 @dataclass
@@ -145,12 +153,14 @@ class DefaultModelRouter:
 
     def route(
         self,
-        task_type: str,
+        request: str | ModelRouteRequest,
         *,
         task_budget: int | None = None,
         privacy_mode: bool = False,
     ) -> ModelConfig:
         """Resolve the model config for a given task type."""
+        task_type = request if isinstance(request, str) else request.task_type
+
         override = os.environ.get("PRACDA_OVERRIDE_MODEL")
         if override:
             parts = override.split(":", 1)
@@ -159,6 +169,8 @@ class DefaultModelRouter:
             return ModelConfig(
                 provider=provider,
                 model_name=model_name,
+                latency=0.3,
+                cost=0.0005,
             )
 
         cfg = self._task_defaults.get(task_type)
@@ -172,7 +184,13 @@ class DefaultModelRouter:
                 model_name="test",
                 max_tokens=512,
                 temperature=0.0,
+                latency=0.1,
+                cost=0.0,
             )
+
+        # Estimate latency and cost based on provider / parameters
+        latency = 0.8 if provider == "google" else 1.2
+        cost = 0.0001 * (task_budget or cfg.max_tokens) / 1000.0
 
         return ModelConfig(
             provider=provider,
@@ -180,9 +198,11 @@ class DefaultModelRouter:
             max_tokens=task_budget or cfg.max_tokens,
             temperature=cfg.temperature,
             adapter=cfg.adapter,
+            latency=latency,
+            cost=cost,
         )
 
-    def is_configured(self, task_type: str) -> bool:
+    def is_configured(self, task_type: str | ModelRouteRequest) -> bool:
         """Return True iff ``route(task_type)`` resolves to a real provider.
 
         The test provider is treated as unconfigured (chat review §2.5):
@@ -195,3 +215,4 @@ class DefaultModelRouter:
         except Exception:
             return False
         return bool(cfg.provider) and cfg.provider != "test"
+
