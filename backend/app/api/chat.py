@@ -90,7 +90,7 @@ async def send_message(
             response=response_text,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.post("/message/stream")
@@ -162,4 +162,4 @@ async def end_chat_session(
             event_count=summary.event_count if summary else 0,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e

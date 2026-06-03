@@ -17,6 +17,7 @@ Graphiti's async calls on an internal event loop.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 from datetime import UTC, datetime
 from pathlib import Path
@@ -274,10 +275,8 @@ class GraphitiMasteryStore:
         ]
 
     def __del__(self) -> None:
-        try:
+        with contextlib.suppress(Exception):
             self.close()
-        except Exception:
-            pass
 
     def get_all_concept_ids(self) -> list[str]:
         """Return all concept IDs with mastery edges."""
@@ -288,10 +287,8 @@ class GraphitiMasteryStore:
     def close(self) -> None:
         """Close the Graphiti driver and event loop."""
         if self._driver is not None and self._loop is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._run_async(self._driver.close())
-            except Exception:
-                pass
         if self._loop and not self._loop.is_closed():
             self._loop.close()
         self._driver = None

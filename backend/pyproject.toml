@@ -140,3 +140,27 @@ addopts = "-ra --strict-markers"
 filterwarnings = [
     "ignore::DeprecationWarning",
 ]
+
+[tool.pyrefly]
+search_path = [
+    "app/..."
+]
+project-excludes = [
+    "**/data*",
+    "**/ingestion-pipeline*",
+    "**/storage*",
+    "**/.venv*",
+    "**/tests*",
+    "**/build*",
+    "**/dist*",
+]
+python-version = "3.12.0"
+preset = "legacy"
+ignore-missing-imports = [
+    "graphiti_core.*",
+    "kuzu.*",
+    "qdrant_client.*",
+    "sentence_transformers.*",
+    "litellm.*",
+    "*",
+]

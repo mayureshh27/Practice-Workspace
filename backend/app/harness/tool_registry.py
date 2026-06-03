@@ -94,7 +94,7 @@ class FileToolRegistry:
         """
         try:
             return self._schemas[name]
-        except KeyError:
+        except KeyError as err:
             raise KeyError(
                 f"Tool '{name}' not found. Available: {', '.join(self._schemas)}"
-            )
+            ) from err

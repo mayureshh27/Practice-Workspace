@@ -49,10 +49,7 @@ class BudgetError(Exception):
         self.slot = slot
         self.observed = observed
         self.budget = budget
-        super().__init__(
-            f"Slot '{slot}' exceeds hard budget: {observed} tokens > "
-            f"{budget} budget"
-        )
+        super().__init__(f"Slot '{slot}' exceeds hard budget: {observed} tokens > {budget} budget")
 
 
 class SeedContext(BaseModel):
@@ -159,6 +156,9 @@ class DefaultContextGate:
         self._system_prompt = system_prompt
         self._deep_source_default = deep_source
         self._graph_layer = graph_layer
+        self._cached_memory_seed: str | None = None
+        self._cached_mtime: float | None = None
+        self._call_mtime: float | None = None
 
     def _effective_budgets(self, deep_source: bool) -> dict[str, int]:
         budgets = dict(_DEFAULT_BUDGETS)
@@ -170,17 +170,15 @@ class DefaultContextGate:
     def _read_tool_names(self) -> list[str]:
         if self._tool_registry is None:
             return []
-        list_with_desc = getattr(
-            self._tool_registry, "list_tools_with_descriptions", None
-        )
+        list_with_desc = getattr(self._tool_registry, "list_tools_with_descriptions", None)
         list_names = getattr(self._tool_registry, "list_tool_names", None)
         try:
             if callable(list_with_desc):
-                result = list_with_desc()
-                return list(result) if result is not None else []
+                result_desc: Any = list_with_desc()
+                return list(result_desc) if result_desc is not None else []
             if callable(list_names):
-                result = list_names()
-                return list(result) if result is not None else []
+                result_names: Any = list_names()
+                return list(result_names) if result_names is not None else []
         except Exception as exc:  # pragma: no cover
             logfire.warning(
                 "Context Gate: tool registry raised: {exc}",
@@ -199,15 +197,12 @@ class DefaultContextGate:
         history: list[str] | None = None,
         examples: list[str] | None = None,
     ) -> SeedContext:
-        effective_deep = (
-            self._deep_source_default if deep_source is None else deep_source
-        )
+        self._call_mtime = None
+        effective_deep = self._deep_source_default if deep_source is None else deep_source
         budgets = self._effective_budgets(effective_deep)
 
         system_text = (
-            system_slot_override
-            if system_slot_override is not None
-            else self._system_prompt
+            system_slot_override if system_slot_override is not None else self._system_prompt
         )
         system_tokens = _count_tokens(system_text)
         if system_tokens > budgets["system_slot"]:
@@ -255,9 +250,7 @@ class DefaultContextGate:
                 parts: list[str] = []
                 for c in context.concepts:
                     score = (
-                        f"{c.mastery_score:.2f}"
-                        if c.mastery_score is not None
-                        else "not practiced"
+                        f"{c.mastery_score:.2f}" if c.mastery_score is not None else "not practiced"
                     )
                     parts.append(f"- {c.canonical_name}: mastery {score}")
                 if context.prereq_chain:
@@ -271,8 +264,7 @@ class DefaultContextGate:
                 graph_seed = "\n".join(parts) if parts else None
             except Exception as exc:
                 logfire.warning(
-                    "Context Gate: graph_seed failed for {n} source(s): "
-                    "{exc_type}: {exc}",
+                    "Context Gate: graph_seed failed for {n} source(s): {exc_type}: {exc}",
                     n=len(source_ids),
                     exc_type=type(exc).__name__,
                     exc=str(exc),
@@ -324,9 +316,7 @@ class DefaultContextGate:
 
         workflow_text: str | None = workflow_name
         if workflow_text:
-            truncated, observed = _truncate(
-                workflow_text, budgets["workflow_template"]
-            )
+            truncated, observed = _truncate(workflow_text, budgets["workflow_template"])
             if observed > budgets["workflow_template"]:
                 logfire.warning(
                     "Context Gate: workflow_template truncated to fit budget",
@@ -402,8 +392,26 @@ class DefaultContextGate:
         are empty are skipped (the joining logic handles empty
         strings via the if content: guard).
         """
-        if not self._memories_dir.is_dir():
-            return None
+        if self._call_mtime is not None:
+            mtime = self._call_mtime
+        else:
+            try:
+                import stat as stat_mod
+
+                st = self._memories_dir.stat()
+                if not stat_mod.S_ISDIR(st.st_mode):
+                    self._cached_memory_seed = None
+                    self._cached_mtime = None
+                    return None
+                mtime = st.st_mtime
+                self._call_mtime = mtime
+            except OSError:
+                self._cached_memory_seed = None
+                self._cached_mtime = None
+                return None
+
+        if self._cached_mtime == mtime:
+            return self._cached_memory_seed
 
         parts: list[str] = []
         for filename in (
@@ -418,4 +426,7 @@ class DefaultContextGate:
                 if content:
                     parts.append(content)
 
-        return "\n\n---\n\n".join(parts) if parts else None
+        result = "\n\n---\n\n".join(parts) if parts else None
+        self._cached_memory_seed = result
+        self._cached_mtime = mtime
+        return result
