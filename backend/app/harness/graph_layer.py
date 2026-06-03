@@ -22,11 +22,12 @@ Implementation gaps documented in graph-layer-spike.md §5:
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from app.domain.graph import ConceptCandidate, ConceptContext, ConceptNode
 
 
+@runtime_checkable
 class GraphLayer(Protocol):
     """Product-owned graph interface.
 

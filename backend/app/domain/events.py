@@ -119,7 +119,7 @@ class ConceptMasteryUpdated(EventBase, table=True):
 
     Mastery Score update rule (CONTEXT.md):
       pass → +0.10 (capped at 1.0)
-      fail → −0.05 (floored at 0.0)
+      fail -> -0.05 (floored at 0.0)
 
     The trigger_event_id FK links this update to the specific
     PracticeAttempted event that caused it, enabling mastery score

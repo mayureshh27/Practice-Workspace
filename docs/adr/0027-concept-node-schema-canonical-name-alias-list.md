@@ -33,3 +33,9 @@ all concept nodes must be re-evaluated and potentially merged. The threshold
 must be locked before the first source is ingested and treated as immutable
 thereafter unless a deliberate migration is planned. This constraint must appear
 in onboarding documentation for the project.
+
+### 2026-06-03 Amendment — Implementation Details
+- **Constructor Parameter**: The fuzzy matching threshold is configurable as a constructor parameter (`fuzzy_threshold`), defaulting to 85.0.
+- **In-process Fuzzy Index**: To avoid redundant database round-trips when performing fuzzy resolution, the graph layer implements an in-process fuzzy index (`_FuzzyIndex`). This index is built lazily on first match request and is invalidated on any write operation (new concept node creation or alias modification).
+- **Concurrency Write Lock**: To prevent race conditions during read-modify-write operations on Concept alias arrays and to serialize database writes, a mutex lock (`_write_lock`) is introduced. This ensures that concurrent alias modifications serialize and safely merge with existing lists without data loss.
+

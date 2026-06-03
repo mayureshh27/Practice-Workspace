@@ -4,8 +4,8 @@ The chapter IDs in the domain hierarchy must match the chapter field
 in each problem so the frontend can filter problems by subject.
 
 Data files (relative to backend/):
-  ../data/problems.json           — 135 Go problems, 13 chapters (ch1–ch13)
-  ../data/problems_robotics.json  — 3 Robotics problems, 3 chapters (ch2, ch4, ch9)
+  ../data/problems.json           - 135 Go problems, 13 chapters (ch1-ch13)
+  ../data/problems_robotics.json  - 3 Robotics problems, 3 chapters (ch2, ch4, ch9)
 """
 
 import json
@@ -238,7 +238,7 @@ def seed() -> None:
     print(f"Seeded {len(domains)} domains into workspace repository.")
     print("  Go Programming: 13 chapters (ch1-ch13)")
     print(
-        f"  Robotics: {len([d for d in domains if d.id == 'robotics'][0].subjects[0].chapters)} chapters"
+        f"  Robotics: {len(next(d for d in domains if d.id == 'robotics').subjects[0].chapters)} chapters"
     )
     print(f"SQLite event tables created at: {settings.db_path}")
 

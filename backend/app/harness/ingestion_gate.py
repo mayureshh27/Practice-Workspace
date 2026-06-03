@@ -42,9 +42,7 @@ def _check_chunk_citations(chunks: list[dict]) -> list[str]:
             missing.append("page_or_timestamp")
 
         if missing:
-            failures.append(
-                f"chunk[{i}]: missing required citation metadata: {', '.join(missing)}"
-            )
+            failures.append(f"chunk[{i}]: missing required citation metadata: {', '.join(missing)}")
     return failures
 
 
@@ -61,8 +59,7 @@ def _check_concept_candidates(
             failures.append(f"candidate[{i}]: missing concept name")
         if len(aliases) < min_alias_count:
             failures.append(
-                f"candidate[{i}] '{name}': only {len(aliases)} aliases "
-                f"(minimum {min_alias_count})"
+                f"candidate[{i}] '{name}': only {len(aliases)} aliases (minimum {min_alias_count})"
             )
     return failures
 
@@ -76,12 +73,8 @@ def _check_graph_facts(graph_facts: list[Any]) -> list[str]:
                 _ = fact.model_dump()
             except ValidationError as exc:
                 failures.append(f"graph_fact[{i}]: validation error — {exc}")
-        elif isinstance(fact, dict):
-            # Bare dict facts must have at minimum source/target/relation
-            if "source" not in fact or "target" not in fact:
-                failures.append(
-                    f"graph_fact[{i}]: dict missing required 'source' or 'target' key"
-                )
+        elif isinstance(fact, dict) and ("source" not in fact or "target" not in fact):
+            failures.append(f"graph_fact[{i}]: dict missing required 'source' or 'target' key")
     return failures
 
 

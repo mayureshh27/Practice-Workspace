@@ -22,12 +22,14 @@ router = APIRouter(prefix="/api/events", tags=["events"])
 
 class EventResponse(BaseModel):
     """Standard response for event submission."""
+
     status: str
     event_id: str
 
 
 class EventSummary(BaseModel):
     """Lightweight representation of an event for the API."""
+
     id: str
     event_type: str
     timestamp: str | None = None
@@ -44,7 +46,7 @@ def submit_attempt(attempt: PracticeAttempted, session: DatabaseDep) -> EventRes
         event_emitter.emit_event(session, attempt)
         return EventResponse(status="success", event_id=attempt.id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.post("/hint")
@@ -54,7 +56,7 @@ def record_hint(hint: HintRequested, session: DatabaseDep) -> EventResponse:
         event_emitter.emit_event(session, hint)
         return EventResponse(status="success", event_id=hint.id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.get("/session/{session_id}")
@@ -67,13 +69,15 @@ def list_session_events(
     results: list[EventSummary] = []
     for event in events:
         flat = event_as_dict(event)
-        results.append(EventSummary(
-            id=flat["id"],
-            event_type=flat["type"],
-            timestamp=flat["timestamp"],
-            session_id=flat.get("session_id"),
-            concept_id=flat.get("concept_id"),
-            verdict=flat.get("verdict"),
-            new_mastery=flat.get("new_mastery"),
-        ))
+        results.append(
+            EventSummary(
+                id=flat["id"],
+                event_type=flat["type"],
+                timestamp=flat["timestamp"],
+                session_id=flat.get("session_id"),
+                concept_id=flat.get("concept_id"),
+                verdict=flat.get("verdict"),
+                new_mastery=flat.get("new_mastery"),
+            )
+        )
     return results
