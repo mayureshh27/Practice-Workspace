@@ -107,12 +107,6 @@ def _default_mastery_store(mastery_db_path: str) -> Any:
         return TemporalMasteryStore(db_path=mastery_db_path)
 
 
-def _execute(
-    c: kuzu.Connection, query: str, params: dict[str, Any] | None = None
-) -> kuzu.QueryResult:
-    return c.execute(query, params)  # type: ignore[return-value]
-
-
 class KuzuGraphLayer(GraphLayer):
     """Concrete GraphLayer using local Kuzu DB and local Memgraph/Graphiti stubs."""
 
@@ -200,8 +194,8 @@ class KuzuGraphLayer(GraphLayer):
         concept_candidates: list[ConceptCandidate],
     ) -> list[ConceptNode]:
         with self._write_lock:
-            _execute(
-                self.conn, "MERGE (s:Source {source_id: $source_id})", {"source_id": source_id}
+            self.conn.execute(
+                "MERGE (s:Source {source_id: $source_id})", {"source_id": source_id}
             )
 
             nodes: list[ConceptNode] = []
@@ -210,21 +204,19 @@ class KuzuGraphLayer(GraphLayer):
 
                 if concept_id:
                     # Fetch existing aliases
-                    existing_res = _execute(
-                        self.conn,
+                    existing_res = self.conn.execute(
                         "MATCH (c:Concept) WHERE c.concept_id = $id RETURN c.aliases",
                         {"id": concept_id},
                     )
                     existing_aliases: list[str] = []
-                    if existing_res.has_next():
-                        existing_row: Any = existing_res.get_next()
+                    if existing_res.has_next():  # type: ignore
+                        existing_row: Any = existing_res.get_next()  # type: ignore
                         existing_aliases = list(existing_row[0])
 
                     new_aliases = list(
                         set(existing_aliases + list(candidate.aliases) + [candidate.name])
                     )
-                    _execute(
-                        self.conn,
+                    self.conn.execute(
                         "MATCH (c:Concept) WHERE c.concept_id = $id SET c.aliases = $aliases",
                         {"id": concept_id, "aliases": new_aliases},
                     )
@@ -232,8 +224,7 @@ class KuzuGraphLayer(GraphLayer):
                 else:
                     concept_id = str(uuid.uuid4())
                     all_aliases = list(set([*list(candidate.aliases), candidate.name]))
-                    _execute(
-                        self.conn,
+                    self.conn.execute(
                         "CREATE (c:Concept {concept_id: $id, canonical_name: $name, aliases: $aliases, schema_version: $version, created_at: $created_at})",
                         {
                             "id": concept_id,
@@ -250,8 +241,7 @@ class KuzuGraphLayer(GraphLayer):
                         id=concept_id,
                     )
 
-                _execute(
-                    self.conn,
+                self.conn.execute(
                     "MATCH (c:Concept), (s:Source) WHERE c.concept_id = $cid AND s.source_id = $sid MERGE (c)-[:APPEARS_IN]->(s)",
                     {"cid": concept_id, "sid": source_id},
                 )
@@ -259,14 +249,12 @@ class KuzuGraphLayer(GraphLayer):
                 for prereq_name in candidate.prerequisite_names:
                     prereq_id = self._fuzzy_match_concept(prereq_name)
                     if prereq_id:
-                        _execute(
-                            self.conn,
+                        self.conn.execute(
                             "MATCH (target:Concept), (prereq:Concept) WHERE target.concept_id = $tid AND prereq.concept_id = $pid MERGE (target)-[:PREREQUISITE_OF]->(prereq)",
                             {"tid": concept_id, "pid": prereq_id},
                         )
 
-                prereq_res = _execute(
-                    self.conn,
+                prereq_res = self.conn.execute(
                     "MATCH (c:Concept)-[:PREREQUISITE_OF]->(p:Concept) WHERE c.concept_id = $id RETURN p.concept_id",
                     {"id": concept_id},
                 )
@@ -288,10 +276,10 @@ class KuzuGraphLayer(GraphLayer):
             return nodes
 
     def _get_current_mastery(self, concept_id: str) -> float | None:
-        return self._mastery_store.get_current_score(concept_id)
+        return self._mastery_store.get_current_score(concept_id)  # type: ignore
 
     def _get_last_updated(self, concept_id: str) -> datetime | None:
-        return self._mastery_store.get_last_updated(concept_id)
+        return self._mastery_store.get_last_updated(concept_id)  # type: ignore
 
     def update_mastery(
         self,
@@ -301,12 +289,12 @@ class KuzuGraphLayer(GraphLayer):
         timestamp: datetime,
     ) -> None:
         # FK validation: reject concept_ids not present in Concept table
-        check_res = _execute(
-            self.conn,
+        check_res = self.conn.execute(
+
             "MATCH (c:Concept) WHERE c.concept_id = $id RETURN c.concept_id",
             {"id": concept_id},
         )
-        if not check_res.has_next():
+        if not check_res.has_next():  # type: ignore
             raise ValueError(f"Concept ID '{concept_id}' does not exist in Concept table.")
 
         self._mastery_store.append_mastery_edge(
@@ -325,8 +313,8 @@ class KuzuGraphLayer(GraphLayer):
         """Fetch multiple Concept nodes in a single batched Cypher query."""
         if not ids:
             return []
-        res = _execute(
-            self.conn,
+        res = self.conn.execute(
+
             "MATCH (c:Concept) WHERE c.concept_id IN $ids "
             "OPTIONAL MATCH (c)-[:PREREQUISITE_OF]->(p:Concept) "
             "RETURN c.concept_id, c.canonical_name, c.aliases, collect(p.concept_id)",
@@ -369,8 +357,8 @@ class KuzuGraphLayer(GraphLayer):
 
         if concept_ids:
             # Transitive prerequisite chain traversal (depth-capped 1..8)
-            res_prereq = _execute(
-                self.conn,
+            res_prereq = self.conn.execute(
+
                 "MATCH (root:Concept)-[:PREREQUISITE_OF*1..8]->(p:Concept) "
                 "WHERE root.concept_id IN $ids "
                 "OPTIONAL MATCH (p)-[:PREREQUISITE_OF]->(prereq:Concept) "
@@ -416,14 +404,14 @@ class KuzuGraphLayer(GraphLayer):
         exercise_id: str,
         concept_ids: list[str],
     ) -> None:
-        _execute(
-            self.conn,
+        self.conn.execute(
+
             "MERGE (e:Exercise {exercise_id: $id})",
             {"id": exercise_id},
         )
         for cid in concept_ids:
-            _execute(
-                self.conn,
+            self.conn.execute(
+
                 "MATCH (e:Exercise), (c:Concept) WHERE e.exercise_id = $eid AND c.concept_id = $cid MERGE (e)-[:TARGETS_CONCEPT]->(c)",
                 {"eid": exercise_id, "cid": cid},
             )
@@ -439,7 +427,7 @@ class KuzuGraphLayer(GraphLayer):
         recorded_at <= target_timestamp and returns the most recent.
         This enables reconstructing mastery state at any prior session boundary.
         """
-        return self._mastery_store.get_score_at_time(concept_id, target_timestamp)
+        return self._mastery_store.get_score_at_time(concept_id, target_timestamp)  # type: ignore
 
     def get_all_concepts(self) -> list[dict[str, Any]]:
         """Return all concept nodes with mastery and prerequisite IDs.
@@ -449,8 +437,8 @@ class KuzuGraphLayer(GraphLayer):
         an internal helper on the concrete implementation.
         """
         results: list[dict[str, Any]] = []
-        c_res = _execute(
-            self.conn,
+        c_res = self.conn.execute(
+
             "MATCH (c:Concept) RETURN c.concept_id, c.canonical_name",
         )
         for row_any in c_res:
@@ -458,8 +446,8 @@ class KuzuGraphLayer(GraphLayer):
             cid: str = row[0]
             cname: str = row[1]
 
-            p_res = _execute(
-                self.conn,
+            p_res = self.conn.execute(
+
                 "MATCH (c:Concept)-[:PREREQUISITE_OF]->(p:Concept) WHERE c.concept_id = $id RETURN p.concept_id",
                 {"id": cid},
             )

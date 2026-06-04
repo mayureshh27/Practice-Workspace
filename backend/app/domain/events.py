@@ -1,3 +1,5 @@
+from typing import Any
+
 """Typed memory events for the Shared Learning Memory event log.
 
 Seven event types per ADR-0005 and ADR-0014:
@@ -34,8 +36,8 @@ class EventBase(SQLModel):
     session_id: str | None = Field(default=None, index=True)
 
 
-def event_as_dict(event: EventBase) -> dict:
-    d: dict = {
+def event_as_dict(event: EventBase) -> dict:  # type: ignore
+    d: dict[str, Any] = {
         "type": event.__class__.__name__,
         "id": event.id,
         "timestamp": event.timestamp.isoformat() if event.timestamp else None,

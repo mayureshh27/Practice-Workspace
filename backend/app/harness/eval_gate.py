@@ -211,14 +211,17 @@ class LocalSandboxRunner:
         try:
             completed = await asyncio.to_thread(_exec)
         except subprocess.TimeoutExpired as exc:
-            stdout_str = exc.stdout.decode() if isinstance(exc.stdout, bytes) else (exc.stdout or "")
-            stderr_str = exc.stderr.decode() if isinstance(exc.stderr, bytes) else (exc.stderr or "")
+            stdout_str = (
+                exc.stdout.decode() if isinstance(exc.stdout, bytes) else (exc.stdout or "")
+            )
+            stderr_str = (
+                exc.stderr.decode() if isinstance(exc.stderr, bytes) else (exc.stderr or "")
+            )
             return {
                 "exit_code": 124,
                 "stdout": stdout_str,
                 "stderr": (
-                    f"{stderr_str}\n"
-                    f"[LocalSandboxRunner] code exceeded {timeout_seconds}s timeout"
+                    f"{stderr_str}\n[LocalSandboxRunner] code exceeded {timeout_seconds}s timeout"
                 ).strip(),
             }
         except Exception as exc:  # network FS errors, OOM, etc.

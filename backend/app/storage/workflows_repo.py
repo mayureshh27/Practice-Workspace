@@ -13,6 +13,7 @@ promote a global template into a subject-scoped variant via
 """
 
 from __future__ import annotations
+from typing import Any
 
 import json
 from pathlib import Path
@@ -118,7 +119,7 @@ def add_workflow(workflow: WorkflowTemplate) -> WorkflowTemplate:
     return workflow
 
 
-def update_workflow(workflow_id: str, fields: dict) -> WorkflowTemplate | None:
+def update_workflow(workflow_id: str, fields: dict[str, Any]) -> WorkflowTemplate | None:
     for i, w in enumerate(_workflows):
         if w.id == workflow_id:
             _workflows[i] = w.model_copy(update=fields)

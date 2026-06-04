@@ -11,7 +11,7 @@ TypeError (ADR-0017). Used only for source chunks, never for memory events
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Any, Protocol
 
 from pydantic import BaseModel
 
@@ -50,7 +50,7 @@ class RetrievalRouter(Protocol):
         source_ids: list[str],
     ) -> list[ChunkResult]: ...
 
-    def list_sources(self) -> list[dict]:
+    def list_sources(self) -> list[dict[str, Any]]:
         """Return metadata for all indexed sources.
 
         Each entry has at minimum: id, title, type.
@@ -58,7 +58,7 @@ class RetrievalRouter(Protocol):
         """
         ...
 
-    def list_chunk_previews(self, source_id: str) -> list[dict]:
+    def list_chunk_previews(self, source_id: str) -> list[dict[str, Any]]:
         """Return chunk previews for a source.
 
         Each entry has: id, preview, chunk_index.

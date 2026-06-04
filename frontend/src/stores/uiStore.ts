@@ -39,10 +39,18 @@ function readPersistedSettings(): PersistedSettings {
   try {
     const parsed = JSON.parse(raw) as Partial<PersistedSettings>;
     return {
-      base: VALID_BASES.includes(parsed.base as BaseColor) ? (parsed.base as BaseColor) : DEFAULT_SETTINGS.base,
-      radius: VALID_RADIUS.includes(parsed.radius as RadiusScale) ? (parsed.radius as RadiusScale) : DEFAULT_SETTINGS.radius,
-      fontHeading: VALID_FONTS.includes(parsed.fontHeading as FontOption) ? (parsed.fontHeading as FontOption) : DEFAULT_SETTINGS.fontHeading,
-      fontBody: VALID_FONTS.includes(parsed.fontBody as FontOption) ? (parsed.fontBody as FontOption) : DEFAULT_SETTINGS.fontBody,
+      base: VALID_BASES.includes(parsed.base as BaseColor)
+        ? (parsed.base as BaseColor)
+        : DEFAULT_SETTINGS.base,
+      radius: VALID_RADIUS.includes(parsed.radius as RadiusScale)
+        ? (parsed.radius as RadiusScale)
+        : DEFAULT_SETTINGS.radius,
+      fontHeading: VALID_FONTS.includes(parsed.fontHeading as FontOption)
+        ? (parsed.fontHeading as FontOption)
+        : DEFAULT_SETTINGS.fontHeading,
+      fontBody: VALID_FONTS.includes(parsed.fontBody as FontOption)
+        ? (parsed.fontBody as FontOption)
+        : DEFAULT_SETTINGS.fontBody,
     };
   } catch {
     return DEFAULT_SETTINGS;
@@ -116,7 +124,7 @@ interface UIState {
 const initialSettings = readPersistedSettings();
 if (typeof document !== 'undefined') applyToDocument(initialSettings);
 
-export const useUIStore = create<UIState>((set, get) => ({
+export const useUIStore = create<UIState>((set) => ({
   theme: readTextStorage(getBrowserStorage(), 'theme', 'dark') === 'light' ? 'light' : 'dark',
   setTheme: (theme) => {
     writeTextStorage(getBrowserStorage(), 'theme', theme);
@@ -177,9 +185,10 @@ export const useUIStore = create<UIState>((set, get) => ({
   searchQuery: '',
   setSearchQuery: (query) => set({ searchQuery: query }),
   selectedIndex: 0,
-  setSelectedIndex: (index) => set((state) => ({
-    selectedIndex: typeof index === 'function' ? index(state.selectedIndex) : index
-  })),
+  setSelectedIndex: (index) =>
+    set((state) => ({
+      selectedIndex: typeof index === 'function' ? index(state.selectedIndex) : index,
+    })),
 
   creationModal: null,
   setCreationModal: (modal) => set({ creationModal: modal }),
@@ -189,14 +198,17 @@ export const useUIStore = create<UIState>((set, get) => ({
   setModalDesc: (desc) => set({ modalDesc: desc }),
 
   leftCollapsed: false,
-  setLeftCollapsed: (collapsed) => set((state) => ({
-    leftCollapsed: typeof collapsed === 'function' ? collapsed(state.leftCollapsed) : collapsed
-  })),
+  setLeftCollapsed: (collapsed) =>
+    set((state) => ({
+      leftCollapsed: typeof collapsed === 'function' ? collapsed(state.leftCollapsed) : collapsed,
+    })),
   toggleLeftCollapsed: () => set((state) => ({ leftCollapsed: !state.leftCollapsed })),
   practiceNavCollapsed: false,
-  setPracticeNavCollapsed: (collapsed) => set((state) => ({
-    practiceNavCollapsed: typeof collapsed === 'function' ? collapsed(state.practiceNavCollapsed) : collapsed
-  })),
+  setPracticeNavCollapsed: (collapsed) =>
+    set((state) => ({
+      practiceNavCollapsed:
+        typeof collapsed === 'function' ? collapsed(state.practiceNavCollapsed) : collapsed,
+    })),
   rightPanel: null,
   setRightPanel: (panel) => set({ rightPanel: panel }),
   bottomOpen: false,

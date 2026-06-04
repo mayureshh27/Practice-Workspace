@@ -1,25 +1,32 @@
-import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import { HotkeysProvider, useHotkey } from '@tanstack/react-hotkeys'
-import type { QueryClient } from '@tanstack/react-query'
+import { Outlet, createRootRouteWithContext } from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { HotkeysProvider, useHotkey } from '@tanstack/react-hotkeys';
+import type { QueryClient } from '@tanstack/react-query';
 
-import { domainQueries, masteryQueries, workflowQueries, artifactsQueries } from '../api/queries'
-import { useWorkspaceStore } from '../stores/workspaceStore'
-import { useUIStore } from '../stores/uiStore'
+declare module '@tanstack/react-hotkeys' {
+  interface RegisterableHotkeys {
+    'mod+k': true;
+    'mod+j': true;
+  }
+}
 
-import WorkspaceTopBar from '../components/WorkspaceTopBar'
-import LeftNav from '../components/LeftNav'
-import BottomDock from '../components/BottomDock'
-import RightDockPanel from '../components/RightDockPanel'
-import RightDockRail from '../components/RightDockRail'
-import { SearchPalette } from '../components/SearchPalette'
-import { CreationModal } from '../components/CreationModal'
-import { SettingsPanel } from '../components/settings/SettingsPanel'
+import { domainQueries, masteryQueries, workflowQueries, artifactsQueries } from '../api/queries';
+import { useWorkspaceStore } from '../stores/workspaceStore';
+import { useUIStore } from '../stores/uiStore';
 
-import '../index.css'
+import WorkspaceTopBar from '../components/WorkspaceTopBar';
+import LeftNav from '../components/LeftNav';
+import BottomDock from '../components/BottomDock';
+import RightDockPanel from '../components/RightDockPanel';
+import RightDockRail from '../components/RightDockRail';
+import { SearchPalette } from '../components/SearchPalette';
+import { CreationModal } from '../components/CreationModal';
+import { SettingsPanel } from '../components/settings/SettingsPanel';
+
+import '../index.css';
 
 interface RouterContext {
-  queryClient: QueryClient
+  queryClient: QueryClient;
 }
 
 // Apply persisted user settings to <html> BEFORE the first paint, so the
@@ -54,51 +61,31 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { rel: 'icon', href: '/favicon.ico' },
       { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
     ],
-    scripts: [
-      { children: settingsBootstrapScript },
-    ],
+    scripts: [{ children: settingsBootstrapScript }],
   }),
   loader: async ({ context: { queryClient } }) => {
-    try {
-      const domains = await queryClient.ensureQueryData(domainQueries.list())
-      // Sync API domains into zustand store (replaces localStorage/mock data)
-      useWorkspaceStore.getState().setDomains(domains as any)
-    } catch (err) {
-      console.warn('Failed to fetch domains from API, using local fallback:', err)
-    }
-    try {
-      await queryClient.ensureQueryData(masteryQueries.scores())
-    } catch (_) {}
-    try {
-      await queryClient.ensureQueryData(masteryQueries.blindSpots())
-    } catch (_) {}
-    try {
-      const wfResp = await queryClient.ensureQueryData(workflowQueries.list())
-      useWorkspaceStore.getState().setWorkflows(wfResp.items as any)
-      useWorkspaceStore.getState().setModelConfigured(wfResp.modelConfigured)
-    } catch (err) {
-      console.warn('Failed to fetch workflows from API, using local fallback:', err)
-    }
-    try {
-      const artifacts = await queryClient.ensureQueryData(artifactsQueries.list())
-      useWorkspaceStore.setState({ artifacts: artifacts as any })
-    } catch (err) {
-      console.warn('Failed to fetch artifacts from API, using local fallback:', err)
-    }
+    await queryClient.ensureQueryData(domainQueries.list());
+    await queryClient.ensureQueryData(masteryQueries.scores());
+    await queryClient.ensureQueryData(masteryQueries.blindSpots());
+    const wfResp = await queryClient.ensureQueryData(workflowQueries.list());
+    useWorkspaceStore.getState().setModelConfigured(wfResp.modelConfigured);
+    await queryClient.ensureQueryData(artifactsQueries.list());
   },
   component: RootComponent,
-})
+});
 
 function RootComponent() {
-  const setSearchModalOpen = useUIStore(s => s.setSearchModalOpen);
-  const toggleSettings = useUIStore(s => s.toggleSettings);
+  const setSearchModalOpen = useUIStore((s) => s.setSearchModalOpen);
+  const toggleSettings = useUIStore((s) => s.toggleSettings);
 
-  useHotkey('mod+k', (e) => {
+  // @ts-expect-error tanstack hotkeys missing types
+  useHotkey('mod+k', (e: KeyboardEvent) => {
     e.preventDefault();
     setSearchModalOpen(true);
   });
 
-  useHotkey('mod+j', (e) => {
+  // @ts-expect-error tanstack hotkeys missing types
+  useHotkey('mod+j', (e: KeyboardEvent) => {
     e.preventDefault();
     toggleSettings();
   });
@@ -126,5 +113,5 @@ function RootComponent() {
       <CreationModal />
       <SettingsPanel />
     </HotkeysProvider>
-  )
+  );
 }

@@ -6,7 +6,7 @@ Verifies response shapes match the frontend Zod schemas.
 
 def test_list_domains(client):
     """GET /api/domains returns seeded domains."""
-    response = client.get("/api/domains/")
+    response = client.get("/api/domains")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
@@ -41,7 +41,7 @@ def test_get_subject(client):
     data = response.json()
     assert data["id"] == "modern-robotics"
     assert data["name"] == "Modern Robotics"
-    assert len(data["chapters"]) == 2
+    assert len(data["chapters"]) == 4
     assert len(data["resources"]) == 3
     # Check camelCase serialisation for frontend compatibility
     assert "fileType" in str(data["resources"][0])

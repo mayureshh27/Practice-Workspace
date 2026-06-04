@@ -53,7 +53,7 @@ tutor_agent = Agent(
 
 
 @tutor_agent.tool
-async def source_search(
+async def source_search(  # type: ignore
     ctx,
     query: str,
     source_ids: list[str],
@@ -88,7 +88,7 @@ async def source_search(
 
 
 @tutor_agent.tool
-async def source_search_exact(
+async def source_search_exact(  # type: ignore
     ctx,
     tokens: str,
     source_ids: list[str],
@@ -119,7 +119,7 @@ async def source_search_exact(
 
 
 @tutor_agent.tool
-async def get_concept_context(
+async def get_concept_context(  # type: ignore
     ctx,
     concept_ids: list[str],
 ) -> str:

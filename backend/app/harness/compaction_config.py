@@ -68,9 +68,10 @@ def compact_history(sessions_dir: str = "sessions") -> None:
     - clear_tool_uses triggers when trigger_tokens (30k) exceeded.
     - compact triggers when trigger_tokens (60k) exceeded.
     """
-    import sqlite3
     import json
+    import sqlite3
     from pathlib import Path
+
     import logfire
 
     dir_path = Path(sessions_dir)
@@ -123,14 +124,16 @@ def compact_history(sessions_dir: str = "sessions") -> None:
                         continue
 
                 if len(tool_event_ids) > config.clear.keep_results:
-                    to_delete = tool_event_ids[:-config.clear.keep_results]
+                    to_delete = tool_event_ids[: -config.clear.keep_results]
                     if to_delete:
                         logfire.info(
                             "Compaction: Pruning {count} tool result events for session {session_id}",
                             count=len(to_delete),
                             session_id=session_id,
                         )
-                        conn.executemany("DELETE FROM events WHERE id = ?", [(eid,) for eid in to_delete])
+                        conn.executemany(
+                            "DELETE FROM events WHERE id = ?", [(eid,) for eid in to_delete]
+                        )
                         conn.commit()
 
             # 2. Compact turns (trigger_tokens = 60k)
@@ -150,14 +153,22 @@ def compact_history(sessions_dir: str = "sessions") -> None:
                 )
                 if len(rows) > 5:
                     to_summarize = rows[:-5]
-                    conn.execute("DELETE FROM events WHERE id IN (" + ",".join(str(r[0]) for r in to_summarize) + ")")
+                    conn.execute(
+                        "DELETE FROM events WHERE id IN ("
+                        + ",".join(str(r[0]) for r in to_summarize)
+                        + ")"
+                    )
                     conn.execute(
                         "INSERT INTO events (event_type, payload) VALUES (?, ?)",
-                        ("compaction_summary", json.dumps({"summary": summary_text, "raw_history_db": str(db_path)})),
+                        (
+                            "compaction_summary",
+                            json.dumps({"summary": summary_text, "raw_history_db": str(db_path)}),
+                        ),
                     )
                     conn.commit()
 
             conn.close()
         except Exception as e:
-            logfire.warning("Failed compacting session database {db}: {err}", db=db_path.name, err=str(e))
-
+            logfire.warning(
+                "Failed compacting session database {db}: {err}", db=db_path.name, err=str(e)
+            )

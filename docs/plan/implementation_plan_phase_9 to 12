@@ -1,0 +1,520 @@
+# Implementation Plan — Frontend Phases 9–12 (One-Shot)
+
+> **Scope**: Phases 9, 10, 11, 12 from `docs/plan/implementation-plan-2026-06-02-review-fix-cycle.md`.
+> All items previously marked **deferred** in those phases are absorbed here — nothing kicked forward.
+> Zero `as any` in user-written source files is a hard acceptance criterion for every PR.
+
+---
+
+## Background & Current State
+
+| Item | Detail |
+|---|---|
+| Baseline branch | `feat/backend-8-orchestration` (PR #10 — Phase 8 complete) |
+| `SourceNotebookScreen.tsx` | **984 lines**, 4 setTimeout mock ingest handlers, `as any` on ingest type setter |
+| `workspaceStore.ts` | **587 lines**, `artifacts`/`workflows`/`domains` server data duplicated in Zustand, 7 `as any` casts caused by `WorkflowTemplateDTO.lastRun: string \| null` vs `WorkflowTemplate.lastRun?: string` mismatch |
+| `__root.tsx` loader | 4 try/catch blocks; 3 `as any` casts syncing API data into Zustand |
+| `mockData.ts` | 214-line seed file still imported at store init; never deleted |
+| `WorkflowEditorScreen.tsx` | 536 lines; `evalGates >= 1/2/3` pattern; options hard-coded; no TanStack mutation |
+| `WorkflowTemplate.evalGates` | Raw `number` — no enum; component derives booleans with `>= N` comparisons |
+| TypeScript baseline | **4 errors** — all in `workspaceStore.ts` (`lastRun: null` not assignable to `string \| undefined`) |
+| `pnpm typecheck` | Must exit 0 at end of every PR before pushing |
+
+---
+
+## Architecture Decisions (locked before coding)
+
+### 1. Zustand store owns only UI-local state
+Server data (`domains`, `workflows`, `artifacts`) moves out of Zustand and into **TanStack Query** as the single source of truth. Zustand retains:
+- `chatSessionId / chatMessages / isChatLoading` (ephemeral session state)
+- `modelConfigured` (derived once from workflow list response, never mutated)
+- `recentItems` (localStorage-persisted nav history)
+- `notebooks` (localStorage-persisted lightweight map)
+
+Domain/subject/chapter/topic mutations become **TanStack Query `useMutation`** calls that **invalidate** the relevant query key — no direct Zustand writes for server data.
+
+### 2. DTO ↔ Domain type alignment (zero casting)
+- `workspaceTypes.ts` domain types become `z.infer<typeof …Schema>` re-exports from `workspaceApi.ts` schemas.
+- `WorkflowTemplate.lastRun` aligned to `string | null | undefined` (matches DTO), eliminating all 4 current TS errors.
+- `WorkflowTemplate.evalGates` becomes `EvalGate[]` (explicit discriminated union) in Phase 12.
+
+### 3. Ingest via real mutation, not setTimeout
+`IngestionModal` calls `POST /api/sources/ingest` via `useMutation`. The 4 `setTimeout` mock handlers are deleted. TanStack Query invalidates `['sources']` on success; the sources list refreshes.
+
+### 4. Pre-commit workflow
+After every logical chunk: `pnpm typecheck` → `pnpm test` → fix errors inline → commit.
+No `as any` escapes allowed in user-written files. The only permissible `as any` occurrences are in the auto-generated `routeTree.gen.ts` (not user-written).
+
+---
+
+## Stacking
+
+```
+feat/backend-8-orchestration  (Phase 8 — PR #10, merged to main)
+  └── feat/frontend-9-screen-decomposition   (Phase 9)
+        └── feat/frontend-10-ingestion-truth  (Phase 10)
+              └── feat/frontend-11-store-cleanup  (Phase 11)
+                    └── feat/frontend-12-type-contracts  (Phase 12)
+```
+
+Each branch commits exactly one logical PR. `gt submit --stack` after Phase 12.
+
+---
+
+## Phase 9 — Screen Decomposition
+
+**Branch**: `feat/frontend-9-screen-decomposition`  
+**Commit**: `refactor(frontend): decompose SourceNotebookScreen into column siblings`  
+**Findings closed**: R-1.1, R-2.8, R-3.1
+
+### Goal
+`SourceNotebookScreen.tsx` drops from 984 lines → ≤ 200 lines (layout container + wiring only).
+
+### New files
+
+#### [NEW] `frontend/src/components/notebook/SourcesColumn.tsx`
+- Props: `sources`, `totalChunks`, `allChecked`, `onToggle`, `onSelectAll`, `onAddSources`
+- No local state — all state lifted; component is pure-display
+- No `as any`
+
+#### [NEW] `frontend/src/components/notebook/ChatColumn.tsx`
+- Props: `domain`, `subject`, `messages`, `isTyping`, `input`, `selectedSourceCount`, `onSend`, `onInputChange`, `onNavigate`, `firstChapterId`
+- Owns `useUIStore(s => s.setCreationModal)` call
+- No local state except scroll ref
+
+#### [NEW] `frontend/src/components/notebook/StudioColumn.tsx`
+- Props: `studioWorkflows`, `isGenerating`, `runError`, `lastFailedId`, `modelConfigured`, `subjectArtifacts`, `artifactsIsFetching`, `artifactsIsLoading`, `artifactsIsError`, `notes`, `showNotesForm`, `newNoteText`, `onRun`, `onRetry`, `onDismissError`, `onAddNote`, `onShowNotesForm`, `onNoteTextChange`
+- Purely presentational — all callbacks passed in
+
+#### [NEW] `frontend/src/components/notebook/NotesPanel.tsx`  
+- Extracted from the Studio column's notes sub-section; stateless
+
+#### [NEW] `frontend/src/components/notebook/IngestionModal.tsx`  
+*(absorbed from Phase 10 — doing it here saves a second extraction pass)*
+- Props: `open`, `onClose`, `domainId`, `subjectId`
+- Contains the 5-tab form UI
+- **Calls no mock setTimeout** — handlers call `useIngestMutation` (Phase 10 wires the real mutation; this file has the placeholder that Phase 10 fills in)
+
+#### [NEW] `frontend/src/components/notebook/ingestTabs.tsx`
+- Tab definition array: `id | label | icon` — typed, no `as any` on tab id
+
+#### [NEW] `frontend/src/types/artifactPayload.ts`
+```typescript
+// Zod-parsed discriminated union covering all 3 shapes the backend emits
+export const ProblemPayloadSchema = z.object({
+  kind: z.literal('problems'),
+  problems: z.array(ProblemSchema),
+});
+export const SummaryPayloadSchema = z.object({
+  kind: z.literal('summary'),
+  content: z.string(),
+});
+export const PlaceholderPayloadSchema = z.object({
+  kind: z.literal('placeholder'),
+});
+export const ArtifactPayloadSchema = z.discriminatedUnion('kind', [
+  ProblemPayloadSchema, SummaryPayloadSchema, PlaceholderPayloadSchema,
+]);
+export type ArtifactPayload = z.infer<typeof ArtifactPayloadSchema>;
+```
+
+#### [MODIFY] `frontend/src/components/SourceNotebookScreen.tsx`
+- Becomes layout container: `<div className="flex gap-3">` wrapping the 3 column components
+- All state declarations stay here (column components are stateless)
+- Imports `IngestionModal`, `SourcesColumn`, `ChatColumn`, `StudioColumn`
+- Leaves `onAddResource` prop intact for backward compat (Phase 11 deletes it)
+- ≤ 200 lines total
+
+### Acceptance
+```bash
+(Get-Content SourceNotebookScreen.tsx).Count   # < 200
+pnpm typecheck                                  # exit 0
+pnpm test                                       # existing 5 tests pass
+# grep must return nothing:
+grep -rn "as any" frontend/src/components/notebook/
+```
+
+---
+
+## Phase 10 — Wire Real Ingestion
+
+**Branch**: `feat/frontend-10-ingestion-truth`  
+**Commit**: `feat(frontend): wire IngestionModal to POST /api/sources/ingest`  
+**Findings closed**: R-1.2 + deferred mock-handler items from Phase 9
+
+### New files
+
+#### [NEW] `frontend/src/api/sourcesApi.ts`
+```typescript
+import { z } from 'zod';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+
+export const SourceIngestResponseSchema = z.object({
+  status: z.literal('accepted'),
+  sourceId: z.string(),
+});
+export type SourceIngestResponse = z.infer<typeof SourceIngestResponseSchema>;
+
+export const IngestFileRequestSchema = z.object({
+  subjectId: z.string(),
+  domainId: z.string(),
+  fileName: z.string(),
+  mimeType: z.string(),
+});
+
+export async function ingestSource(body: {
+  subjectId: string;
+  domainId: string;
+  fileName: string;
+  mimeType: string;
+  // File content is sent as multipart or base64 — TBD by backend contract
+  content?: string;
+}): Promise<SourceIngestResponse> {
+  const res = await fetch(`${API_BASE}/api/sources/ingest`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error((err as { detail?: string }).detail ?? `Ingest failed: ${res.status}`);
+  }
+  return SourceIngestResponseSchema.parse(await res.json());
+}
+```
+
+#### [NEW] `frontend/src/api/mutations.ts`
+Central file for all `useMutation` factory functions to keep components thin.
+```typescript
+export function useIngestMutation(onSuccess?: () => void) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ingestSource,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sources'] });
+      onSuccess?.();
+    },
+  });
+}
+```
+
+#### [MODIFY] `frontend/src/components/notebook/IngestionModal.tsx`
+- Wire `useIngestMutation` for all 4 handler paths (upload, github, web, text)
+- Delete all `setTimeout` calls
+- Add `isPending` spinner state using mutation's `.isPending` flag
+- Add error display using mutation's `.error` field
+- `onAddResource` prop dropped (backend is source of truth now)
+
+#### [MODIFY] `frontend/src/api/queries.ts`
+```typescript
+export const sourcesQueries = {
+  list: () => queryOptions({
+    queryKey: ['sources'],
+    queryFn: api.getSources,
+    staleTime: 1000 * 60 * 5,  // Shorter: ingest makes this stale
+  }),
+  // Phase 10 addition:
+  ingest: (body: IngestBody) => ({
+    mutationKey: ['sources', 'ingest'],
+    mutationFn: () => ingestSource(body),
+  }),
+}
+```
+
+#### [MODIFY] `frontend/src/components/SourceNotebookScreen.tsx`
+- Remove `onAddResource` prop entirely from component signature
+- `handleLocalFileUpload` / `handleIngestSubmit` / `handleDriveConnectMock` deleted from here (moved into `IngestionModal`)
+
+### Acceptance
+```bash
+# Zero setTimeout in notebook components:
+grep -rn "setTimeout" frontend/src/components/notebook/     # returns nothing
+pnpm typecheck    # exit 0
+pnpm test         # 3 new ingest tests pass
+# Live smoke: drop a PDF via IngestionModal → POST /api/sources/ingest returns 202
+```
+
+---
+
+## Phase 11 — Store Cleanup
+
+**Branch**: `feat/frontend-11-store-cleanup`  
+**Commit**: `refactor(frontend): delete store-level server data + align DTO types`  
+**Findings closed**: R-1.3, R-1.4, R-2.4, R-2.6, R-2.7, R-3.2 + 4 current TS errors
+
+### Philosophy
+Zustand is not a cache. TanStack Query owns all server data. Zustand retains only ephemeral UI state that has no natural query key.
+
+### Changes
+
+#### [DELETE] `frontend/src/stores/mockData.ts`
+Entirely removed. The seed data it contains has been replaced by real backend responses since Phase 1.
+
+#### [MODIFY] `frontend/src/workspaceTypes.ts`
+Align with `WorkflowTemplateDTO` — the root cause of the 4 TS errors:
+```typescript
+// BEFORE:
+lastRun?: string;
+// AFTER (matches DTO):
+lastRun?: string | null;
+```
+This propagates through the store, eliminating all 4 TS errors without `as any`.
+
+#### [NEW] `frontend/src/api/workspaceSchemas.ts`
+Split Zod schemas out of `workspaceApi.ts` into their own file so they can be imported by the store and components without importing the full `api` object:
+```typescript
+export {
+  DomainSchema, SubjectSchema, ChapterSchema, TopicSchema,
+  WorkflowTemplateSchema, ArtifactSchema, PracticeConfigSchema,
+  // ... all existing schemas
+} from './workspaceApi';
+// Re-export inferred types for convenience:
+export type { DomainDTO, SubjectDTO, WorkflowTemplateDTO, ArtifactDTO } from './workspaceApi';
+```
+
+#### [MODIFY] `frontend/src/stores/workspaceStore.ts`
+**Remove from state**:
+- `domains: Domain[]` → reads from `useQuery(domainQueries.list())`
+- `workflows: WorkflowTemplate[]` → reads from `useQuery(workflowQueries.list())`
+- `artifacts: Artifact[]` → reads from `useQuery(artifactsQueries.list())`
+- `setDomains`, `setWorkflows` actions → deleted
+- `INITIAL_DOMAINS`, `INITIAL_WORKFLOWS`, `INITIAL_ARTIFACTS` imports → deleted
+
+**Retain in state**:
+```typescript
+interface WorkspaceState {
+  // UI-local only:
+  modelConfigured: boolean;
+  recentItems: RecentItem[];
+  notebooks: Record<string, string[]>;
+  chatSessionId: string | null;
+  chatMessages: ChatMessage[];
+  isChatLoading: boolean;
+
+  // Actions that mutate server data become useMutation calls in components,
+  // but runWorkflow stays here since it needs to be called from SourceNotebookScreen
+  // and is complex enough to warrant store co-location:
+  runWorkflow: (...) => Promise<ArtifactDTO | null>;
+  submitPracticeAttempt: (...) => Promise<void>;
+  startChatSession: () => Promise<void>;
+  endChatSession: () => Promise<void>;
+  sendChatMessage: (...) => Promise<void>;
+
+  // Lightweight actions staying in store:
+  setModelConfigured: (v: boolean) => void;
+  addToRecents: (...) => void;
+  createNotebook: (...) => void;
+  deleteNotebook: (...) => void;
+}
+```
+
+**Domain/Subject/Chapter/Topic mutations** → converted to `useMutation` hooks in `frontend/src/api/mutations.ts`:
+```typescript
+export function useAddDomainMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.addDomain,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['domains'] }),
+  });
+}
+// ... renameDomain, deleteDomain, togglePin, toggleArchive, addSubject, etc.
+```
+
+#### [MODIFY] `frontend/src/routes/__root.tsx`
+**Remove all 4 try/catch blocks** from the loader. Replace with proper `ensureQueryData` that throws on failure — TanStack Router handles the error boundary. Remove 3 `as any` casts:
+```typescript
+loader: async ({ context: { queryClient } }) => {
+  await queryClient.ensureQueryData(domainQueries.list());
+  await queryClient.ensureQueryData(masteryQueries.scores());
+  await queryClient.ensureQueryData(masteryQueries.blindSpots());
+  const wfResp = await queryClient.ensureQueryData(workflowQueries.list());
+  useWorkspaceStore.getState().setModelConfigured(wfResp.modelConfigured);
+  await queryClient.ensureQueryData(artifactsQueries.list());
+},
+```
+> **Note**: `setModelConfigured` is the only Zustand write remaining; it's a scalar boolean, not server data.
+
+#### [MODIFY] All components that read `workflows`/`domains`/`artifacts` from the store
+Replace `useWorkspaceStore(s => s.workflows)` with `useQuery(workflowQueries.list()).data?.items ?? []`, etc. Key components to update:
+- `SourceNotebookScreen.tsx` (workflows, artifacts)
+- `LeftNav.tsx` (domains)
+- `WorkflowManagerScreen.tsx` (workflows)
+- `ExplorerScreens.tsx` (domains)
+
+#### [NEW] `frontend/tests/workspaceStore.test.ts`
+4 tests covering:
+1. `addToRecents` deduplication
+2. `addToRecents` max-5 trim
+3. `createNotebook` key format
+4. `setModelConfigured` toggle
+
+#### [DELETE] `frontend/src/stores/mockData.ts` (confirmed)
+
+### Acceptance
+```bash
+grep -rn "INITIAL_DOMAINS\|INITIAL_WORKFLOWS\|INITIAL_ARTIFACTS" frontend/src   # returns nothing
+grep -rn "as any" frontend/src/stores/workspaceStore.ts                          # returns nothing
+grep -rn "as any" frontend/src/routes/__root.tsx                                 # returns nothing
+pnpm typecheck    # exit 0 — the 4 TS errors are gone
+pnpm test         # 4 new store tests pass; all prior tests pass
+```
+
+---
+
+## Phase 12 — Type Contracts
+
+**Branch**: `feat/frontend-12-type-contracts`  
+**Commit**: `refactor(frontend): EvalGate enum + Literal types + ArtifactPayload discriminator + WorkflowEditor mutations`  
+**Findings closed**: R-2.9, R-3.1, R-3.3, R-3.4, R-3.5 + remaining `as any` sites
+
+### New files
+
+#### [NEW] `frontend/src/types/options.ts`
+```typescript
+export type Difficulty = 'easy' | 'medium' | 'hard';
+export type PracticeScope = 'subject' | 'chapter' | 'topic';
+export type WorkflowScope = 'global' | 'subject' | 'chapter' | 'topic';
+export type ArtifactStatus = 'approved' | 'draft' | 'reviewed';
+
+export const DIFFICULTY_OPTIONS = [
+  { value: 'easy' as Difficulty, label: 'Easy' },
+  { value: 'medium' as Difficulty, label: 'Medium' },
+  { value: 'hard' as Difficulty, label: 'Hard' },
+] as const;
+
+export const PRACTICE_SCOPE_OPTIONS = [
+  { value: 'subject' as PracticeScope, label: 'Whole subject' },
+  { value: 'chapter' as PracticeScope, label: 'This chapter' },
+  { value: 'topic' as PracticeScope, label: 'This topic' },
+] as const;
+```
+
+#### [NEW] `frontend/src/types/workflow.ts`
+```typescript
+export const EVAL_GATE_SCHEMA = 'schema_validation' as const;
+export const EVAL_GATE_SANDBOX = 'sandbox_execution' as const;
+export const EVAL_GATE_SOURCE = 'source_grounding' as const;
+export type EvalGate =
+  | typeof EVAL_GATE_SCHEMA
+  | typeof EVAL_GATE_SANDBOX
+  | typeof EVAL_GATE_SOURCE;
+
+export const ALL_EVAL_GATES: EvalGate[] = [
+  EVAL_GATE_SCHEMA,
+  EVAL_GATE_SANDBOX,
+  EVAL_GATE_SOURCE,
+];
+
+/** Converts the legacy `evalGates: number` from the backend into the typed array. */
+export function evalGatesFromCount(n: number): EvalGate[] {
+  return ALL_EVAL_GATES.slice(0, Math.min(n, ALL_EVAL_GATES.length));
+}
+/** Converts the typed array back to the backend's count field. */
+export function evalGatesToCount(gates: EvalGate[]): number {
+  return gates.length;
+}
+```
+
+#### [MODIFY] `frontend/src/components/WorkflowEditorScreen.tsx`
+- Replace `const [evalSchema, evalSandbox, evalSource] = useState(true)` with `const [enabledGates, setEnabledGates] = useState<EvalGate[]>([...])`
+- Options driven from `DIFFICULTY_OPTIONS`, `PRACTICE_SCOPE_OPTIONS` (no magic strings)
+- **Extract `WorkflowMetadataCards`** component (Blueprint Metadata + Practice Settings + Scope + Source Requirements cards) into `frontend/src/components/notebook/WorkflowMetadataCards.tsx`
+- **Extract `PromptEditor`** textarea + variable badges into `frontend/src/components/notebook/PromptEditor.tsx`
+- **Wire save via `useMutation`**: `saveWorkflow` store action converted to `useSaveWorkflowMutation` in `mutations.ts`; eliminates the remaining `wf as any` casts in the store
+- `evalGates >= N` comparisons deleted entirely
+
+#### [MODIFY] `frontend/src/components/notebook/StudioColumn.tsx`
+- `wf.evalGates` display uses `evalGatesFromCount(wf.evalGates).join(', ')` instead of bare number
+
+#### [MODIFY] `frontend/src/components/notebook/ArtifactPayloadView.tsx`
+- Uses `ArtifactPayloadSchema.safeParse(art.payload)` for type-safe rendering
+- Renders `problems`, `summary`, or `placeholder` arm depending on discriminant
+- No `as Record<string, unknown>` cast
+
+#### [MODIFY] `frontend/src/components/LeftNav.tsx`
+- `to={toStr as any}` → replaced with typed `LinkOptions` from `@tanstack/react-router`
+- `setRecentGroupBy(g as any)` → `g` typed as the correct union literal
+
+#### [MODIFY] `frontend/src/routes/subject/$domainId/$subjectId.tsx`
+- `type as any` → typed as `CreationModalType`
+
+#### [NEW] `frontend/tests/workflow-editor.test.ts`
+3 tests:
+1. `evalGatesFromCount(2)` returns `[schema, sandbox]`
+2. `evalGatesToCount([schema, source])` returns `2`
+3. `DIFFICULTY_OPTIONS` has exactly 3 entries, each with a `Difficulty` value
+
+### Acceptance
+```bash
+grep -rn "as any" frontend/src --include="*.ts" --include="*.tsx" \
+  | grep -v "routeTree.gen.ts"    # returns nothing
+grep -rn "evalGates >=" frontend/src                                  # returns nothing
+pnpm typecheck    # exit 0
+pnpm test         # 3 new tests pass
+```
+
+---
+
+## Handoff
+
+After Phase 12 is committed and pushed:
+- Run `gt submit --stack` to open all 4 PRs against `main`
+- Write `docs/handoffs/2026-06-03/phase-9-to-12-frontend.md`
+- Stop; Phase 13 (Backend Template Registry) is next
+
+---
+
+## Verification Plan
+
+### Per-PR gates (run after every commit)
+```bash
+powershell -ExecutionPolicy Bypass -Command "cd frontend; pnpm typecheck"
+powershell -ExecutionPolicy Bypass -Command "cd frontend; pnpm test"
+# Then pre-commit:
+git commit ...   # Husky fires: eslint + prettier + typecheck
+```
+
+### Phase 12 final gate
+```bash
+# Zero as-any (user files):
+grep -rn "as any" frontend/src --include="*.ts" --include="*.tsx" |
+  Select-String -NotMatch "routeTree.gen.ts"
+
+# Zero evalGates >= comparisons:
+grep -rn "evalGates >=" frontend/src
+
+# Zero setTimeout mock handlers in notebook:
+grep -rn "setTimeout" frontend/src/components/notebook/
+
+# Zero INITIAL_ imports:
+grep -rn "INITIAL_DOMAINS\|INITIAL_WORKFLOWS\|INITIAL_ARTIFACTS" frontend/src
+
+# TypeScript clean:
+pnpm typecheck   # exit 0
+
+# Test suite:
+pnpm test        # all tests pass including new ones
+```
+
+### Manual smoke (Phase 12)
+1. `pnpm dev` + `fastapi dev backend/app/main.py`
+2. Open `/notebook/robotics/modern-robotics`
+3. Confirm SourcesColumn, ChatColumn, StudioColumn render independently
+4. Confirm `wc -l SourceNotebookScreen.tsx` < 200
+5. Drop a PDF via IngestionModal → confirm `POST /api/sources/ingest` 202 in network tab
+6. Open WorkflowEditor → confirm `evalGates >= N` pattern is gone (use inspect element or search source)
+7. Confirm no flicker on domain reload (TanStack Query stale-while-revalidate)
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Q1 — Ingest multipart vs JSON**: `POST /api/sources/ingest` currently accepts a JSON body with `fileName`/`mimeType`. Does it accept binary file content via `multipart/form-data`, or does the frontend need to convert to base64? Answer determines `sourcesApi.ts` fetch body construction.
+
+> [!IMPORTANT]
+> **Q2 — `WorkflowEditorScreen` router or prop?**: Currently receives `workflows`, `workflowId`, `onSaveWorkflow`, `onCustomize`, `onNavigate` as props passed from the parent route. After Phase 11 removes store-level workflows, should this component use `useQuery` internally (preferred) or continue receiving workflows as props (backward compat)? Recommended: use `useQuery` internally and drop the props — 1 less prop-drilling chain.
+
+> [!NOTE]
+> **`LeftNav.tsx` `toStr as any`**: The cast exists because `toStr` is a string assembled at runtime from a union of route paths. The fix is to use `@tanstack/react-router`'s `LinkComponent` with a `to` prop typed as `RegisteredRouter['routePaths']`. This may require the `@tanstack/react-router` path generation to be up-to-date. If `routeTree.gen.ts` is stale, regenerate with `pnpm vite` first.

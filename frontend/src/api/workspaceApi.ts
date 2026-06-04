@@ -126,7 +126,7 @@ export const ArtifactSchema = z.object({
   subjectId: z.string().optional().nullable(),
   chapterId: z.string().optional().nullable(),
   topicId: z.string().optional().nullable(),
-  payload: z.record(z.any()).optional().nullable(),
+  payload: z.record(z.string(), z.any()).optional().nullable(),
 });
 
 export type ArtifactDTO = z.infer<typeof ArtifactSchema>;
@@ -215,15 +215,28 @@ export const api = {
     return SubjectSchema.parse(data);
   },
 
-  getChapter: async (domainId: string, subjectId: string, chapterId: string): Promise<ChapterDTO> => {
-    const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/${chapterId}`);
+  getChapter: async (
+    domainId: string,
+    subjectId: string,
+    chapterId: string,
+  ): Promise<ChapterDTO> => {
+    const res = await fetch(
+      `${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/${chapterId}`,
+    );
     if (!res.ok) throw new Error(`Chapter not found: ${chapterId}`);
     const data = await res.json();
     return ChapterSchema.parse(data);
   },
 
-  getTopic: async (domainId: string, subjectId: string, chapterId: string, topicId: string): Promise<TopicDTO> => {
-    const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/${chapterId}/topics/${topicId}`);
+  getTopic: async (
+    domainId: string,
+    subjectId: string,
+    chapterId: string,
+    topicId: string,
+  ): Promise<TopicDTO> => {
+    const res = await fetch(
+      `${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/${chapterId}/topics/${topicId}`,
+    );
     if (!res.ok) throw new Error(`Topic not found: ${topicId}`);
     const data = await res.json();
     return TopicSchema.parse(data);
@@ -305,7 +318,12 @@ export const api = {
     if (!res.ok) throw new Error(`Failed to delete subject: ${res.status}`);
   },
 
-  addChapter: async (domainId: string, subjectId: string, name: string, description?: string): Promise<ChapterDTO> => {
+  addChapter: async (
+    domainId: string,
+    subjectId: string,
+    name: string,
+    description?: string,
+  ): Promise<ChapterDTO> => {
     const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -315,12 +333,20 @@ export const api = {
     return ChapterSchema.parse(await res.json());
   },
 
-  addTopic: async (domainId: string, subjectId: string, chapterId: string, name: string): Promise<TopicDTO> => {
-    const res = await fetch(`${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/${chapterId}/topics/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
-    });
+  addTopic: async (
+    domainId: string,
+    subjectId: string,
+    chapterId: string,
+    name: string,
+  ): Promise<TopicDTO> => {
+    const res = await fetch(
+      `${API_BASE}/api/domains/${domainId}/subjects/${subjectId}/chapters/${chapterId}/topics/`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      },
+    );
     if (!res.ok) throw new Error(`Failed to create topic: ${res.status}`);
     return TopicSchema.parse(await res.json());
   },
@@ -508,7 +534,8 @@ export const api = {
     topicId?: string;
   }): Promise<WorkflowListResponse> => {
     const qs = params
-      ? '?' + Object.entries(params)
+      ? '?' +
+        Object.entries(params)
           .filter(([, v]) => v != null && v !== '')
           .map(([k, v]) => `${k}=${encodeURIComponent(v as string)}`)
           .join('&')

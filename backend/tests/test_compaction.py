@@ -5,9 +5,10 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
+
 import pytest
 
-from app.harness.compaction_config import CompactionConfig, compact_history
+from app.harness.compaction_config import compact_history
 
 
 @pytest.fixture
@@ -32,7 +33,7 @@ def test_compact_history_clears_tool_uses(temp_sessions_dir):
     # Insert events that exceed 30,000 tokens (characters // 4 approximation)
     # 30,000 tokens ≈ 120,000 characters
     large_payload = "x" * 25000
-    
+
     # Excluded tools should not be cleared
     conn.execute(
         "INSERT INTO events (event_type, payload) VALUES (?, ?)",

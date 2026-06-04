@@ -105,7 +105,7 @@ def _is_model_configured(request: Request) -> bool:
 # ── Read endpoints ──────────────────────────────────────────────────
 
 
-@router.get("/", response_model=WorkflowListResponse)
+@router.get("", response_model=WorkflowListResponse)
 def list_workflows(
     request: Request,
     scope: Annotated[WorkflowScope | None, Query()] = None,
@@ -142,7 +142,7 @@ def get_workflow(workflow_id: str) -> WorkflowTemplate:
 # ── Mutations ───────────────────────────────────────────────────────
 
 
-@router.post("/", response_model=WorkflowTemplate, status_code=201)
+@router.post("", response_model=WorkflowTemplate, status_code=201)
 def create_workflow(body: CreateWorkflowBody) -> WorkflowTemplate:
     payload = body.model_dump(by_alias=False, exclude_none=False)
     payload["id"] = new_id("wf")
@@ -160,7 +160,7 @@ def patch_workflow(workflow_id: str, body: UpdateWorkflowBody) -> WorkflowTempla
 
 
 @router.delete("/{workflow_id}", status_code=204)
-def remove_workflow(workflow_id: str):
+def remove_workflow(workflow_id: str):  # type: ignore
     if not workflows_repo.delete_workflow(workflow_id):
         raise HTTPException(status_code=404, detail="Workflow not found")
 

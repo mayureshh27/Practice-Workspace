@@ -57,7 +57,19 @@ class TemporalMasteryStore:
             self._local.conn = sqlite3.connect(str(self._db_path))
             self._local.conn.row_factory = sqlite3.Row
             self._local.conn.execute("PRAGMA journal_mode=WAL")
-        return self._local.conn
+        return self._local.conn  # type: ignore
+
+    def close(self) -> None:
+        """Close the thread-local database connection."""
+        if hasattr(self._local, "conn") and self._local.conn is not None:
+            self._local.conn.close()
+            self._local.conn = None
+
+    def __enter__(self) -> TemporalMasteryStore:
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        self.close()
 
     def _init_db(self) -> None:
         conn = self._get_conn()
@@ -97,10 +109,20 @@ class TemporalMasteryStore:
         ts_iso = timestamp.isoformat()
 
         # Close the prior edge
-        conn.execute(
-            "UPDATE mastery_edges SET valid_to = ? WHERE concept_id = ? AND valid_to IS NULL",
-            (ts_iso, concept_id),
+        cursor = conn.execute(
+            "SELECT id, valid_from FROM mastery_edges WHERE concept_id = ? AND valid_to IS NULL",
+            (concept_id,)
         )
+        row = cursor.fetchone()
+        if row:
+            from datetime import timedelta
+            prior_id, prior_from = row[0], row[1]
+            prior_dt = datetime.fromisoformat(prior_from)
+            if timestamp <= prior_dt:
+                valid_to = (prior_dt + timedelta(microseconds=1)).isoformat()
+            else:
+                valid_to = ts_iso
+            conn.execute("UPDATE mastery_edges SET valid_to = ? WHERE id = ?", (valid_to, prior_id))
 
         # Insert the new edge
         conn.execute(

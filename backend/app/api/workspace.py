@@ -7,7 +7,9 @@ any restructuring.
 CRUD mutations persist to a JSON snapshot file next to the SQLite DB.
 """
 
-from fastapi import APIRouter, HTTPException
+from typing import Annotated
+
+from fastapi import APIRouter, HTTPException, Path
 from pydantic import BaseModel
 
 from app.domain.workspace import Chapter, Domain, Subject, Topic
@@ -19,13 +21,13 @@ router = APIRouter(prefix="/api/domains", tags=["workspace"])
 # ── Read endpoints ──────────────────────────────────────────────────
 
 
-@router.get("/")
+@router.get("")
 def list_domains() -> list[Domain]:
     return workspace_repo.get_domains()
 
 
 @router.get("/{domain_id}")
-def get_domain(domain_id: str) -> Domain:
+def get_domain(domain_id: Annotated[str, Path(description="Domain ULID")]) -> Domain:
     domain = workspace_repo.get_domain(domain_id)
     if domain is None:
         raise HTTPException(status_code=404, detail="Domain not found")
@@ -33,7 +35,10 @@ def get_domain(domain_id: str) -> Domain:
 
 
 @router.get("/{domain_id}/subjects/{subject_id}")
-def get_subject(domain_id: str, subject_id: str) -> Subject:
+def get_subject(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    subject_id: Annotated[str, Path(description="Subject ULID")],
+) -> Subject:
     subject = workspace_repo.get_subject(domain_id, subject_id)
     if subject is None:
         raise HTTPException(status_code=404, detail="Subject not found")
@@ -41,7 +46,11 @@ def get_subject(domain_id: str, subject_id: str) -> Subject:
 
 
 @router.get("/{domain_id}/subjects/{subject_id}/chapters/{chapter_id}")
-def get_chapter(domain_id: str, subject_id: str, chapter_id: str) -> Chapter:
+def get_chapter(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    subject_id: Annotated[str, Path(description="Subject ULID")],
+    chapter_id: Annotated[str, Path(description="Chapter ULID")],
+) -> Chapter:
     chapter = workspace_repo.get_chapter(domain_id, subject_id, chapter_id)
     if chapter is None:
         raise HTTPException(status_code=404, detail="Chapter not found")
@@ -49,7 +58,12 @@ def get_chapter(domain_id: str, subject_id: str, chapter_id: str) -> Chapter:
 
 
 @router.get("/{domain_id}/subjects/{subject_id}/chapters/{chapter_id}/topics/{topic_id}")
-def get_topic(domain_id: str, subject_id: str, chapter_id: str, topic_id: str) -> Topic:
+def get_topic(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    subject_id: Annotated[str, Path(description="Subject ULID")],
+    chapter_id: Annotated[str, Path(description="Chapter ULID")],
+    topic_id: Annotated[str, Path(description="Topic ULID")],
+) -> Topic:
     topic = workspace_repo.get_topic(domain_id, subject_id, chapter_id, topic_id)
     if topic is None:
         raise HTTPException(status_code=404, detail="Topic not found")
@@ -68,11 +82,6 @@ def create_domain(body: CreateDomainBody) -> Domain:
     return workspace_repo.add_domain(body.name)
 
 
-@router.post("/", status_code=201, include_in_schema=False)
-def create_domain_slash(body: CreateDomainBody) -> Domain:
-    return workspace_repo.add_domain(body.name)
-
-
 class UpdateDomainBody(BaseModel):
     name: str | None = None
     pinned: bool | None = None
@@ -80,7 +89,10 @@ class UpdateDomainBody(BaseModel):
 
 
 @router.patch("/{domain_id}")
-def patch_domain(domain_id: str, body: UpdateDomainBody) -> Domain:
+def patch_domain(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    body: UpdateDomainBody,
+) -> Domain:
     fields = body.model_dump(exclude_none=True)
     updated = workspace_repo.update_domain(domain_id, fields)
     if updated is None:
@@ -89,7 +101,7 @@ def patch_domain(domain_id: str, body: UpdateDomainBody) -> Domain:
 
 
 @router.delete("/{domain_id}", status_code=204)
-def remove_domain(domain_id: str):
+def remove_domain(domain_id: Annotated[str, Path(description="Domain ULID")]) -> None:
     if not workspace_repo.delete_domain(domain_id):
         raise HTTPException(status_code=404, detail="Domain not found")
 
@@ -100,15 +112,10 @@ class CreateSubjectBody(BaseModel):
 
 
 @router.post("/{domain_id}/subjects", status_code=201)
-def create_subject(domain_id: str, body: CreateSubjectBody) -> Subject:
-    subject = workspace_repo.add_subject(domain_id, body.name, body.description)
-    if subject is None:
-        raise HTTPException(status_code=404, detail="Domain not found")
-    return subject
-
-
-@router.post("/{domain_id}/subjects/", status_code=201, include_in_schema=False)
-def create_subject_slash(domain_id: str, body: CreateSubjectBody) -> Subject:
+def create_subject(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    body: CreateSubjectBody,
+) -> Subject:
     subject = workspace_repo.add_subject(domain_id, body.name, body.description)
     if subject is None:
         raise HTTPException(status_code=404, detail="Domain not found")
@@ -125,7 +132,11 @@ class UpdateSubjectBody(BaseModel):
 
 
 @router.patch("/{domain_id}/subjects/{subject_id}")
-def patch_subject(domain_id: str, subject_id: str, body: UpdateSubjectBody) -> Subject:
+def patch_subject(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    subject_id: Annotated[str, Path(description="Subject ULID")],
+    body: UpdateSubjectBody,
+) -> Subject:
     fields = body.model_dump(exclude_none=True)
     updated = workspace_repo.update_subject(domain_id, subject_id, fields)
     if updated is None:
@@ -134,7 +145,10 @@ def patch_subject(domain_id: str, subject_id: str, body: UpdateSubjectBody) -> S
 
 
 @router.delete("/{domain_id}/subjects/{subject_id}", status_code=204)
-def remove_subject(domain_id: str, subject_id: str):
+def remove_subject(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    subject_id: Annotated[str, Path(description="Subject ULID")],
+) -> None:
     if not workspace_repo.delete_subject(domain_id, subject_id):
         raise HTTPException(status_code=404, detail="Subject not found")
 
@@ -145,15 +159,11 @@ class CreateChapterBody(BaseModel):
 
 
 @router.post("/{domain_id}/subjects/{subject_id}/chapters", status_code=201)
-def create_chapter(domain_id: str, subject_id: str, body: CreateChapterBody) -> Chapter:
-    chapter = workspace_repo.add_chapter(domain_id, subject_id, body.name, body.description)
-    if chapter is None:
-        raise HTTPException(status_code=404, detail="Subject not found")
-    return chapter
-
-
-@router.post("/{domain_id}/subjects/{subject_id}/chapters/", status_code=201, include_in_schema=False)
-def create_chapter_slash(domain_id: str, subject_id: str, body: CreateChapterBody) -> Chapter:
+def create_chapter(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    subject_id: Annotated[str, Path(description="Subject ULID")],
+    body: CreateChapterBody,
+) -> Chapter:
     chapter = workspace_repo.add_chapter(domain_id, subject_id, body.name, body.description)
     if chapter is None:
         raise HTTPException(status_code=404, detail="Subject not found")
@@ -170,7 +180,12 @@ class UpdateChapterBody(BaseModel):
 
 
 @router.patch("/{domain_id}/subjects/{subject_id}/chapters/{chapter_id}")
-def patch_chapter(domain_id: str, subject_id: str, chapter_id: str, body: UpdateChapterBody) -> Chapter:
+def patch_chapter(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    subject_id: Annotated[str, Path(description="Subject ULID")],
+    chapter_id: Annotated[str, Path(description="Chapter ULID")],
+    body: UpdateChapterBody,
+) -> Chapter:
     fields = body.model_dump(exclude_none=True)
     updated = workspace_repo.update_chapter(domain_id, subject_id, chapter_id, fields)
     if updated is None:
@@ -183,15 +198,12 @@ class CreateTopicBody(BaseModel):
 
 
 @router.post("/{domain_id}/subjects/{subject_id}/chapters/{chapter_id}/topics", status_code=201)
-def create_topic(domain_id: str, subject_id: str, chapter_id: str, body: CreateTopicBody) -> Topic:
-    topic = workspace_repo.add_topic(domain_id, subject_id, chapter_id, body.name)
-    if topic is None:
-        raise HTTPException(status_code=404, detail="Chapter not found")
-    return topic
-
-
-@router.post("/{domain_id}/subjects/{subject_id}/chapters/{chapter_id}/topics/", status_code=201, include_in_schema=False)
-def create_topic_slash(domain_id: str, subject_id: str, chapter_id: str, body: CreateTopicBody) -> Topic:
+def create_topic(
+    domain_id: Annotated[str, Path(description="Domain ULID")],
+    subject_id: Annotated[str, Path(description="Subject ULID")],
+    chapter_id: Annotated[str, Path(description="Chapter ULID")],
+    body: CreateTopicBody,
+) -> Topic:
     topic = workspace_repo.add_topic(domain_id, subject_id, chapter_id, body.name)
     if topic is None:
         raise HTTPException(status_code=404, detail="Chapter not found")

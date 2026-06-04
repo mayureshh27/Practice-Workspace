@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 import logfire
 
@@ -19,7 +19,9 @@ class ToolRegistry(Protocol):
 
     def list_tool_names(self) -> list[str]: ...
 
-    def get_tool_schema(self, name: str) -> dict: ...
+    def get_tool_schema(self, name: str) -> dict: ...  # type: ignore
+
+    def register(self, name: str, schema: dict[str, Any]) -> None: ...
 
 
 class FileToolRegistry:
@@ -33,7 +35,7 @@ class FileToolRegistry:
         if registry_dir is None:
             registry_dir = Path(__file__).parent / "tool_registry"
         self._dir = registry_dir
-        self._schemas: dict[str, dict] = {}
+        self._schemas: dict[str, dict] = {}  # type: ignore
         self._load()
 
     def _load(self) -> None:
@@ -87,7 +89,7 @@ class FileToolRegistry:
                 out.append(name)
         return out
 
-    def get_tool_schema(self, name: str) -> dict:
+    def get_tool_schema(self, name: str) -> dict:  # type: ignore
         """Return the full JSON schema for a tool.
 
         Raises ``KeyError`` if the tool name is not registered.
@@ -98,3 +100,32 @@ class FileToolRegistry:
             raise KeyError(
                 f"Tool '{name}' not found. Available: {', '.join(self._schemas)}"
             ) from err
+
+    def register(self, name: str, schema: dict[str, Any]) -> None:
+        """Register a new tool schema dynamically."""
+        self._schemas[name] = schema
+
+
+class DefaultToolRegistry(FileToolRegistry):
+    """Concrete registry that loads JSON schemas and filters by agent role (ADR-0018)."""
+
+    def get_role_tools(self, role: str) -> list[str]:
+        """Return the tool names mapped to a specific agent role."""
+        role_map = {
+            "ingestion": ["file_read", "source_search", "graph_lookup", "memory_write"],
+            "tutor": [
+                "memory_read",
+                "memory_write",
+                "graph_lookup",
+                "source_search",
+                "source_search_exact",
+                "session_history",
+            ],
+            "workflow": ["source_search_exact", "source_search", "sandbox_run"],
+            "summary": [],
+            "eval": ["sandbox_run"],
+        }
+        allowed = role_map.get(role)
+        if allowed is not None:
+            return [name for name in allowed if name in self._schemas]
+        return self.list_tool_names()

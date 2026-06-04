@@ -6,9 +6,10 @@ GET /api/sources/{id}/chunks — list chunk previews for a source
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Request, BackgroundTasks
-from pydantic import BaseModel, Field
 from typing import Any
+
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
+from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/api/sources", tags=["sources"])
 
@@ -17,8 +18,8 @@ class IngestSourceBody(BaseModel):
     source_id: str = Field(alias="sourceId")
     source_type: str = Field(alias="sourceType")
     source_name: str = Field(alias="sourceName")
-    chunks: list[dict] | None = None
-    concept_candidates: list[dict] | None = Field(alias="conceptCandidates", default=None)
+    chunks: list[dict[str, Any]] | None = None
+    concept_candidates: list[dict[str, Any]] | None = Field(alias="conceptCandidates", default=None)
     graph_facts: list[Any] | None = Field(alias="graphFacts", default=None)
 
     model_config = {"populate_by_name": True}
@@ -28,16 +29,17 @@ def run_ingestion_in_background(
     source_id: str,
     source_type: str,
     source_name: str,
-    chunks: list[dict] | None,
-    concept_candidates: list[dict] | None,
+    chunks: list[dict[str, Any]] | None,
+    concept_candidates: list[dict[str, Any]] | None,
     graph_facts: list[Any] | None,
 ) -> None:
-    from app.harness.ingestion_gate import validate_ingestion_stage
-    from app.harness.event_emitter import emit_event
-    from app.domain.events import SourceIngested
-    from app.storage.database import get_engine
-    from sqlmodel import Session
     import logfire
+    from sqlmodel import Session
+
+    from app.domain.events import SourceIngested
+    from app.harness.event_emitter import emit_event
+    from app.harness.ingestion_gate import validate_ingestion_stage
+    from app.storage.database import get_engine
 
     gate_result = validate_ingestion_stage(
         chunks=chunks,
@@ -93,7 +95,6 @@ def ingest_source(
     return {"status": "accepted"}
 
 
-
 class ChunkPreview(BaseModel):
     id: str
     text: str
@@ -108,7 +109,7 @@ class SourceDTO(BaseModel):
     chunks: list[ChunkPreview] = []
 
 
-@router.get("/")
+@router.get("")
 def list_sources(request: Request) -> list[SourceDTO]:
     """Return all learning sources with metadata.
 

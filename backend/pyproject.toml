@@ -42,10 +42,8 @@ target-version = "py312"
 line-length = 100
 extend-exclude = [
     "data",
-    "ingestion-pipeline",
     "storage",
     ".venv",
-    "tests",
 ]
 
 [tool.ruff.lint]
@@ -59,24 +57,32 @@ select = [
     "N",    # pep8-naming
     "SIM",  # flake8-simplify
     "RUF",  # ruff-specific rules
+    "ANN",  # annotations
+    "TCH",  # type-checking imports
+    "PTH",  # pathlib
+    "S",    # bandit security
+    "PERF", # performance lint
 ]
 ignore = [
     "E501",   # line length (handled by formatter)
     "B008",   # function call in default argument (FastAPI pattern)
     "UP007",  # X | Y union syntax — keep Optional for older 3.12 compat
+    "ANN101", # missing self annotation
+    "ANN401", # Any in annotation
+    "S101",   # assert in tests
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "app/api/*" = ["B008"]  # FastAPI dependency defaults
-"tests/*" = ["N802", "N803", "B011"]
+"tests/*" = ["N802", "N803", "B011", "ANN"]
 
 [tool.mypy]
 python_version = "3.12"
-strict_optional = true
-warn_return_any = false
+strict = true
+warn_return_any = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
 warn_unused_configs = true
-disallow_untyped_defs = false
-ignore_missing_imports = true
 plugins = ["pydantic.mypy"]
 exclude = [
     "data",
@@ -108,6 +114,14 @@ ignore_missing_imports = true
 module = "litellm.*"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "logfire.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
 [tool.coverage.run]
 source = ["app"]
 branch = true
@@ -138,7 +152,11 @@ testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra --strict-markers"
 filterwarnings = [
-    "ignore::DeprecationWarning",
+    "error",
+    "ignore::pydantic.warnings.PydanticDeprecatedSince20",
+    "ignore::DeprecationWarning:pydantic.*",
+    "ignore::ResourceWarning",
+    "ignore::pytest.PytestUnraisableExceptionWarning",
 ]
 
 [tool.pyrefly]
@@ -150,17 +168,14 @@ project-excludes = [
     "**/ingestion-pipeline*",
     "**/storage*",
     "**/.venv*",
-    "**/tests*",
     "**/build*",
     "**/dist*",
 ]
 python-version = "3.12.0"
-preset = "legacy"
 ignore-missing-imports = [
     "graphiti_core.*",
     "kuzu.*",
     "qdrant_client.*",
     "sentence_transformers.*",
     "litellm.*",
-    "*",
 ]
